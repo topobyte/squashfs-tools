@@ -1,7 +1,7 @@
-.classpath
+bin
+build
+.gradle
 .project
+.classpath
 .settings
-*.iml
-.idea/*
-/target
-pom.xml.versionsBackup
+*.swp
