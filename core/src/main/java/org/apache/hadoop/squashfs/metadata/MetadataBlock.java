@@ -18,9 +18,10 @@
 
 package org.apache.hadoop.squashfs.metadata;
 
-import org.apache.hadoop.squashfs.SquashFsException;
-import org.apache.hadoop.squashfs.superblock.SuperBlock;
-import org.apache.hadoop.squashfs.superblock.SuperBlockFlag;
+import static org.apache.hadoop.squashfs.util.BinUtils.dumpBin;
+import static org.apache.hadoop.squashfs.util.BinUtils.DumpOptions.BINARY;
+import static org.apache.hadoop.squashfs.util.BinUtils.DumpOptions.DECIMAL;
+import static org.apache.hadoop.squashfs.util.BinUtils.DumpOptions.UNSIGNED;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -31,10 +32,11 @@ import java.nio.ByteOrder;
 import java.util.zip.Inflater;
 import java.util.zip.InflaterInputStream;
 
-import static org.apache.hadoop.squashfs.util.BinUtils.DumpOptions.BINARY;
-import static org.apache.hadoop.squashfs.util.BinUtils.DumpOptions.DECIMAL;
-import static org.apache.hadoop.squashfs.util.BinUtils.DumpOptions.UNSIGNED;
-import static org.apache.hadoop.squashfs.util.BinUtils.dumpBin;
+import org.apache.hadoop.squashfs.SquashFsException;
+import org.apache.hadoop.squashfs.superblock.SuperBlock;
+import org.apache.hadoop.squashfs.superblock.SuperBlockFlag;
+
+import io.airlift.compress.zstd.ZstdInputStream;
 
 public class MetadataBlock
 {
@@ -129,6 +131,8 @@ public class MetadataBlock
 					"Archive claims no compression, but found compressed data");
 		case ZLIB:
 			return readCompressedZlib(in, sb);
+		case ZSTD:
+			return readCompressedZstd(in, sb);
 		default:
 			throw new UnsupportedOperationException(String.format(
 					"Reading compressed data of type %s not yet supported",
@@ -174,6 +178,43 @@ public class MetadataBlock
 		return dataSize;
 	}
 
+	private int readCompressedZstd(DataInput in, SuperBlock sb)
+			throws IOException, SquashFsException
+	{
+		// see if there are compression flags
+		if (sb.hasFlag(SuperBlockFlag.COMPRESSOR_OPTIONS)) {
+			throw new UnsupportedOperationException(
+					"Reading Zstd compressed data with non-standard options not yet supported");
+		}
+
+		int dataSize = getDataSize();
+		byte[] buf = new byte[dataSize];
+		in.readFully(buf);
+
+		byte[] xfer = new byte[MAX_SIZE];
+		try (ByteArrayInputStream bis = new ByteArrayInputStream(buf)) {
+			try (ZstdInputStream zis = new ZstdInputStream(bis)) {
+				try (ByteArrayOutputStream bos = new ByteArrayOutputStream(
+						MAX_SIZE)) {
+					int c = 0;
+					while ((c = zis.read(xfer, 0, MAX_SIZE)) >= 0) {
+						if (c > 0) {
+							bos.write(xfer, 0, c);
+						}
+					}
+					data = bos.toByteArray();
+					if (data.length > MAX_SIZE) {
+						throw new SquashFsException(String.format(
+								"Corrupt metadata block: Got size %d (max = %d)",
+								data.length, MAX_SIZE));
+					}
+				}
+			}
+		}
+
+		return dataSize;
+	}
+
 	@Override
 	public String toString()
 	{
@@ -183,8 +224,7 @@ public class MetadataBlock
 		dumpBin(buf, width, "header", header, BINARY, UNSIGNED);
 		dumpBin(buf, width, "dataSize (decoded)", getDataSize(), DECIMAL,
 				UNSIGNED);
-		dumpBin(buf, width, "fileLength", (short) fileLength, DECIMAL,
-				UNSIGNED);
+		dumpBin(buf, width, "fileLength", fileLength, DECIMAL, UNSIGNED);
 		dumpBin(buf, width, "compressed (decoded)",
 				isCompressed() ? "true" : "false");
 		dumpBin(buf, width, "blockSize", data.length, DECIMAL, UNSIGNED);
