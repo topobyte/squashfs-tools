@@ -40,18 +40,22 @@ import org.apache.hadoop.squashfs.superblock.SuperBlockFlag;
 import org.apache.hadoop.squashfs.test.DataTestUtils;
 import org.apache.hadoop.squashfs.test.MetadataTestUtils;
 
-public class MetadataBlockTest {
+public class MetadataBlockTest
+{
 
 	@Before
-	public void setUp() throws Exception {
+	public void setUp() throws Exception
+	{
 	}
 
 	@After
-	public void tearDown() throws Exception {
+	public void tearDown() throws Exception
+	{
 	}
 
 	@Test
-	public void readingCompressedBlockShouldSucceed() throws Exception {
+	public void readingCompressedBlockShouldSucceed() throws Exception
+	{
 
 		byte[] buf = new byte[8192];
 		for (int i = 0; i < buf.length; i++) {
@@ -60,7 +64,8 @@ public class MetadataBlockTest {
 		byte[] blockData = MetadataTestUtils.saveMetadataBlock(buf);
 
 		SuperBlock sb = new SuperBlock();
-		try (DataInputStream dis = new DataInputStream(new ByteArrayInputStream(blockData))) {
+		try (DataInputStream dis = new DataInputStream(
+				new ByteArrayInputStream(blockData))) {
 			MetadataBlock block = MetadataBlock.read(dis, sb);
 			assertTrue("not compressed", block.isCompressed());
 			assertArrayEquals(buf, block.getData());
@@ -69,7 +74,9 @@ public class MetadataBlockTest {
 	}
 
 	@Test(expected = SquashFsException.class)
-	public void readingCompressedBlockShouldFailIfSuperblockHasCompressionDisabled() throws Exception {
+	public void readingCompressedBlockShouldFailIfSuperblockHasCompressionDisabled()
+			throws Exception
+	{
 
 		byte[] buf = new byte[8192];
 		for (int i = 0; i < buf.length; i++) {
@@ -79,14 +86,17 @@ public class MetadataBlockTest {
 
 		SuperBlock sb = new SuperBlock();
 		sb.setCompressionId(CompressionId.NONE);
-		try (DataInputStream dis = new DataInputStream(new ByteArrayInputStream(blockData))) {
+		try (DataInputStream dis = new DataInputStream(
+				new ByteArrayInputStream(blockData))) {
 			MetadataBlock.read(dis, sb);
 		}
 
 	}
 
 	@Test(expected = UnsupportedOperationException.class)
-	public void readingCompressedBlockShouldFailIfSuperblockHasUnsupportedCompressionAlgorithm() throws Exception {
+	public void readingCompressedBlockShouldFailIfSuperblockHasUnsupportedCompressionAlgorithm()
+			throws Exception
+	{
 
 		byte[] buf = new byte[8192];
 		for (int i = 0; i < buf.length; i++) {
@@ -96,14 +106,17 @@ public class MetadataBlockTest {
 
 		SuperBlock sb = new SuperBlock();
 		sb.setCompressionId(CompressionId.XZ);
-		try (DataInputStream dis = new DataInputStream(new ByteArrayInputStream(blockData))) {
+		try (DataInputStream dis = new DataInputStream(
+				new ByteArrayInputStream(blockData))) {
 			MetadataBlock.read(dis, sb);
 		}
 
 	}
 
 	@Test(expected = UnsupportedOperationException.class)
-	public void readingCompressedBlockShouldFailIfSuperblockHasCompressionOptionFlag() throws Exception {
+	public void readingCompressedBlockShouldFailIfSuperblockHasCompressionOptionFlag()
+			throws Exception
+	{
 
 		byte[] buf = new byte[8192];
 		for (int i = 0; i < buf.length; i++) {
@@ -112,15 +125,18 @@ public class MetadataBlockTest {
 		byte[] blockData = MetadataTestUtils.saveMetadataBlock(buf);
 
 		SuperBlock sb = new SuperBlock();
-		sb.setFlags((short) (sb.getFlags() | SuperBlockFlag.COMPRESSOR_OPTIONS.mask()));
-		try (DataInputStream dis = new DataInputStream(new ByteArrayInputStream(blockData))) {
+		sb.setFlags((short) (sb.getFlags()
+				| SuperBlockFlag.COMPRESSOR_OPTIONS.mask()));
+		try (DataInputStream dis = new DataInputStream(
+				new ByteArrayInputStream(blockData))) {
 			MetadataBlock.read(dis, sb);
 		}
 
 	}
 
 	@Test
-	public void toStringShouldNotFailWhenCompressed() throws Exception {
+	public void toStringShouldNotFailWhenCompressed() throws Exception
+	{
 		byte[] buf = new byte[64];
 		for (int i = 0; i < buf.length; i++) {
 			buf[i] = (byte) 0xff;
@@ -128,14 +144,16 @@ public class MetadataBlockTest {
 		byte[] blockData = MetadataTestUtils.saveMetadataBlock(buf);
 
 		SuperBlock sb = new SuperBlock();
-		try (DataInputStream dis = new DataInputStream(new ByteArrayInputStream(blockData))) {
+		try (DataInputStream dis = new DataInputStream(
+				new ByteArrayInputStream(blockData))) {
 			MetadataBlock block = MetadataBlock.read(dis, sb);
 			System.out.println(block);
 		}
 	}
 
 	@Test
-	public void toStringShouldNotFailWhenUncompressed() throws Exception {
+	public void toStringShouldNotFailWhenUncompressed() throws Exception
+	{
 		Random r = new Random(0L);
 
 		byte[] buf = new byte[64];
@@ -144,14 +162,16 @@ public class MetadataBlockTest {
 		byte[] blockData = MetadataTestUtils.saveMetadataBlock(buf);
 
 		SuperBlock sb = new SuperBlock();
-		try (DataInputStream dis = new DataInputStream(new ByteArrayInputStream(blockData))) {
+		try (DataInputStream dis = new DataInputStream(
+				new ByteArrayInputStream(blockData))) {
 			MetadataBlock block = MetadataBlock.read(dis, sb);
 			System.out.println(block);
 		}
 	}
 
 	@Test
-	public void readingUncompressedBlockShouldSucceed() throws Exception {
+	public void readingUncompressedBlockShouldSucceed() throws Exception
+	{
 		Random r = new Random(0L);
 
 		byte[] buf = new byte[8192];
@@ -160,7 +180,8 @@ public class MetadataBlockTest {
 		byte[] blockData = MetadataTestUtils.saveMetadataBlock(buf);
 
 		SuperBlock sb = new SuperBlock();
-		try (DataInputStream dis = new DataInputStream(new ByteArrayInputStream(blockData))) {
+		try (DataInputStream dis = new DataInputStream(
+				new ByteArrayInputStream(blockData))) {
 			MetadataBlock block = MetadataBlock.read(dis, sb);
 			assertFalse("compressed", block.isCompressed());
 			assertArrayEquals(buf, block.getData());
@@ -169,29 +190,36 @@ public class MetadataBlockTest {
 	}
 
 	@Test(expected = SquashFsException.class)
-	public void readingUncompressedDataThatIsTooLargeShouldFail() throws Exception {
+	public void readingUncompressedDataThatIsTooLargeShouldFail()
+			throws Exception
+	{
 		byte[] buf = new byte[8196];
-		ShortBuffer sbuf = ByteBuffer.wrap(buf).order(ByteOrder.LITTLE_ENDIAN).asShortBuffer();
+		ShortBuffer sbuf = ByteBuffer.wrap(buf).order(ByteOrder.LITTLE_ENDIAN)
+				.asShortBuffer();
 		sbuf.put((short) (8194 | 0x8000)); // 8194 bytes, uncompressed
 
 		SuperBlock sb = new SuperBlock();
-		try (DataInputStream dis = new DataInputStream(new ByteArrayInputStream(buf))) {
+		try (DataInputStream dis = new DataInputStream(
+				new ByteArrayInputStream(buf))) {
 			MetadataBlock.read(dis, sb);
 		}
 	}
 
 	@Test(expected = SquashFsException.class)
-	public void readingCompressedDataThatIsTooLargeShouldFail() throws Exception {
+	public void readingCompressedDataThatIsTooLargeShouldFail() throws Exception
+	{
 
 		byte[] buf = new byte[8194];
 		byte[] compressed = DataTestUtils.compress(buf);
 		byte[] encoded = new byte[compressed.length + 2];
 		System.arraycopy(compressed, 0, encoded, 2, compressed.length);
-		ShortBuffer sbuf = ByteBuffer.wrap(encoded).order(ByteOrder.LITTLE_ENDIAN).asShortBuffer();
+		ShortBuffer sbuf = ByteBuffer.wrap(encoded)
+				.order(ByteOrder.LITTLE_ENDIAN).asShortBuffer();
 		sbuf.put((short) (compressed.length & 0x7fff));
 
 		SuperBlock sb = new SuperBlock();
-		try (DataInputStream dis = new DataInputStream(new ByteArrayInputStream(encoded))) {
+		try (DataInputStream dis = new DataInputStream(
+				new ByteArrayInputStream(encoded))) {
 			MetadataBlock.read(dis, sb);
 		}
 	}

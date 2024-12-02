@@ -30,64 +30,75 @@ import static org.apache.hadoop.squashfs.util.BinUtils.DumpOptions.UNSIGNED;
 import static org.apache.hadoop.squashfs.util.BinUtils.dumpBin;
 
 abstract public class AbstractBasicIpcINode extends AbstractINode
-    implements IpcINode {
+		implements IpcINode
+{
 
-  public static final int XATTR_NOT_PRESENT = 0xffff_ffff;
+	public static final int XATTR_NOT_PRESENT = 0xffff_ffff;
 
-  int nlink = 1;
+	int nlink = 1;
 
-  @Override
-  public final int getNlink() {
-    return nlink;
-  }
+	@Override
+	public final int getNlink()
+	{
+		return nlink;
+	}
 
-  @Override
-  public void setNlink(int nlink) {
-    this.nlink = nlink;
-  }
+	@Override
+	public void setNlink(int nlink)
+	{
+		this.nlink = nlink;
+	}
 
-  @Override
-  public int getXattrIndex() {
-    return XATTR_NOT_PRESENT;
-  }
+	@Override
+	public int getXattrIndex()
+	{
+		return XATTR_NOT_PRESENT;
+	}
 
-  @Override
-  public void setXattrIndex(int xattrIndex) {
-    if (xattrIndex != XATTR_NOT_PRESENT) {
-      throw new IllegalArgumentException(
-          "Basic ipc inodes do not support extended attributes");
-    }
-  }
+	@Override
+	public void setXattrIndex(int xattrIndex)
+	{
+		if (xattrIndex != XATTR_NOT_PRESENT) {
+			throw new IllegalArgumentException(
+					"Basic ipc inodes do not support extended attributes");
+		}
+	}
 
-  @Override
-  public boolean isXattrPresent() {
-    return false;
-  }
+	@Override
+	public boolean isXattrPresent()
+	{
+		return false;
+	}
 
-  @Override
-  protected final int getChildSerializedSize() {
-    return 4;
-  }
+	@Override
+	protected final int getChildSerializedSize()
+	{
+		return 4;
+	}
 
-  @Override
-  protected final void readExtraData(SuperBlock sb, DataInput in)
-      throws SquashFsException, IOException {
-    nlink = in.readInt();
-  }
+	@Override
+	protected final void readExtraData(SuperBlock sb, DataInput in)
+			throws SquashFsException, IOException
+	{
+		nlink = in.readInt();
+	}
 
-  @Override
-  protected void writeExtraData(MetadataWriter out) throws IOException {
-    out.writeInt(nlink);
-  }
+	@Override
+	protected void writeExtraData(MetadataWriter out) throws IOException
+	{
+		out.writeInt(nlink);
+	}
 
-  @Override
-  protected final int getPreferredDumpWidth() {
-    return 8;
-  }
+	@Override
+	protected final int getPreferredDumpWidth()
+	{
+		return 8;
+	}
 
-  @Override
-  protected final void dumpProperties(StringBuilder buf, int width) {
-    dumpBin(buf, width, "nlink", nlink, DECIMAL, UNSIGNED);
-  }
+	@Override
+	protected final void dumpProperties(StringBuilder buf, int width)
+	{
+		dumpBin(buf, width, "nlink", nlink, DECIMAL, UNSIGNED);
+	}
 
 }

@@ -40,23 +40,27 @@ import org.junit.Test;
 
 import org.apache.hadoop.squashfs.test.MetadataTestUtils;
 
-public class MetadataWriterTest {
+public class MetadataWriterTest
+{
 
 	MetadataWriter writer;
 
 	@Before
-	public void setUp() {
+	public void setUp()
+	{
 		writer = new MetadataWriter();
 	}
 
 	@Test
-	public void getCurrentReferenceShouldReturnZeroBeforeBlocksWritten() {
+	public void getCurrentReferenceShouldReturnZeroBeforeBlocksWritten()
+	{
 		MetadataBlockRef ref = writer.getCurrentReference();
 		assertEquals("wrong location", 0, ref.getLocation());
 		assertEquals("wrong offset", (short) 0, ref.getOffset());
 	}
 
-	byte[] save() throws IOException {
+	byte[] save() throws IOException
+	{
 		try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
 			try (DataOutputStream dos = new DataOutputStream(bos)) {
 				writer.save(dos);
@@ -66,7 +70,8 @@ public class MetadataWriterTest {
 	}
 
 	@Test
-	public void writeByteArrayShouldWriteAsIs() throws Exception {
+	public void writeByteArrayShouldWriteAsIs() throws Exception
+	{
 		byte[] buf = new byte[] { 0, 1, 2, 3, 4 };
 		writer.write(buf);
 		byte[] out = MetadataTestUtils.saveMetadataBlock(writer);
@@ -75,7 +80,8 @@ public class MetadataWriterTest {
 	}
 
 	@Test
-	public void writeLongByteArrayShouldSucceed() throws Exception {
+	public void writeLongByteArrayShouldSucceed() throws Exception
+	{
 		byte[] buf = new byte[16384];
 		for (int i = 0; i < buf.length; i++) {
 			buf[i] = (byte) (i % 32);
@@ -87,7 +93,8 @@ public class MetadataWriterTest {
 	}
 
 	@Test
-	public void writeEmptyByteArrayShouldDoNothing() throws Exception {
+	public void writeEmptyByteArrayShouldDoNothing() throws Exception
+	{
 		byte[] buf = new byte[0];
 		writer.write(buf);
 		byte[] out = MetadataTestUtils.saveMetadataBlock(writer);
@@ -95,14 +102,16 @@ public class MetadataWriterTest {
 	}
 
 	@Test
-	public void flushShouldDoNothingIfNoData() throws Exception {
+	public void flushShouldDoNothingIfNoData() throws Exception
+	{
 		writer.flush();
 		byte[] out = MetadataTestUtils.saveMetadataBlock(writer);
 		assertEquals("wrong length", 0, out.length);
 	}
 
 	@Test
-	public void flushShouldWriteMultipleBlocksIfNecessary() throws Exception {
+	public void flushShouldWriteMultipleBlocksIfNecessary() throws Exception
+	{
 		byte[] buf0 = new byte[] { 0, 1, 2, 3, 4 };
 		byte[] buf1 = new byte[] { 5, 6, 7, 8, 9 };
 
@@ -117,14 +126,17 @@ public class MetadataWriterTest {
 		writer.flush();
 
 		byte[] out = MetadataTestUtils.saveMetadataBlock(writer);
-		byte[] buf2 = MetadataTestUtils.decodeMetadataBlock(out, ref1.getLocation());
-		byte[] buf3 = MetadataTestUtils.decodeMetadataBlock(out, ref2.getLocation());
+		byte[] buf2 = MetadataTestUtils.decodeMetadataBlock(out,
+				ref1.getLocation());
+		byte[] buf3 = MetadataTestUtils.decodeMetadataBlock(out,
+				ref2.getLocation());
 		assertArrayEquals(buf0, buf2);
 		assertArrayEquals(buf1, buf3);
 	}
 
 	@Test
-	public void flushShouldHandleWritingCompressedData() throws Exception {
+	public void flushShouldHandleWritingCompressedData() throws Exception
+	{
 		byte[] buf = new byte[8192];
 		for (int i = 0; i < buf.length; i++) {
 			buf[i] = (byte) 0xff;
@@ -136,12 +148,15 @@ public class MetadataWriterTest {
 		writer.flush();
 
 		byte[] out = MetadataTestUtils.saveMetadataBlock(writer);
-		byte[] buf2 = MetadataTestUtils.decodeMetadataBlock(out, ref.getLocation());
+		byte[] buf2 = MetadataTestUtils.decodeMetadataBlock(out,
+				ref.getLocation());
 		assertArrayEquals(buf, buf2);
 	}
 
 	@Test
-	public void writeByteArrayWithOffsetAndLengthShouldSucceed() throws Exception {
+	public void writeByteArrayWithOffsetAndLengthShouldSucceed()
+			throws Exception
+	{
 		byte[] buf = new byte[1024];
 		for (int i = 0; i < buf.length; i++) {
 			buf[i] = (byte) (i % 256);
@@ -154,7 +169,8 @@ public class MetadataWriterTest {
 	}
 
 	@Test
-	public void writeIntAsByteShouldStripHighBits() throws Exception {
+	public void writeIntAsByteShouldStripHighBits() throws Exception
+	{
 		for (int i = 0; i < 512; i++) {
 			writer.write(i);
 		}
@@ -162,12 +178,14 @@ public class MetadataWriterTest {
 		byte[] buf2 = MetadataTestUtils.decodeMetadataBlocks(out, 0);
 		assertEquals("wrong length", 512, buf2.length);
 		for (int i = 0; i < buf2.length; i++) {
-			assertEquals(String.format("wrong value at index %d", i), (byte) (i % 256), buf2[i]);
+			assertEquals(String.format("wrong value at index %d", i),
+					(byte) (i % 256), buf2[i]);
 		}
 	}
 
 	@Test
-	public void writeByteShouldStripHighBits() throws Exception {
+	public void writeByteShouldStripHighBits() throws Exception
+	{
 		for (int i = 0; i < 512; i++) {
 			writer.writeByte(i);
 		}
@@ -175,12 +193,14 @@ public class MetadataWriterTest {
 		byte[] buf2 = MetadataTestUtils.decodeMetadataBlocks(out, 0);
 		assertEquals("wrong length", 512, buf2.length);
 		for (int i = 0; i < buf2.length; i++) {
-			assertEquals(String.format("wrong value at index %d", i), (byte) (i % 256), buf2[i]);
+			assertEquals(String.format("wrong value at index %d", i),
+					(byte) (i % 256), buf2[i]);
 		}
 	}
 
 	@Test
-	public void writeBooleanShouldWorkAsExpected() throws Exception {
+	public void writeBooleanShouldWorkAsExpected() throws Exception
+	{
 		writer.writeBoolean(false);
 		writer.writeBoolean(true);
 		byte[] out = MetadataTestUtils.saveMetadataBlock(writer);
@@ -191,7 +211,8 @@ public class MetadataWriterTest {
 	}
 
 	@Test
-	public void writeShortShouldByteSwapOutput() throws Exception {
+	public void writeShortShouldByteSwapOutput() throws Exception
+	{
 		for (int i = 0; i <= 0xffff; i++) {
 			writer.writeShort(i);
 		}
@@ -199,14 +220,17 @@ public class MetadataWriterTest {
 		byte[] out = MetadataTestUtils.saveMetadataBlock(writer);
 		byte[] buf2 = MetadataTestUtils.decodeMetadataBlocks(out, 0);
 		assertEquals("wrong length", 0x20000, buf2.length);
-		ShortBuffer sb = ByteBuffer.wrap(buf2).order(ByteOrder.LITTLE_ENDIAN).asShortBuffer();
+		ShortBuffer sb = ByteBuffer.wrap(buf2).order(ByteOrder.LITTLE_ENDIAN)
+				.asShortBuffer();
 		for (int i = 0; i <= 0xffff; i++) {
-			assertEquals(String.format("wrong value at index %d", i), (short) (i & 0xffff), sb.get(i));
+			assertEquals(String.format("wrong value at index %d", i),
+					(short) (i & 0xffff), sb.get(i));
 		}
 	}
 
 	@Test
-	public void writeCharShouldByteSwapOutput() throws Exception {
+	public void writeCharShouldByteSwapOutput() throws Exception
+	{
 		for (int i = 0; i <= 0xffff; i++) {
 			writer.writeChar(i);
 		}
@@ -214,14 +238,17 @@ public class MetadataWriterTest {
 		byte[] out = MetadataTestUtils.saveMetadataBlock(writer);
 		byte[] buf2 = MetadataTestUtils.decodeMetadataBlocks(out, 0);
 		assertEquals("wrong length", 0x20000, buf2.length);
-		CharBuffer cb = ByteBuffer.wrap(buf2).order(ByteOrder.LITTLE_ENDIAN).asCharBuffer();
+		CharBuffer cb = ByteBuffer.wrap(buf2).order(ByteOrder.LITTLE_ENDIAN)
+				.asCharBuffer();
 		for (int i = 0; i <= 0xffff; i++) {
-			assertEquals(String.format("wrong value at index %d", i), (char) (i & 0xffff), cb.get(i));
+			assertEquals(String.format("wrong value at index %d", i),
+					(char) (i & 0xffff), cb.get(i));
 		}
 	}
 
 	@Test
-	public void writIntShouldByteSwapOutput() throws Exception {
+	public void writIntShouldByteSwapOutput() throws Exception
+	{
 		writer.writeInt(0x000000ff);
 		writer.writeInt(0x0000ff00);
 		writer.writeInt(0x00ff0000);
@@ -230,7 +257,8 @@ public class MetadataWriterTest {
 		byte[] out = MetadataTestUtils.saveMetadataBlock(writer);
 		byte[] buf2 = MetadataTestUtils.decodeMetadataBlocks(out, 0);
 		assertEquals("wrong length", 16, buf2.length);
-		IntBuffer ib = ByteBuffer.wrap(buf2).order(ByteOrder.LITTLE_ENDIAN).asIntBuffer();
+		IntBuffer ib = ByteBuffer.wrap(buf2).order(ByteOrder.LITTLE_ENDIAN)
+				.asIntBuffer();
 		assertEquals(0x000000ff, ib.get(0));
 		assertEquals(0x0000ff00, ib.get(1));
 		assertEquals(0x00ff0000, ib.get(2));
@@ -238,7 +266,8 @@ public class MetadataWriterTest {
 	}
 
 	@Test
-	public void writLongShouldByteSwapOutput() throws Exception {
+	public void writLongShouldByteSwapOutput() throws Exception
+	{
 		writer.writeLong(0x0000_0000_0000_00ffL);
 		writer.writeLong(0x0000_0000_0000_ff00L);
 		writer.writeLong(0x0000_0000_00ff_0000L);
@@ -252,7 +281,8 @@ public class MetadataWriterTest {
 		byte[] buf2 = MetadataTestUtils.decodeMetadataBlocks(out, 0);
 		assertEquals("wrong length", 64, buf2.length);
 
-		LongBuffer lb = ByteBuffer.wrap(buf2).order(ByteOrder.LITTLE_ENDIAN).asLongBuffer();
+		LongBuffer lb = ByteBuffer.wrap(buf2).order(ByteOrder.LITTLE_ENDIAN)
+				.asLongBuffer();
 		assertEquals(0x0000_0000_0000_00ffL, lb.get(0));
 		assertEquals(0x0000_0000_0000_ff00L, lb.get(1));
 		assertEquals(0x0000_0000_00ff_0000L, lb.get(2));
@@ -264,7 +294,8 @@ public class MetadataWriterTest {
 	}
 
 	@Test
-	public void writeFloatShouldByteSwapOutput() throws Exception {
+	public void writeFloatShouldByteSwapOutput() throws Exception
+	{
 		Random r = new Random(0L);
 
 		float[] data = new float[1024];
@@ -277,14 +308,17 @@ public class MetadataWriterTest {
 		byte[] buf2 = MetadataTestUtils.decodeMetadataBlocks(out, 0);
 		assertEquals("wrong length", 4096, buf2.length);
 
-		FloatBuffer fb = ByteBuffer.wrap(buf2).order(ByteOrder.LITTLE_ENDIAN).asFloatBuffer();
+		FloatBuffer fb = ByteBuffer.wrap(buf2).order(ByteOrder.LITTLE_ENDIAN)
+				.asFloatBuffer();
 		for (int i = 0; i < data.length; i++) {
-			assertEquals(String.format("wrong value at index %d", i), data[i], fb.get(i), 0.0000001f);
+			assertEquals(String.format("wrong value at index %d", i), data[i],
+					fb.get(i), 0.0000001f);
 		}
 	}
 
 	@Test
-	public void writeDoubleShouldByteSwapOutput() throws Exception {
+	public void writeDoubleShouldByteSwapOutput() throws Exception
+	{
 		Random r = new Random(0L);
 
 		double[] data = new double[1024];
@@ -297,14 +331,17 @@ public class MetadataWriterTest {
 		byte[] buf2 = MetadataTestUtils.decodeMetadataBlocks(out, 0);
 		assertEquals("wrong length", 8192, buf2.length);
 
-		DoubleBuffer db = ByteBuffer.wrap(buf2).order(ByteOrder.LITTLE_ENDIAN).asDoubleBuffer();
+		DoubleBuffer db = ByteBuffer.wrap(buf2).order(ByteOrder.LITTLE_ENDIAN)
+				.asDoubleBuffer();
 		for (int i = 0; i < data.length; i++) {
-			assertEquals(String.format("wrong value at index %d", i), data[i], db.get(i), 0.0000001d);
+			assertEquals(String.format("wrong value at index %d", i), data[i],
+					db.get(i), 0.0000001d);
 		}
 	}
 
 	@Test
-	public void writeCharsStringShouldByteSwapOutput() throws Exception {
+	public void writeCharsStringShouldByteSwapOutput() throws Exception
+	{
 		StringBuilder buf = new StringBuilder();
 		for (int i = 0; i <= 0xffff; i++) {
 			buf.append((char) i);
@@ -315,14 +352,17 @@ public class MetadataWriterTest {
 		byte[] out = MetadataTestUtils.saveMetadataBlock(writer);
 		byte[] buf2 = MetadataTestUtils.decodeMetadataBlocks(out, 0);
 		assertEquals("wrong length", 0x20000, buf2.length);
-		CharBuffer cb = ByteBuffer.wrap(buf2).order(ByteOrder.LITTLE_ENDIAN).asCharBuffer();
+		CharBuffer cb = ByteBuffer.wrap(buf2).order(ByteOrder.LITTLE_ENDIAN)
+				.asCharBuffer();
 		for (int i = 0; i <= 0xffff; i++) {
-			assertEquals(String.format("wrong value at index %d", i), str.charAt(i), cb.get(i));
+			assertEquals(String.format("wrong value at index %d", i),
+					str.charAt(i), cb.get(i));
 		}
 	}
 
 	@Test
-	public void writeBytesStringShouldWorkAsExpected() throws Exception {
+	public void writeBytesStringShouldWorkAsExpected() throws Exception
+	{
 		StringBuilder buf = new StringBuilder();
 		for (int i = 0; i < 512; i++) {
 			buf.append((char) i);
@@ -335,12 +375,14 @@ public class MetadataWriterTest {
 		assertEquals("wrong length", 512, buf2.length);
 		ByteBuffer bb = ByteBuffer.wrap(buf2).order(ByteOrder.LITTLE_ENDIAN);
 		for (int i = 0; i < 512; i++) {
-			assertEquals(String.format("wrong value at index %d", i), (byte) (i & 0xff), bb.get(i));
+			assertEquals(String.format("wrong value at index %d", i),
+					(byte) (i & 0xff), bb.get(i));
 		}
 	}
 
 	@Test(expected = UnsupportedOperationException.class)
-	public void writeUTFShouldThrowsExcpetion() throws Exception {
+	public void writeUTFShouldThrowsExcpetion() throws Exception
+	{
 		writer.writeUTF("test");
 	}
 

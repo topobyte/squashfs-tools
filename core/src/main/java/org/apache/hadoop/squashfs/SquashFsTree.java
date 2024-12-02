@@ -33,150 +33,162 @@ import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-public class SquashFsTree {
+public class SquashFsTree
+{
 
-  private final SortedMap<String, SquashFsEntry> map = new TreeMap<>();
+	private final SortedMap<String, SquashFsEntry> map = new TreeMap<>();
 
-  private final AtomicInteger inodeAssignments = new AtomicInteger(0);
-  private final SortedMap<Integer, Set<SquashFsEntry>> inodeToEntry =
-      new TreeMap<>();
-  private final MetadataWriter inodeWriter = new MetadataWriter();
-  private final MetadataWriter dirWriter = new MetadataWriter();
-  private final SortedMap<Integer, MetadataBlockRef> visitedInodes =
-      new TreeMap<>();
+	private final AtomicInteger inodeAssignments = new AtomicInteger(0);
+	private final SortedMap<Integer, Set<SquashFsEntry>> inodeToEntry = new TreeMap<>();
+	private final MetadataWriter inodeWriter = new MetadataWriter();
+	private final MetadataWriter dirWriter = new MetadataWriter();
+	private final SortedMap<Integer, MetadataBlockRef> visitedInodes = new TreeMap<>();
 
-  private final SquashFsEntry root = new SquashFsEntry();
-  private MetadataBlockRef rootInodeRef;
+	private final SquashFsEntry root = new SquashFsEntry();
+	private MetadataBlockRef rootInodeRef;
 
-  SquashFsTree() {
+	SquashFsTree()
+	{
 
-  }
+	}
 
-  void add(SquashFsEntry squashFsEntry) {
-    SquashFsEntry prev = map.get(squashFsEntry.name);
-    if (prev == null || (prev.synthetic && !squashFsEntry.synthetic)) {
-      map.put(squashFsEntry.name, squashFsEntry);
-    }
-  }
+	void add(SquashFsEntry squashFsEntry)
+	{
+		SquashFsEntry prev = map.get(squashFsEntry.name);
+		if (prev == null || (prev.synthetic && !squashFsEntry.synthetic)) {
+			map.put(squashFsEntry.name, squashFsEntry);
+		}
+	}
 
-  public SquashFsEntry getRoot() {
-    return root;
-  }
+	public SquashFsEntry getRoot()
+	{
+		return root;
+	}
 
-  void build() throws SquashFsException, IOException {
-    for (Map.Entry<String, SquashFsEntry> squashFsEntry : map.entrySet()) {
-      String name = squashFsEntry.getKey();
-      String parent = name;
-      while ((parent = parentName(parent)) != null) {
-        SquashFsEntry p = map.get(parent);
-        if (p == null || p.type != INodeType.BASIC_DIRECTORY) {
-          throw new IllegalArgumentException(
-              String.format("Parent '%s' not found for entry '%s'", parent,
-                  name));
-        }
-      }
+	void build() throws SquashFsException, IOException
+	{
+		for (Map.Entry<String, SquashFsEntry> squashFsEntry : map.entrySet()) {
+			String name = squashFsEntry.getKey();
+			String parent = name;
+			while ((parent = parentName(parent)) != null) {
+				SquashFsEntry p = map.get(parent);
+				if (p == null || p.type != INodeType.BASIC_DIRECTORY) {
+					throw new IllegalArgumentException(String.format(
+							"Parent '%s' not found for entry '%s'", parent,
+							name));
+				}
+			}
 
-      String hardLinkTarget = squashFsEntry.getValue().hardlinkTarget;
-      if (hardLinkTarget != null && !map.containsKey(hardLinkTarget)) {
-        throw new IllegalArgumentException(
-            String.format("Hardlink target '%s' not found for entry '%s'",
-                hardLinkTarget, name));
-      }
+			String hardLinkTarget = squashFsEntry.getValue().hardlinkTarget;
+			if (hardLinkTarget != null && !map.containsKey(hardLinkTarget)) {
+				throw new IllegalArgumentException(String.format(
+						"Hardlink target '%s' not found for entry '%s'",
+						hardLinkTarget, name));
+			}
 
-      // assign parent
-      parent = parentName(name);
-      if (parent == null) {
-        root.children.add(squashFsEntry.getValue());
-        squashFsEntry.getValue().parent = root;
-      } else {
-        SquashFsEntry parentEntry = map.get(parent);
-        parentEntry.children.add(squashFsEntry.getValue());
-        squashFsEntry.getValue().parent = parentEntry;
-      }
-    }
+			// assign parent
+			parent = parentName(name);
+			if (parent == null) {
+				root.children.add(squashFsEntry.getValue());
+				squashFsEntry.getValue().parent = root;
+			} else {
+				SquashFsEntry parentEntry = map.get(parent);
+				parentEntry.children.add(squashFsEntry.getValue());
+				squashFsEntry.getValue().parent = parentEntry;
+			}
+		}
 
-    // walk tree, sort entries and assign inodes
-    root.sortChildren();
+		// walk tree, sort entries and assign inodes
+		root.sortChildren();
 
-    root.assignInodes(map, inodeAssignments);
-    root.assignHardlinkInodes(map, inodeToEntry);
+		root.assignInodes(map, inodeAssignments);
+		root.assignHardlinkInodes(map, inodeToEntry);
 
-    root.updateDirectoryLinkCounts();
-    root.updateHardlinkInodeCounts(inodeToEntry);
+		root.updateDirectoryLinkCounts();
+		root.updateHardlinkInodeCounts(inodeToEntry);
 
-    root.createInodes();
-    root.createHardlinkInodes();
+		root.createInodes();
+		root.createHardlinkInodes();
 
-    rootInodeRef = root.writeMetadata(inodeWriter, dirWriter, visitedInodes);
+		rootInodeRef = root.writeMetadata(inodeWriter, dirWriter,
+				visitedInodes);
 
-    // make sure all inodes were visited
-    if (visitedInodes.size() != root.inode.getInodeNumber()) {
-      throw new SquashFsException(
-          String.format("BUG: Visited inode count %d != actual inode count %d",
-              visitedInodes.size(), root.inode.getInodeNumber()));
-    }
+		// make sure all inodes were visited
+		if (visitedInodes.size() != root.inode.getInodeNumber()) {
+			throw new SquashFsException(String.format(
+					"BUG: Visited inode count %d != actual inode count %d",
+					visitedInodes.size(), root.inode.getInodeNumber()));
+		}
 
-    // make sure all inode numbers exist, from 1 to n
-    List<Integer> allInodes =
-        visitedInodes.keySet().stream().collect(Collectors.toList());
-    if (allInodes.get(0).intValue() != 1) {
-      throw new SquashFsException(
-          String.format("BUG: First inode number %d != 1",
-              allInodes.get(0).intValue()));
-    }
-    if (allInodes.get(allInodes.size() - 1).intValue() != allInodes.size()) {
-      throw new SquashFsException(
-          String.format("BUG: Last inode number %d != %d",
-              allInodes.get(allInodes.size() - 1).intValue(),
-              allInodes.size()));
-    }
-  }
+		// make sure all inode numbers exist, from 1 to n
+		List<Integer> allInodes = visitedInodes.keySet().stream()
+				.collect(Collectors.toList());
+		if (allInodes.get(0).intValue() != 1) {
+			throw new SquashFsException(
+					String.format("BUG: First inode number %d != 1",
+							allInodes.get(0).intValue()));
+		}
+		if (allInodes.get(allInodes.size() - 1).intValue() != allInodes
+				.size()) {
+			throw new SquashFsException(
+					String.format("BUG: Last inode number %d != %d",
+							allInodes.get(allInodes.size() - 1).intValue(),
+							allInodes.size()));
+		}
+	}
 
-  int getInodeCount() {
-    return visitedInodes.size();
-  }
+	int getInodeCount()
+	{
+		return visitedInodes.size();
+	}
 
-  List<MetadataBlockRef> saveExportTable(MetadataWriter writer)
-      throws IOException {
+	List<MetadataBlockRef> saveExportTable(MetadataWriter writer)
+			throws IOException
+	{
 
-    List<MetadataBlockRef> exportRefs = new ArrayList<>();
+		List<MetadataBlockRef> exportRefs = new ArrayList<>();
 
-    int index = 0;
-    for (Map.Entry<Integer, MetadataBlockRef> entry : visitedInodes
-        .entrySet()) {
-      if (index % ExportTable.ENTRIES_PER_BLOCK == 0) {
-        exportRefs.add(writer.getCurrentReference());
-      }
-      MetadataBlockRef metaRef = entry.getValue();
+		int index = 0;
+		for (Map.Entry<Integer, MetadataBlockRef> entry : visitedInodes
+				.entrySet()) {
+			if (index % ExportTable.ENTRIES_PER_BLOCK == 0) {
+				exportRefs.add(writer.getCurrentReference());
+			}
+			MetadataBlockRef metaRef = entry.getValue();
 
-      long inodeRef = (((long) (metaRef.getLocation() & 0xffffffffL)) << 16) |
-          (((long) metaRef.getOffset()) & 0xffffL);
+			long inodeRef = (((long) (metaRef.getLocation()
+					& 0xffffffffL)) << 16)
+					| (((long) metaRef.getOffset()) & 0xffffL);
 
-      writer.writeLong(inodeRef);
-      index++;
-    }
+			writer.writeLong(inodeRef);
+			index++;
+		}
 
-    return exportRefs;
-  }
+		return exportRefs;
+	}
 
-  MetadataBlockRef getRootInodeRef() {
-    return rootInodeRef;
-  }
+	MetadataBlockRef getRootInodeRef()
+	{
+		return rootInodeRef;
+	}
 
-  MetadataWriter getINodeWriter() {
-    return inodeWriter;
-  }
+	MetadataWriter getINodeWriter()
+	{
+		return inodeWriter;
+	}
 
-  MetadataWriter getDirWriter() {
-    return dirWriter;
-  }
+	MetadataWriter getDirWriter()
+	{
+		return dirWriter;
+	}
 
-  private String parentName(String name) {
-    int slash = name.lastIndexOf('/');
-    if (slash == 0) {
-      return null;
-    }
-    return name.substring(0, slash);
-  }
+	private String parentName(String name)
+	{
+		int slash = name.lastIndexOf('/');
+		if (slash == 0) {
+			return null;
+		}
+		return name.substring(0, slash);
+	}
 
 }

@@ -29,97 +29,113 @@ import static org.apache.hadoop.squashfs.util.BinUtils.DumpOptions.DECIMAL;
 import static org.apache.hadoop.squashfs.util.BinUtils.DumpOptions.UNSIGNED;
 import static org.apache.hadoop.squashfs.util.BinUtils.dumpBin;
 
-public class ExtendedSymlinkINode extends AbstractINode
-    implements SymlinkINode {
+public class ExtendedSymlinkINode extends AbstractINode implements SymlinkINode
+{
 
-  private static final byte[] EMPTY = new byte[0];
+	private static final byte[] EMPTY = new byte[0];
 
-  int nlink = 1;
-  byte[] targetPath = EMPTY;
-  int xattrIndex = XATTR_NOT_PRESENT;
+	int nlink = 1;
+	byte[] targetPath = EMPTY;
+	int xattrIndex = XATTR_NOT_PRESENT;
 
-  @Override
-  public int getNlink() {
-    return nlink;
-  }
+	@Override
+	public int getNlink()
+	{
+		return nlink;
+	}
 
-  @Override
-  public void setNlink(int nlink) {
-    this.nlink = nlink;
-  }
+	@Override
+	public void setNlink(int nlink)
+	{
+		this.nlink = nlink;
+	}
 
-  @Override
-  public byte[] getTargetPath() {
-    return targetPath;
-  }
+	@Override
+	public byte[] getTargetPath()
+	{
+		return targetPath;
+	}
 
-  @Override
-  public void setTargetPath(byte[] targetPath) {
-    this.targetPath = (targetPath == null) ? EMPTY : targetPath;
-  }
+	@Override
+	public void setTargetPath(byte[] targetPath)
+	{
+		this.targetPath = (targetPath == null) ? EMPTY : targetPath;
+	}
 
-  @Override
-  public int getXattrIndex() {
-    return xattrIndex;
-  }
+	@Override
+	public int getXattrIndex()
+	{
+		return xattrIndex;
+	}
 
-  @Override
-  public void setXattrIndex(int xattrIndex) {
-    this.xattrIndex = xattrIndex;
-  }
+	@Override
+	public void setXattrIndex(int xattrIndex)
+	{
+		this.xattrIndex = xattrIndex;
+	}
 
-  @Override
-  public boolean isXattrPresent() {
-    return xattrIndex != XATTR_NOT_PRESENT;
-  }
+	@Override
+	public boolean isXattrPresent()
+	{
+		return xattrIndex != XATTR_NOT_PRESENT;
+	}
 
-  @Override
-  protected int getChildSerializedSize() {
-    return 12 + targetPath.length;
-  }
+	@Override
+	protected int getChildSerializedSize()
+	{
+		return 12 + targetPath.length;
+	}
 
-  @Override
-  protected String getName() {
-    return "extended-symlink-inode";
-  }
+	@Override
+	protected String getName()
+	{
+		return "extended-symlink-inode";
+	}
 
-  @Override
-  public INodeType getInodeType() {
-    return INodeType.EXTENDED_SYMLINK;
-  }
+	@Override
+	public INodeType getInodeType()
+	{
+		return INodeType.EXTENDED_SYMLINK;
+	}
 
-  @Override
-  protected void readExtraData(SuperBlock sb, DataInput in)
-      throws SquashFsException, IOException {
-    nlink = in.readInt();
-    int targetSize = in.readInt();
-    targetPath = new byte[targetSize];
-    in.readFully(targetPath);
-    xattrIndex = in.readInt();
-  }
+	@Override
+	protected void readExtraData(SuperBlock sb, DataInput in)
+			throws SquashFsException, IOException
+	{
+		nlink = in.readInt();
+		int targetSize = in.readInt();
+		targetPath = new byte[targetSize];
+		in.readFully(targetPath);
+		xattrIndex = in.readInt();
+	}
 
-  @Override
-  protected void writeExtraData(MetadataWriter out) throws IOException {
-    out.writeInt(nlink);
-    out.writeInt(targetPath.length);
-    out.write(targetPath);
-    out.writeInt(xattrIndex);
-  }
+	@Override
+	protected void writeExtraData(MetadataWriter out) throws IOException
+	{
+		out.writeInt(nlink);
+		out.writeInt(targetPath.length);
+		out.write(targetPath);
+		out.writeInt(xattrIndex);
+	}
 
-  @Override
-  protected int getPreferredDumpWidth() {
-    return 12;
-  }
+	@Override
+	protected int getPreferredDumpWidth()
+	{
+		return 12;
+	}
 
-  @Override
-  protected void dumpProperties(StringBuilder buf, int width) {
-    dumpBin(buf, width, "nlink", nlink, DECIMAL, UNSIGNED);
-    dumpBin(buf, width, "targetSize", targetPath.length, DECIMAL, UNSIGNED);
-    dumpBin(buf, width, "targetPath", targetPath, 0, targetPath.length, 16, 2);
-    dumpBin(buf, width, "xattrIndex", xattrIndex, DECIMAL, UNSIGNED);
-  }
+	@Override
+	protected void dumpProperties(StringBuilder buf, int width)
+	{
+		dumpBin(buf, width, "nlink", nlink, DECIMAL, UNSIGNED);
+		dumpBin(buf, width, "targetSize", targetPath.length, DECIMAL, UNSIGNED);
+		dumpBin(buf, width, "targetPath", targetPath, 0, targetPath.length, 16,
+				2);
+		dumpBin(buf, width, "xattrIndex", xattrIndex, DECIMAL, UNSIGNED);
+	}
 
-  public SymlinkINode simplify() {
-    return BasicSymlinkINode.simplify(this);
-  }
+	public SymlinkINode simplify()
+	{
+		return BasicSymlinkINode.simplify(this);
+	}
 }

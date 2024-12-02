@@ -39,7 +39,8 @@ import org.apache.hadoop.squashfs.superblock.SuperBlock;
 import org.apache.hadoop.squashfs.table.FragmentTableEntry;
 import org.apache.hadoop.squashfs.test.DataTestUtils;
 
-public class FragmentWriterTest {
+public class FragmentWriterTest
+{
 
 	@Rule
 	public TemporaryFolder temp = new TemporaryFolder();
@@ -49,21 +50,24 @@ public class FragmentWriterTest {
 	FragmentWriter writer;
 
 	@Before
-	public void setUp() throws Exception {
+	public void setUp() throws Exception
+	{
 		tempFile = temp.newFile();
 		raf = new RandomAccessFile(tempFile, "rw");
 		writer = new FragmentWriter(raf, SuperBlock.DEFAULT_BLOCK_SIZE);
 	}
 
 	@After
-	public void tearDown() throws Exception {
+	public void tearDown() throws Exception
+	{
 		writer = null;
 		raf.close();
 		raf = null;
 	}
 
 	@Test
-	public void writerMustSaveCompressibleBlockProperly() throws Exception {
+	public void writerMustSaveCompressibleBlockProperly() throws Exception
+	{
 		byte[] buf = new byte[SuperBlock.DEFAULT_BLOCK_SIZE];
 		for (int i = 0; i < buf.length; i++) {
 			buf[i] = (byte) 0xff; // all ones
@@ -72,7 +76,8 @@ public class FragmentWriterTest {
 		writer.write(buf, 0, buf.length);
 		writer.flush();
 
-		assertEquals("wrong fragment entry count", 1, writer.getFragmentEntryCount());
+		assertEquals("wrong fragment entry count", 1,
+				writer.getFragmentEntryCount());
 		FragmentTableEntry fte = writer.getFragmentEntries().get(0);
 		assertTrue("Not compressed", fte.isCompressed());
 
@@ -86,7 +91,8 @@ public class FragmentWriterTest {
 	}
 
 	@Test
-	public void writerMustSaveUncompressibleBlockProperly() throws Exception {
+	public void writerMustSaveUncompressibleBlockProperly() throws Exception
+	{
 		Random random = new Random(0L);
 
 		byte[] buf = new byte[SuperBlock.DEFAULT_BLOCK_SIZE];
@@ -95,7 +101,8 @@ public class FragmentWriterTest {
 		writer.write(buf, 0, buf.length);
 		writer.flush();
 
-		assertEquals("wrong fragment entry count", 1, writer.getFragmentEntryCount());
+		assertEquals("wrong fragment entry count", 1,
+				writer.getFragmentEntryCount());
 		FragmentTableEntry fte = writer.getFragmentEntries().get(0);
 		assertFalse("Compressed", fte.isCompressed());
 
@@ -108,54 +115,74 @@ public class FragmentWriterTest {
 	}
 
 	@Test(expected = IllegalArgumentException.class)
-	public void attemptToWriteZeroBytesShouldFail() throws Exception {
+	public void attemptToWriteZeroBytesShouldFail() throws Exception
+	{
 		writer.write(new byte[0], 0, 0);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
-	public void attemptToWriteMoreThanBlockSizeShouldFail() throws Exception {
-		writer.write(new byte[SuperBlock.DEFAULT_BLOCK_SIZE + 1], 0, SuperBlock.DEFAULT_BLOCK_SIZE + 1);
+	public void attemptToWriteMoreThanBlockSizeShouldFail() throws Exception
+	{
+		writer.write(new byte[SuperBlock.DEFAULT_BLOCK_SIZE + 1], 0,
+				SuperBlock.DEFAULT_BLOCK_SIZE + 1);
 	}
 
 	@Test
-	public void writingBeyondBlockSizeShouldTriggerFlush() throws Exception {
-		writer.write(new byte[SuperBlock.DEFAULT_BLOCK_SIZE], 0, SuperBlock.DEFAULT_BLOCK_SIZE);
-		assertEquals("wrong fragment entry count (before)", 0, writer.getFragmentEntryCount());
+	public void writingBeyondBlockSizeShouldTriggerFlush() throws Exception
+	{
+		writer.write(new byte[SuperBlock.DEFAULT_BLOCK_SIZE], 0,
+				SuperBlock.DEFAULT_BLOCK_SIZE);
+		assertEquals("wrong fragment entry count (before)", 0,
+				writer.getFragmentEntryCount());
 		writer.write(new byte[1], 0, 1);
-		assertEquals("wrong fragment entry count (after)", 1, writer.getFragmentEntryCount());
+		assertEquals("wrong fragment entry count (after)", 1,
+				writer.getFragmentEntryCount());
 	}
 
 	@Test
-	public void flushWithNoDataShouldNotTriggerFragmentEntryCreation() throws Exception {
+	public void flushWithNoDataShouldNotTriggerFragmentEntryCreation()
+			throws Exception
+	{
 		writer.flush();
-		assertEquals("wrong fragment entry count", 0, writer.getFragmentEntryCount());
+		assertEquals("wrong fragment entry count", 0,
+				writer.getFragmentEntryCount());
 	}
 
 	@Test
-	public void flushWithDataShouldTriggerFragmentEntryCreation() throws Exception {
+	public void flushWithDataShouldTriggerFragmentEntryCreation()
+			throws Exception
+	{
 		writer.write(new byte[1], 0, 1);
 		writer.flush();
-		assertEquals("wrong fragment entry count", 1, writer.getFragmentEntryCount());
+		assertEquals("wrong fragment entry count", 1,
+				writer.getFragmentEntryCount());
 	}
 
 	@Test
-	public void doubleFlushShouldNotTriggerAdditionalFragmentEntryCreation() throws Exception {
+	public void doubleFlushShouldNotTriggerAdditionalFragmentEntryCreation()
+			throws Exception
+	{
 		writer.write(new byte[1], 0, 1);
 		writer.flush();
-		assertEquals("wrong fragment entry count (before)", 1, writer.getFragmentEntryCount());
+		assertEquals("wrong fragment entry count (before)", 1,
+				writer.getFragmentEntryCount());
 		writer.flush();
-		assertEquals("wrong fragment entry count (after)", 1, writer.getFragmentEntryCount());
+		assertEquals("wrong fragment entry count (after)", 1,
+				writer.getFragmentEntryCount());
 	}
 
 	@Test
-	public void fragmentTableRefSizeShouldBeZeroIfNoDataWritten() throws Exception {
+	public void fragmentTableRefSizeShouldBeZeroIfNoDataWritten()
+			throws Exception
+	{
 		writer.flush();
 		assertEquals("wrong entry count", 0, writer.getFragmentEntryCount());
 		assertEquals("wrong table size", 0, writer.getFragmentTableRefSize());
 	}
 
 	@Test
-	public void fragmentTableRefSizeShouldBeOneIfDataWritten() throws Exception {
+	public void fragmentTableRefSizeShouldBeOneIfDataWritten() throws Exception
+	{
 		writer.write(new byte[1], 0, 1);
 		writer.flush();
 		assertEquals("wrong entry count", 1, writer.getFragmentEntryCount());
@@ -163,7 +190,9 @@ public class FragmentWriterTest {
 	}
 
 	@Test
-	public void fragmentTableRefSizeShouldBeOneIfFullBlockWritten() throws Exception {
+	public void fragmentTableRefSizeShouldBeOneIfFullBlockWritten()
+			throws Exception
+	{
 		for (int i = 0; i < 512; i++) {
 			writer.write(new byte[1], 0, 1);
 			writer.flush();
@@ -173,7 +202,9 @@ public class FragmentWriterTest {
 	}
 
 	@Test
-	public void fragmentTableRefSizeShouldBeTwoIfFullBlockPlusOneWritten() throws Exception {
+	public void fragmentTableRefSizeShouldBeTwoIfFullBlockPlusOneWritten()
+			throws Exception
+	{
 		for (int i = 0; i < 513; i++) {
 			writer.write(new byte[1], 0, 1);
 			writer.flush();
@@ -183,13 +214,17 @@ public class FragmentWriterTest {
 	}
 
 	@Test
-	public void saveShouldSerializeEmptyMetadataIfNoFragmentsPresent() throws Exception {
+	public void saveShouldSerializeEmptyMetadataIfNoFragmentsPresent()
+			throws Exception
+	{
 		byte[] data = DataTestUtils.saveFragmentMetadata(writer);
 		assertEquals("wrong length", 0, data.length);
 	}
 
 	@Test
-	public void saveShouldSerializeOneEntryIfOneFragmentPresent() throws Exception {
+	public void saveShouldSerializeOneEntryIfOneFragmentPresent()
+			throws Exception
+	{
 		writer.write(new byte[1], 0, 1);
 		writer.flush();
 
@@ -206,7 +241,9 @@ public class FragmentWriterTest {
 	}
 
 	@Test
-	public void saveShouldSerializeOneEntryIfTwoFragmentsPresent() throws Exception {
+	public void saveShouldSerializeOneEntryIfTwoFragmentsPresent()
+			throws Exception
+	{
 		writer.write(new byte[1], 0, 1);
 		writer.flush();
 		writer.write(new byte[1], 0, 1);
@@ -216,11 +253,11 @@ public class FragmentWriterTest {
 		byte[] decoded = DataTestUtils.decodeMetadataBlock(data);
 		assertEquals("wrong data length", 32, decoded.length);
 		ByteBuffer bb = ByteBuffer.wrap(decoded).order(ByteOrder.LITTLE_ENDIAN);
-		
+
 		assertEquals("wrong start 0", 0L, bb.getLong());
 		assertEquals("wrong size 0", 0x1000001, bb.getInt());
 		assertEquals("wrong unused value 0", 0, bb.getInt());
-		
+
 		assertEquals("wrong start 1", 1L, bb.getLong());
 		assertEquals("wrong size 1", 0x1000001, bb.getInt());
 		assertEquals("wrong unused value 1", 0, bb.getInt());

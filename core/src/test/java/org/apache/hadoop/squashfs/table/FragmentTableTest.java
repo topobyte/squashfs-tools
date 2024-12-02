@@ -42,58 +42,69 @@ import org.apache.hadoop.squashfs.metadata.MetadataWriter;
 import org.apache.hadoop.squashfs.superblock.SuperBlock;
 import org.apache.hadoop.squashfs.superblock.SuperBlockFlag;
 
-public class FragmentTableTest {
+public class FragmentTableTest
+{
 
 	@Test
-	public void readShouldHandleReadingEmptyTable() throws Exception {
+	public void readShouldHandleReadingEmptyTable() throws Exception
+	{
 		verify(0, true);
 	}
 
 	@Test
-	public void readShouldHandleReadingSingleEntry() throws Exception {
+	public void readShouldHandleReadingSingleEntry() throws Exception
+	{
 		verify(1, true);
 	}
 
 	@Test
-	public void readShouldHandleFragmentTableBeingDisabled() throws Exception {
+	public void readShouldHandleFragmentTableBeingDisabled() throws Exception
+	{
 		verify(1, false);
 	}
 
 	@Test
-	public void readShouldHandleReadingSinglePage() throws Exception {
+	public void readShouldHandleReadingSinglePage() throws Exception
+	{
 		verify(512, true);
 	}
 
 	@Test
-	public void readShouldHandleReadingMultiplePages() throws Exception {
+	public void readShouldHandleReadingMultiplePages() throws Exception
+	{
 		verify(1024, true);
 	}
 
 	@Test
-	public void toStringShouldNotFail() throws Exception {
+	public void toStringShouldNotFail() throws Exception
+	{
 		FragmentTable table = verify(10, true);
 		System.out.println(table.toString());
 	}
 
 	@Test
-	public void toStringShouldNotFailOnNotAvailable() throws Exception {
+	public void toStringShouldNotFailOnNotAvailable() throws Exception
+	{
 		FragmentTable table = verify(10, false);
 		System.out.println(table.toString());
 	}
 
 	@Test(expected = SquashFsException.class)
-	public void getEntryShouldFailOnTooLargeValue() throws Exception {
+	public void getEntryShouldFailOnTooLargeValue() throws Exception
+	{
 		FragmentTable table = verify(100, true);
 		table.getEntry(100);
 	}
 
 	@Test(expected = SquashFsException.class)
-	public void getEntryShouldFailOnTooSmallValue() throws Exception {
+	public void getEntryShouldFailOnTooSmallValue() throws Exception
+	{
 		FragmentTable table = verify(100, true);
 		table.getEntry(-1);
 	}
 
-	FragmentTable verify(int count, boolean available) throws Exception {
+	FragmentTable verify(int count, boolean available) throws Exception
+	{
 		byte[] tableData;
 
 		List<MetadataBlockRef> refs;
@@ -103,7 +114,8 @@ public class FragmentTableTest {
 		sb.setFragmentEntryCount(count);
 		sb.setFragmentTableStart(SuperBlock.SIZE);
 		if (!available) {
-			sb.setFlags((short) (sb.getFlags() | SuperBlockFlag.NO_FRAGMENTS.mask()));
+			sb.setFlags((short) (sb.getFlags()
+					| SuperBlockFlag.NO_FRAGMENTS.mask()));
 		}
 		try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
 			try (DataOutputStream dos = new DataOutputStream(bos)) {
@@ -117,7 +129,8 @@ public class FragmentTableTest {
 				sb.writeData(dos);
 				for (MetadataBlockRef ref : refs) {
 					byte[] buf = new byte[8];
-					ByteBuffer.wrap(buf).order(ByteOrder.LITTLE_ENDIAN).putLong(ref.getLocation());
+					ByteBuffer.wrap(buf).order(ByteOrder.LITTLE_ENDIAN)
+							.putLong(ref.getLocation());
 					dos.write(buf);
 				}
 			}
@@ -126,7 +139,8 @@ public class FragmentTableTest {
 
 		int tag = 0;
 		TableReader tr = new MemoryTableReader(sb, tableData);
-		MetadataBlockReader mbr = new MemoryMetadataBlockReader(tag, sb, metadata);
+		MetadataBlockReader mbr = new MemoryMetadataBlockReader(tag, sb,
+				metadata);
 
 		FragmentTable ft = FragmentTable.read(tag, tr, mbr);
 		if (available) {
@@ -135,8 +149,10 @@ public class FragmentTableTest {
 			for (int i = 0; i < count; i++) {
 				FragmentTableEntry entry = ft.getEntry(i);
 				assertNotNull(String.format("entry %d is null", i), entry);
-				assertEquals(String.format("wrong start for entry %d", i), (long) (100_000 + i), entry.getStart());
-				assertEquals(String.format("wrong size for entry %d", i), 10_000 + i, entry.getSize());
+				assertEquals(String.format("wrong start for entry %d", i),
+						(long) (100_000 + i), entry.getStart());
+				assertEquals(String.format("wrong size for entry %d", i),
+						10_000 + i, entry.getSize());
 			}
 		} else {
 			assertFalse("available", ft.isAvailable());
@@ -145,7 +161,9 @@ public class FragmentTableTest {
 		return ft;
 	}
 
-	List<MetadataBlockRef> createEntries(int count, DataOutput out) throws IOException {
+	List<MetadataBlockRef> createEntries(int count, DataOutput out)
+			throws IOException
+	{
 		List<MetadataBlockRef> refs = new ArrayList<>();
 
 		MetadataWriter writer = new MetadataWriter();

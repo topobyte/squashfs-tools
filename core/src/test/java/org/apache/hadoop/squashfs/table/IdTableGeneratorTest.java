@@ -32,24 +32,28 @@ import org.apache.hadoop.squashfs.metadata.MetadataBlockRef;
 import org.apache.hadoop.squashfs.metadata.MetadataWriter;
 import org.apache.hadoop.squashfs.test.MetadataTestUtils;
 
-public class IdTableGeneratorTest {
+public class IdTableGeneratorTest
+{
 
 	IdTableGenerator gen;
 
 	@Before
-	public void setUp() {
+	public void setUp()
+	{
 		gen = new IdTableGenerator();
 	}
 
 	@Test
-	public void addingDuplicateEntriesResultsInSingleMapping() {
+	public void addingDuplicateEntriesResultsInSingleMapping()
+	{
 		int id = gen.addUidGid(1000);
 		assertEquals("wrong id", id, gen.addUidGid(1000));
 		assertEquals("wrong count", 1, gen.getIdCount());
 	}
 
 	@Test
-	public void saveEmptyEntryWritesNoData() throws Exception {
+	public void saveEmptyEntryWritesNoData() throws Exception
+	{
 		MetadataWriter writer = new MetadataWriter();
 
 		List<MetadataBlockRef> refs = gen.save(writer);
@@ -60,7 +64,8 @@ public class IdTableGeneratorTest {
 	}
 
 	@Test
-	public void saveSingleEntryWritesOneRef() throws Exception {
+	public void saveSingleEntryWritesOneRef() throws Exception
+	{
 		gen.addUidGid(1000);
 
 		MetadataWriter writer = new MetadataWriter();
@@ -73,12 +78,14 @@ public class IdTableGeneratorTest {
 
 		byte[] ser = MetadataTestUtils.saveMetadataBlock(writer);
 		byte[] decoded = MetadataTestUtils.decodeMetadataBlock(ser);
-		IntBuffer ib = ByteBuffer.wrap(decoded).order(ByteOrder.LITTLE_ENDIAN).asIntBuffer();
+		IntBuffer ib = ByteBuffer.wrap(decoded).order(ByteOrder.LITTLE_ENDIAN)
+				.asIntBuffer();
 		assertEquals("wrong id", 1000, ib.get());
 	}
 
 	@Test
-	public void saveAllPossibleEntriesShouldWork() throws Exception {
+	public void saveAllPossibleEntriesShouldWork() throws Exception
+	{
 		for (int i = 0; i < 65536; i++) {
 			gen.addUidGid(100_000 + i);
 		}
@@ -91,15 +98,18 @@ public class IdTableGeneratorTest {
 
 		byte[] ser = MetadataTestUtils.saveMetadataBlock(writer);
 		byte[] decoded = MetadataTestUtils.decodeMetadataBlocks(ser);
-		IntBuffer ib = ByteBuffer.wrap(decoded).order(ByteOrder.LITTLE_ENDIAN).asIntBuffer();
+		IntBuffer ib = ByteBuffer.wrap(decoded).order(ByteOrder.LITTLE_ENDIAN)
+				.asIntBuffer();
 
 		for (int i = 0; i < 65536; i++) {
-			assertEquals(String.format("wrong id for entry %d", i), 100_000 + i, ib.get());
+			assertEquals(String.format("wrong id for entry %d", i), 100_000 + i,
+					ib.get());
 		}
 	}
 
 	@Test
-	public void toStringShouldNotFail() {
+	public void toStringShouldNotFail()
+	{
 		gen.addUidGid(1000);
 		System.out.println(gen.toString());
 	}

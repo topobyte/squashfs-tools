@@ -34,251 +34,267 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.LongConsumer;
 
-public class SquashFsEntryBuilder {
+public class SquashFsEntryBuilder
+{
 
-  private static final Logger LOG =
-      LoggerFactory.getLogger(SquashFsEntryBuilder.class);
+	private static final Logger LOG = LoggerFactory
+			.getLogger(SquashFsEntryBuilder.class);
 
-  private final SquashFsWriter writer;
+	private final SquashFsWriter writer;
 
-  private INodeType type;
-  private int major;
-  private int minor;
-  private String name;
-  private Short uid;
-  private Short gid;
-  private Short permissions;
-  private Long fileSize;
-  private Integer lastModified;
-  private String symlinkTarget;
-  private String hardlinkTarget;
-  private List<DataBlockRef> dataBlocks;
-  private FragmentRef fragment;
-  private boolean synthetic = false;
+	private INodeType type;
+	private int major;
+	private int minor;
+	private String name;
+	private Short uid;
+	private Short gid;
+	private Short permissions;
+	private Long fileSize;
+	private Integer lastModified;
+	private String symlinkTarget;
+	private String hardlinkTarget;
+	private List<DataBlockRef> dataBlocks;
+	private FragmentRef fragment;
+	private boolean synthetic = false;
 
-  public SquashFsEntryBuilder(SquashFsWriter writer, String name) {
-    if (name == null || name.isEmpty()) {
-      throw new IllegalArgumentException("filename is required");
-    }
-    if (!name.startsWith("/")) {
-      throw new IllegalArgumentException(
-          String.format("filename '%s' must begin with a slash", name));
-    }
-    if (name.endsWith("/")) {
-      throw new IllegalArgumentException(
-          String.format("filename '%s' may not end with a slash", name));
-    }
-    this.writer = writer;
-    this.name = name;
-  }
+	public SquashFsEntryBuilder(SquashFsWriter writer, String name)
+	{
+		if (name == null || name.isEmpty()) {
+			throw new IllegalArgumentException("filename is required");
+		}
+		if (!name.startsWith("/")) {
+			throw new IllegalArgumentException(String
+					.format("filename '%s' must begin with a slash", name));
+		}
+		if (name.endsWith("/")) {
+			throw new IllegalArgumentException(String
+					.format("filename '%s' may not end with a slash", name));
+		}
+		this.writer = writer;
+		this.name = name;
+	}
 
-  public SquashFsEntryBuilder uid(int uid) {
-    this.uid = writer.getIdGenerator().addUidGid(uid);
-    return this;
-  }
+	public SquashFsEntryBuilder uid(int uid)
+	{
+		this.uid = writer.getIdGenerator().addUidGid(uid);
+		return this;
+	}
 
-  public SquashFsEntryBuilder gid(int gid) {
-    this.gid = writer.getIdGenerator().addUidGid(gid);
-    return this;
-  }
+	public SquashFsEntryBuilder gid(int gid)
+	{
+		this.gid = writer.getIdGenerator().addUidGid(gid);
+		return this;
+	}
 
-  public SquashFsEntryBuilder dataBlock(DataBlockRef block) {
-    if (dataBlocks == null) {
-      dataBlocks = new ArrayList<>();
-    }
-    LOG.debug("Wrote datablock {}", block);
-    dataBlocks.add(block);
-    return this;
-  }
+	public SquashFsEntryBuilder dataBlock(DataBlockRef block)
+	{
+		if (dataBlocks == null) {
+			dataBlocks = new ArrayList<>();
+		}
+		LOG.debug("Wrote datablock {}", block);
+		dataBlocks.add(block);
+		return this;
+	}
 
-  public SquashFsEntryBuilder fragment(FragmentRef fragment) {
-    this.fragment = fragment;
-    LOG.debug("Wrote fragment {}", fragment);
-    return this;
-  }
+	public SquashFsEntryBuilder fragment(FragmentRef fragment)
+	{
+		this.fragment = fragment;
+		LOG.debug("Wrote fragment {}", fragment);
+		return this;
+	}
 
-  public SquashFsEntryBuilder permissions(short permissions) {
-    this.permissions = permissions;
-    return this;
-  }
+	public SquashFsEntryBuilder permissions(short permissions)
+	{
+		this.permissions = permissions;
+		return this;
+	}
 
-  public SquashFsEntryBuilder lastModified(Date lastModified) {
-    return lastModified(lastModified.getTime());
-  }
+	public SquashFsEntryBuilder lastModified(Date lastModified)
+	{
+		return lastModified(lastModified.getTime());
+	}
 
-  public SquashFsEntryBuilder lastModified(Instant lastModified) {
-    return lastModified(lastModified.toEpochMilli());
-  }
+	public SquashFsEntryBuilder lastModified(Instant lastModified)
+	{
+		return lastModified(lastModified.toEpochMilli());
+	}
 
-  public SquashFsEntryBuilder lastModified(long lastModified) {
-    this.lastModified = (int) (lastModified / 1000);
-    return this;
-  }
+	public SquashFsEntryBuilder lastModified(long lastModified)
+	{
+		this.lastModified = (int) (lastModified / 1000);
+		return this;
+	}
 
-  public SquashFsEntryBuilder fileSize(long fileSize) {
-    this.fileSize = fileSize;
-    return this;
-  }
+	public SquashFsEntryBuilder fileSize(long fileSize)
+	{
+		this.fileSize = fileSize;
+		return this;
+	}
 
-  public SquashFsEntryBuilder directory() {
-    this.type = INodeType.BASIC_DIRECTORY;
-    return this;
-  }
+	public SquashFsEntryBuilder directory()
+	{
+		this.type = INodeType.BASIC_DIRECTORY;
+		return this;
+	}
 
-  public SquashFsEntryBuilder file() {
-    this.type = INodeType.BASIC_FILE;
-    return this;
-  }
+	public SquashFsEntryBuilder file()
+	{
+		this.type = INodeType.BASIC_FILE;
+		return this;
+	}
 
-  public SquashFsEntryBuilder blockDev(int major, int minor) {
-    this.type = INodeType.BASIC_BLOCK_DEVICE;
-    this.major = major;
-    this.minor = minor;
-    return this;
-  }
+	public SquashFsEntryBuilder blockDev(int major, int minor)
+	{
+		this.type = INodeType.BASIC_BLOCK_DEVICE;
+		this.major = major;
+		this.minor = minor;
+		return this;
+	}
 
-  public SquashFsEntryBuilder charDev(int major, int minor) {
-    this.type = INodeType.BASIC_CHAR_DEVICE;
-    this.major = major;
-    this.minor = minor;
-    return this;
-  }
+	public SquashFsEntryBuilder charDev(int major, int minor)
+	{
+		this.type = INodeType.BASIC_CHAR_DEVICE;
+		this.major = major;
+		this.minor = minor;
+		return this;
+	}
 
-  public SquashFsEntryBuilder fifo() {
-    this.type = INodeType.BASIC_FIFO;
-    return this;
-  }
+	public SquashFsEntryBuilder fifo()
+	{
+		this.type = INodeType.BASIC_FIFO;
+		return this;
+	}
 
-  public SquashFsEntryBuilder symlink(String target) {
-    this.type = INodeType.BASIC_SYMLINK;
-    this.symlinkTarget = target;
-    return this;
-  }
+	public SquashFsEntryBuilder symlink(String target)
+	{
+		this.type = INodeType.BASIC_SYMLINK;
+		this.symlinkTarget = target;
+		return this;
+	}
 
-  public SquashFsEntryBuilder hardlink(String target) {
-    this.hardlinkTarget = target;
-    return this;
-  }
+	public SquashFsEntryBuilder hardlink(String target)
+	{
+		this.hardlinkTarget = target;
+		return this;
+	}
 
-  public SquashFsEntryBuilder synthetic() {
-    this.synthetic = true;
-    return this;
-  }
+	public SquashFsEntryBuilder synthetic()
+	{
+		this.synthetic = true;
+		return this;
+	}
 
-  public SquashFsEntryBuilder content(byte[] content) throws IOException {
-    try (ByteArrayInputStream bis = new ByteArrayInputStream(content)) {
-      return content(bis, (long) content.length);
-    }
-  }
+	public SquashFsEntryBuilder content(byte[] content) throws IOException
+	{
+		try (ByteArrayInputStream bis = new ByteArrayInputStream(content)) {
+			return content(bis, (long) content.length);
+		}
+	}
 
-  public SquashFsEntryBuilder content(InputStream in) throws IOException {
-    return content(in, Long.MAX_VALUE);
-  }
+	public SquashFsEntryBuilder content(InputStream in) throws IOException
+	{
+		return content(in, Long.MAX_VALUE);
+	}
 
-  public SquashFsEntryBuilder content(InputStream in, long maxSize)
-      throws IOException {
-    return content(in, maxSize, l -> {
-    });
-  }
+	public SquashFsEntryBuilder content(InputStream in, long maxSize)
+			throws IOException
+	{
+		return content(in, maxSize, l -> {
+		});
+	}
 
-  public SquashFsEntryBuilder content(InputStream in, long maxSize,
-      LongConsumer progress) throws IOException {
-    long written = 0L;
-    int c = 0;
-    int off = 0;
+	public SquashFsEntryBuilder content(InputStream in, long maxSize,
+			LongConsumer progress) throws IOException
+	{
+		long written = 0L;
+		int c = 0;
+		int off = 0;
 
-    byte[] blockBuffer = writer.getBlockBuffer();
+		byte[] blockBuffer = writer.getBlockBuffer();
 
-    // determine how many bytes to read
-    int bytesToRead =
-        (int) Math.min(blockBuffer.length - off, maxSize - written);
-    while (c >= 0 && bytesToRead > 0) {
+		// determine how many bytes to read
+		int bytesToRead = (int) Math.min(blockBuffer.length - off,
+				maxSize - written);
+		while (c >= 0 && bytesToRead > 0) {
 
-      // attempt to read full block
-      while (bytesToRead > 0
-          && (c = in.read(blockBuffer, off, bytesToRead)) >= 0) {
-        off += c;
-        written += c;
-        if (off == blockBuffer.length) {
-          // write the block
-          LOG.trace("Writing block of size {}", blockBuffer.length);
-          DataBlockRef dataBlock =
-              writer.getDataWriter().write(blockBuffer, 0, blockBuffer.length);
-          dataBlock(dataBlock);
-          progress.accept(written);
-          off = 0;
-          c = 0;
-          break;
-        }
-        bytesToRead =
-            (int) Math.min(blockBuffer.length - off, maxSize - written);
-      }
-    }
+			// attempt to read full block
+			while (bytesToRead > 0
+					&& (c = in.read(blockBuffer, off, bytesToRead)) >= 0) {
+				off += c;
+				written += c;
+				if (off == blockBuffer.length) {
+					// write the block
+					LOG.trace("Writing block of size {}", blockBuffer.length);
+					DataBlockRef dataBlock = writer.getDataWriter()
+							.write(blockBuffer, 0, blockBuffer.length);
+					dataBlock(dataBlock);
+					progress.accept(written);
+					off = 0;
+					c = 0;
+					break;
+				}
+				bytesToRead = (int) Math.min(blockBuffer.length - off,
+						maxSize - written);
+			}
+		}
 
-    if (off > 0) {
-      // write final block
-      LOG.trace("Writing fragment of size {}", off);
-      FragmentRef fragment =
-          writer.getFragmentWriter().write(blockBuffer, 0, off);
-      fragment(fragment);
-      progress.accept(written);
-      off = 0;
-    }
+		if (off > 0) {
+			// write final block
+			LOG.trace("Writing fragment of size {}", off);
+			FragmentRef fragment = writer.getFragmentWriter().write(blockBuffer,
+					0, off);
+			fragment(fragment);
+			progress.accept(written);
+			off = 0;
+		}
 
-    LOG.debug("Wrote {} bytes to {}", written, name);
+		LOG.debug("Wrote {} bytes to {}", written, name);
 
-    // set output type to file
-    if (type == null) {
-      file();
-    }
+		// set output type to file
+		if (type == null) {
+			file();
+		}
 
-    // set output file size
-    if (fileSize == null) {
-      fileSize(written);
-    }
+		// set output file size
+		if (fileSize == null) {
+			fileSize(written);
+		}
 
-    return this;
-  }
+		return this;
+	}
 
-  public SquashFsEntry build() {
-    if (type == null && hardlinkTarget == null) {
-      throw new IllegalArgumentException("type not set");
-    }
-    if (uid == null && hardlinkTarget == null) {
-      throw new IllegalArgumentException("uid not set");
-    }
-    if (gid == null && hardlinkTarget == null) {
-      throw new IllegalArgumentException("gid not set");
-    }
-    if (permissions == null && hardlinkTarget == null) {
-      throw new IllegalArgumentException("permissions not set");
-    }
-    if (fileSize == null && type == INodeType.BASIC_FILE) {
-      throw new IllegalArgumentException("fileSize not set");
-    }
-    if (lastModified == null && hardlinkTarget == null) {
-      lastModified = (int) (System.currentTimeMillis() / 1000L);
-    }
+	public SquashFsEntry build()
+	{
+		if (type == null && hardlinkTarget == null) {
+			throw new IllegalArgumentException("type not set");
+		}
+		if (uid == null && hardlinkTarget == null) {
+			throw new IllegalArgumentException("uid not set");
+		}
+		if (gid == null && hardlinkTarget == null) {
+			throw new IllegalArgumentException("gid not set");
+		}
+		if (permissions == null && hardlinkTarget == null) {
+			throw new IllegalArgumentException("permissions not set");
+		}
+		if (fileSize == null && type == INodeType.BASIC_FILE) {
+			throw new IllegalArgumentException("fileSize not set");
+		}
+		if (lastModified == null && hardlinkTarget == null) {
+			lastModified = (int) (System.currentTimeMillis() / 1000L);
+		}
 
-    SquashFsEntry entry = new SquashFsEntry(
-        type,
-        name,
-        Optional.ofNullable(uid).orElse((short) 0),
-        Optional.ofNullable(gid).orElse((short) 0),
-        Optional.ofNullable(permissions).orElse((short) 0),
-        major,
-        minor,
-        Optional.ofNullable(fileSize).orElse(0L),
-        Optional.ofNullable(lastModified).orElse(0),
-        symlinkTarget,
-        hardlinkTarget,
-        dataBlocks,
-        fragment,
-        synthetic);
+		SquashFsEntry entry = new SquashFsEntry(type, name,
+				Optional.ofNullable(uid).orElse((short) 0),
+				Optional.ofNullable(gid).orElse((short) 0),
+				Optional.ofNullable(permissions).orElse((short) 0), major,
+				minor, Optional.ofNullable(fileSize).orElse(0L),
+				Optional.ofNullable(lastModified).orElse(0), symlinkTarget,
+				hardlinkTarget, dataBlocks, fragment, synthetic);
 
-    writer.getFsTree().add(entry);
+		writer.getFsTree().add(entry);
 
-    return entry;
-  }
+		return entry;
+	}
 
 }

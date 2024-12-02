@@ -35,209 +35,229 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.List;
 
-public class SquashFsWriter implements Closeable {
+public class SquashFsWriter implements Closeable
+{
 
-  private static final Logger LOG =
-      LoggerFactory.getLogger(SquashFsWriter.class);
+	private static final Logger LOG = LoggerFactory
+			.getLogger(SquashFsWriter.class);
 
-  private final RandomAccessFile raf;
-  private final IdTableGenerator idGenerator;
-  private final SuperBlock superBlock;
-  private final SquashFsTree fsTree;
-  private final DataBlockWriter dataWriter;
-  private final FragmentWriter fragmentWriter;
-  private final byte[] blockBuffer;
+	private final RandomAccessFile raf;
+	private final IdTableGenerator idGenerator;
+	private final SuperBlock superBlock;
+	private final SquashFsTree fsTree;
+	private final DataBlockWriter dataWriter;
+	private final FragmentWriter fragmentWriter;
+	private final byte[] blockBuffer;
 
-  private Integer modificationTime = null;
+	private Integer modificationTime = null;
 
-  public SquashFsWriter(File outputFile) throws SquashFsException, IOException {
-    raf = new RandomAccessFile(outputFile, "rw");
-    writeDummySuperblock(raf);
-    superBlock = createSuperBlock();
-    blockBuffer = createBlockBuffer(superBlock);
-    idGenerator = createIdTableGenerator();
-    fsTree = createSquashFsTree();
-    dataWriter = createDataWriter(superBlock, raf);
-    fragmentWriter = createFragmentWriter(superBlock, raf);
-  }
+	public SquashFsWriter(File outputFile) throws SquashFsException, IOException
+	{
+		raf = new RandomAccessFile(outputFile, "rw");
+		writeDummySuperblock(raf);
+		superBlock = createSuperBlock();
+		blockBuffer = createBlockBuffer(superBlock);
+		idGenerator = createIdTableGenerator();
+		fsTree = createSquashFsTree();
+		dataWriter = createDataWriter(superBlock, raf);
+		fragmentWriter = createFragmentWriter(superBlock, raf);
+	}
 
-  public void setModificationTime(int modificationTime) {
-    this.modificationTime = modificationTime;
-  }
+	public void setModificationTime(int modificationTime)
+	{
+		this.modificationTime = modificationTime;
+	}
 
-  static void writeDummySuperblock(RandomAccessFile raf) throws IOException {
-    raf.seek(0L);
-    raf.write(new byte[SuperBlock.SIZE]);
-  }
+	static void writeDummySuperblock(RandomAccessFile raf) throws IOException
+	{
+		raf.seek(0L);
+		raf.write(new byte[SuperBlock.SIZE]);
+	}
 
-  static SuperBlock createSuperBlock() {
-    return new SuperBlock();
-  }
+	static SuperBlock createSuperBlock()
+	{
+		return new SuperBlock();
+	}
 
-  static byte[] createBlockBuffer(SuperBlock sb) {
-    return new byte[sb.getBlockSize()];
-  }
+	static byte[] createBlockBuffer(SuperBlock sb)
+	{
+		return new byte[sb.getBlockSize()];
+	}
 
-  static IdTableGenerator createIdTableGenerator() {
-    IdTableGenerator idGenerator = new IdTableGenerator();
-    idGenerator.addUidGid(0);
-    return idGenerator;
-  }
+	static IdTableGenerator createIdTableGenerator()
+	{
+		IdTableGenerator idGenerator = new IdTableGenerator();
+		idGenerator.addUidGid(0);
+		return idGenerator;
+	}
 
-  static SquashFsTree createSquashFsTree() {
-    return new SquashFsTree();
-  }
+	static SquashFsTree createSquashFsTree()
+	{
+		return new SquashFsTree();
+	}
 
-  static DataBlockWriter createDataWriter(SuperBlock sb, RandomAccessFile raf) {
-    return new DataBlockWriter(raf, sb.getBlockSize());
-  }
+	static DataBlockWriter createDataWriter(SuperBlock sb, RandomAccessFile raf)
+	{
+		return new DataBlockWriter(raf, sb.getBlockSize());
+	}
 
-  static FragmentWriter createFragmentWriter(SuperBlock sb,
-      RandomAccessFile raf) {
-    return new FragmentWriter(raf, sb.getBlockSize());
-  }
+	static FragmentWriter createFragmentWriter(SuperBlock sb,
+			RandomAccessFile raf)
+	{
+		return new FragmentWriter(raf, sb.getBlockSize());
+	}
 
-  SuperBlock getSuperBlock() {
-    return superBlock;
-  }
+	SuperBlock getSuperBlock()
+	{
+		return superBlock;
+	}
 
-  IdTableGenerator getIdGenerator() {
-    return idGenerator;
-  }
+	IdTableGenerator getIdGenerator()
+	{
+		return idGenerator;
+	}
 
-  DataBlockWriter getDataWriter() {
-    return dataWriter;
-  }
+	DataBlockWriter getDataWriter()
+	{
+		return dataWriter;
+	}
 
-  FragmentWriter getFragmentWriter() {
-    return fragmentWriter;
-  }
+	FragmentWriter getFragmentWriter()
+	{
+		return fragmentWriter;
+	}
 
-  byte[] getBlockBuffer() {
-    return blockBuffer;
-  }
+	byte[] getBlockBuffer()
+	{
+		return blockBuffer;
+	}
 
-  public SquashFsTree getFsTree() {
-    return fsTree;
-  }
+	public SquashFsTree getFsTree()
+	{
+		return fsTree;
+	}
 
-  public SquashFsEntryBuilder entry(String name) {
-    return new SquashFsEntryBuilder(this, name);
-  }
+	public SquashFsEntryBuilder entry(String name)
+	{
+		return new SquashFsEntryBuilder(this, name);
+	}
 
-  public void finish() throws SquashFsException, IOException {
-    // flush any remaining fragments
-    fragmentWriter.flush();
+	public void finish() throws SquashFsException, IOException
+	{
+		// flush any remaining fragments
+		fragmentWriter.flush();
 
-    // build the directory tree
-    fsTree.build();
+		// build the directory tree
+		fsTree.build();
 
-    // save inode table
-    long inodeTableStart = raf.getFilePointer();
-    LOG.debug("Inode table start: {}", inodeTableStart);
-    fsTree.getINodeWriter().save(raf);
+		// save inode table
+		long inodeTableStart = raf.getFilePointer();
+		LOG.debug("Inode table start: {}", inodeTableStart);
+		fsTree.getINodeWriter().save(raf);
 
-    // save directory table
-    long dirTableStart = raf.getFilePointer();
-    LOG.debug("Directory table start: {}", dirTableStart);
-    fsTree.getDirWriter().save(raf);
+		// save directory table
+		long dirTableStart = raf.getFilePointer();
+		LOG.debug("Directory table start: {}", dirTableStart);
+		fsTree.getDirWriter().save(raf);
 
-    // build fragment table
-    long fragMetaStart = raf.getFilePointer();
-    MetadataWriter fragMetaWriter = new MetadataWriter();
-    List<MetadataBlockRef> fragRefs = fragmentWriter.save(fragMetaWriter);
-    fragMetaWriter.save(raf);
+		// build fragment table
+		long fragMetaStart = raf.getFilePointer();
+		MetadataWriter fragMetaWriter = new MetadataWriter();
+		List<MetadataBlockRef> fragRefs = fragmentWriter.save(fragMetaWriter);
+		fragMetaWriter.save(raf);
 
-    // save fragment table
-    long fragTableStart = raf.getFilePointer();
-    LOG.debug("Fragment table start: {}", fragTableStart);
-    for (MetadataBlockRef fragRef : fragRefs) {
-      long fragTableFileOffset = fragMetaStart + fragRef.getLocation();
-      byte[] buf = new byte[8];
-      ByteBuffer bb = ByteBuffer.wrap(buf).order(ByteOrder.LITTLE_ENDIAN);
-      bb.putLong(fragTableFileOffset);
-      raf.write(buf);
-    }
+		// save fragment table
+		long fragTableStart = raf.getFilePointer();
+		LOG.debug("Fragment table start: {}", fragTableStart);
+		for (MetadataBlockRef fragRef : fragRefs) {
+			long fragTableFileOffset = fragMetaStart + fragRef.getLocation();
+			byte[] buf = new byte[8];
+			ByteBuffer bb = ByteBuffer.wrap(buf).order(ByteOrder.LITTLE_ENDIAN);
+			bb.putLong(fragTableFileOffset);
+			raf.write(buf);
+		}
 
-    // build export table
-    long exportMetaStart = raf.getFilePointer();
-    MetadataWriter exportMetaWriter = new MetadataWriter();
-    List<MetadataBlockRef> exportRefs =
-        fsTree.saveExportTable(exportMetaWriter);
-    exportMetaWriter.save(raf);
+		// build export table
+		long exportMetaStart = raf.getFilePointer();
+		MetadataWriter exportMetaWriter = new MetadataWriter();
+		List<MetadataBlockRef> exportRefs = fsTree
+				.saveExportTable(exportMetaWriter);
+		exportMetaWriter.save(raf);
 
-    // write export table
-    long exportTableStart = raf.getFilePointer();
-    LOG.debug("Export table start: {}", exportTableStart);
-    for (MetadataBlockRef exportRef : exportRefs) {
-      long exportFileOffset = exportMetaStart + exportRef.getLocation();
-      byte[] buf = new byte[8];
-      ByteBuffer bb = ByteBuffer.wrap(buf).order(ByteOrder.LITTLE_ENDIAN);
-      bb.putLong(exportFileOffset);
-      raf.write(buf);
-    }
+		// write export table
+		long exportTableStart = raf.getFilePointer();
+		LOG.debug("Export table start: {}", exportTableStart);
+		for (MetadataBlockRef exportRef : exportRefs) {
+			long exportFileOffset = exportMetaStart + exportRef.getLocation();
+			byte[] buf = new byte[8];
+			ByteBuffer bb = ByteBuffer.wrap(buf).order(ByteOrder.LITTLE_ENDIAN);
+			bb.putLong(exportFileOffset);
+			raf.write(buf);
+		}
 
-    // build ID table
-    long idMetaStart = raf.getFilePointer();
-    MetadataWriter idMetaWriter = new MetadataWriter();
-    List<MetadataBlockRef> idRefs = idGenerator.save(idMetaWriter);
-    idMetaWriter.save(raf);
+		// build ID table
+		long idMetaStart = raf.getFilePointer();
+		MetadataWriter idMetaWriter = new MetadataWriter();
+		List<MetadataBlockRef> idRefs = idGenerator.save(idMetaWriter);
+		idMetaWriter.save(raf);
 
-    MetadataBlockRef rootInodeRef = fsTree.getRootInodeRef();
-    LOG.debug("Root inode ref: {}", rootInodeRef);
+		MetadataBlockRef rootInodeRef = fsTree.getRootInodeRef();
+		LOG.debug("Root inode ref: {}", rootInodeRef);
 
-    // write ID table
-    long idTableStart = raf.getFilePointer();
-    LOG.debug("ID table start: {}", idTableStart);
+		// write ID table
+		long idTableStart = raf.getFilePointer();
+		LOG.debug("ID table start: {}", idTableStart);
 
-    for (MetadataBlockRef idRef : idRefs) {
-      long idFileOffset = idMetaStart + idRef.getLocation();
-      byte[] buf = new byte[8];
-      ByteBuffer bb = ByteBuffer.wrap(buf).order(ByteOrder.LITTLE_ENDIAN);
-      bb.putLong(idFileOffset);
-      raf.write(buf);
-    }
+		for (MetadataBlockRef idRef : idRefs) {
+			long idFileOffset = idMetaStart + idRef.getLocation();
+			byte[] buf = new byte[8];
+			ByteBuffer bb = ByteBuffer.wrap(buf).order(ByteOrder.LITTLE_ENDIAN);
+			bb.putLong(idFileOffset);
+			raf.write(buf);
+		}
 
-    long archiveSize = raf.getFilePointer();
-    LOG.debug("Archive size:{}", archiveSize);
+		long archiveSize = raf.getFilePointer();
+		LOG.debug("Archive size:{}", archiveSize);
 
-    // pad to 4096 bytes
-    int padding = (4096 - ((int) (archiveSize % 4096L))) % 4096;
-    for (int i = 0; i < padding; i++) {
-      raf.write(0);
-    }
+		// pad to 4096 bytes
+		int padding = (4096 - ((int) (archiveSize % 4096L))) % 4096;
+		for (int i = 0; i < padding; i++) {
+			raf.write(0);
+		}
 
-    long fileSize = raf.getFilePointer();
-    LOG.debug("File size: {}", fileSize);
+		long fileSize = raf.getFilePointer();
+		LOG.debug("File size: {}", fileSize);
 
-    if (modificationTime == null) {
-      modificationTime = (int) (System.currentTimeMillis() / 1000L);
-    }
+		if (modificationTime == null) {
+			modificationTime = (int) (System.currentTimeMillis() / 1000L);
+		}
 
-    // update superblock
-    superBlock.setInodeCount(fsTree.getInodeCount());
-    superBlock.setModificationTime(modificationTime);
-    superBlock.setFragmentEntryCount(fragmentWriter.getFragmentEntryCount());
-    superBlock.setIdCount((short) idGenerator.getIdCount());
-    superBlock.setRootInodeRef(rootInodeRef.toINodeRefRaw());
-    superBlock.setBytesUsed(archiveSize);
-    superBlock.setIdTableStart(idTableStart);
-    superBlock.setInodeTableStart(inodeTableStart);
-    superBlock.setDirectoryTableStart(dirTableStart);
-    superBlock.setFragmentTableStart(fragTableStart);
-    superBlock.setExportTableStart(exportTableStart);
+		// update superblock
+		superBlock.setInodeCount(fsTree.getInodeCount());
+		superBlock.setModificationTime(modificationTime);
+		superBlock
+				.setFragmentEntryCount(fragmentWriter.getFragmentEntryCount());
+		superBlock.setIdCount((short) idGenerator.getIdCount());
+		superBlock.setRootInodeRef(rootInodeRef.toINodeRefRaw());
+		superBlock.setBytesUsed(archiveSize);
+		superBlock.setIdTableStart(idTableStart);
+		superBlock.setInodeTableStart(inodeTableStart);
+		superBlock.setDirectoryTableStart(dirTableStart);
+		superBlock.setFragmentTableStart(fragTableStart);
+		superBlock.setExportTableStart(exportTableStart);
 
-    LOG.debug("Superblock: {}", superBlock);
+		LOG.debug("Superblock: {}", superBlock);
 
-    // write superblock
-    raf.seek(0L);
-    superBlock.writeData(raf);
-    raf.seek(fileSize);
-  }
+		// write superblock
+		raf.seek(0L);
+		superBlock.writeData(raf);
+		raf.seek(fileSize);
+	}
 
-  @Override
-  public void close() throws IOException {
-    raf.close();
-  }
+	@Override
+	public void close() throws IOException
+	{
+		raf.close();
+	}
 
 }

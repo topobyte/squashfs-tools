@@ -18,12 +18,13 @@
 
 package org.apache.hadoop.squashfs.inode;
 
-public interface ExtendedDeviceINode extends DeviceINode {
+public interface ExtendedDeviceINode extends DeviceINode
+{
 
-  public int getXattrIndex();
+	public int getXattrIndex();
 
-  public void setXattrIndex(int xattrIndex);
+	public void setXattrIndex(int xattrIndex);
 
-  public boolean isXattrPresent();
+	public boolean isXattrPresent();
 
 }

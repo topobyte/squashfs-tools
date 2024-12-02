@@ -25,7 +25,8 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 
-public class DataBlockTest {
+public class DataBlockTest
+{
 
 	DataBlock full;
 	DataBlock sparse;
@@ -33,7 +34,8 @@ public class DataBlockTest {
 	DataBlock empty;
 
 	@Before
-	public void setUp() {
+	public void setUp()
+	{
 		full = new DataBlock(new byte[1024], 1024, 1024);
 		full.getData()[0] = (byte) 0xff;
 		sparse = new DataBlock(new byte[1024], 1024, 0);
@@ -42,12 +44,14 @@ public class DataBlockTest {
 	}
 
 	@Test
-	public void getDataShouldReturnCorrectValues() {
+	public void getDataShouldReturnCorrectValues()
+	{
 		assertEquals((byte) 0xff, full.getData()[0]);
 	}
 
 	@Test
-	public void getLogicalSizeShouldReturnCorrectValuesForAllCases() {
+	public void getLogicalSizeShouldReturnCorrectValuesForAllCases()
+	{
 		assertEquals("wrong size for full", 1024, full.getLogicalSize());
 		assertEquals("wrong size for sparse", 1024, sparse.getLogicalSize());
 		assertEquals("wrong size for partial", 512, partial.getLogicalSize());
@@ -55,7 +59,8 @@ public class DataBlockTest {
 	}
 
 	@Test
-	public void getPhysicalSizeShouldReturnCorrectValuesForAllCases() {
+	public void getPhysicalSizeShouldReturnCorrectValuesForAllCases()
+	{
 		assertEquals("wrong size for full", 1024, full.getPhysicalSize());
 		assertEquals("wrong size for sparse", 0, sparse.getPhysicalSize());
 		assertEquals("wrong size for partial", 1024, partial.getPhysicalSize());
@@ -63,7 +68,8 @@ public class DataBlockTest {
 	}
 
 	@Test
-	public void isSparseShouldReturnTrueOnlyForSparseBlock() {
+	public void isSparseShouldReturnTrueOnlyForSparseBlock()
+	{
 		assertFalse("full is sparse", full.isSparse());
 		assertFalse("empty is sparse", empty.isSparse());
 		assertFalse("partial is sparse", partial.isSparse());

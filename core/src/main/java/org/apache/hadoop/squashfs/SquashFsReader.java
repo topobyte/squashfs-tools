@@ -39,67 +39,69 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
 
-public interface SquashFsReader extends Closeable {
+public interface SquashFsReader extends Closeable
+{
 
-  public static SquashFsReader fromFile(int tag, File inputFile)
-      throws SquashFsException, IOException {
-    return new FileSquashFsReader(tag, inputFile);
-  }
+	public static SquashFsReader fromFile(int tag, File inputFile)
+			throws SquashFsException, IOException
+	{
+		return new FileSquashFsReader(tag, inputFile);
+	}
 
-  public static SquashFsReader fromFile(
-      int tag, File inputFile,
-      MetadataBlockCache metadataCache,
-      DataBlockCache dataCache,
-      DataBlockCache fragmentCache) throws SquashFsException, IOException {
+	public static SquashFsReader fromFile(int tag, File inputFile,
+			MetadataBlockCache metadataCache, DataBlockCache dataCache,
+			DataBlockCache fragmentCache) throws SquashFsException, IOException
+	{
 
-    return new FileSquashFsReader(tag, inputFile, metadataCache, dataCache,
-        fragmentCache);
-  }
+		return new FileSquashFsReader(tag, inputFile, metadataCache, dataCache,
+				fragmentCache);
+	}
 
-  public static SquashFsReader fromMappedFile(int tag, MappedFile mmap)
-      throws SquashFsException, IOException {
-    return new MappedSquashFsReader(tag, mmap);
-  }
+	public static SquashFsReader fromMappedFile(int tag, MappedFile mmap)
+			throws SquashFsException, IOException
+	{
+		return new MappedSquashFsReader(tag, mmap);
+	}
 
-  public static SquashFsReader fromMappedFile(int tag, MappedFile mmap,
-      MetadataBlockCache metadataCache,
-      DataBlockCache dataCache,
-      DataBlockCache fragmentCache) throws SquashFsException, IOException {
-    return new MappedSquashFsReader(tag, mmap, metadataCache, dataCache,
-        fragmentCache);
-  }
+	public static SquashFsReader fromMappedFile(int tag, MappedFile mmap,
+			MetadataBlockCache metadataCache, DataBlockCache dataCache,
+			DataBlockCache fragmentCache) throws SquashFsException, IOException
+	{
+		return new MappedSquashFsReader(tag, mmap, metadataCache, dataCache,
+				fragmentCache);
+	}
 
-  public SuperBlock getSuperBlock();
+	public SuperBlock getSuperBlock();
 
-  public IdTable getIdTable();
+	public IdTable getIdTable();
 
-  public FragmentTable getFragmentTable();
+	public FragmentTable getFragmentTable();
 
-  public ExportTable getExportTable();
+	public ExportTable getExportTable();
 
-  public MetadataBlockReader getMetaReader();
+	public MetadataBlockReader getMetaReader();
 
-  public DirectoryINode getRootInode() throws IOException, SquashFsException;
+	public DirectoryINode getRootInode() throws IOException, SquashFsException;
 
-  public INode findInodeByInodeRef(INodeRef ref)
-      throws IOException, SquashFsException;
+	public INode findInodeByInodeRef(INodeRef ref)
+			throws IOException, SquashFsException;
 
-  public INode findInodeByDirectoryEntry(DirectoryEntry entry)
-      throws IOException, SquashFsException;
+	public INode findInodeByDirectoryEntry(DirectoryEntry entry)
+			throws IOException, SquashFsException;
 
-  public INode findInodeByPath(String path)
-      throws IOException, SquashFsException, FileNotFoundException;
+	public INode findInodeByPath(String path)
+			throws IOException, SquashFsException, FileNotFoundException;
 
-  public List<DirectoryEntry> getChildren(INode parent)
-      throws IOException, SquashFsException;
+	public List<DirectoryEntry> getChildren(INode parent)
+			throws IOException, SquashFsException;
 
-  public long writeFileStream(INode inode, OutputStream out)
-      throws IOException, SquashFsException;
+	public long writeFileStream(INode inode, OutputStream out)
+			throws IOException, SquashFsException;
 
-  public long writeFileOut(INode inode, DataOutput out)
-      throws IOException, SquashFsException;
+	public long writeFileOut(INode inode, DataOutput out)
+			throws IOException, SquashFsException;
 
-  public int read(INode inode, long fileOffset, byte[] buf, int off, int len)
-      throws IOException, SquashFsException;
+	public int read(INode inode, long fileOffset, byte[] buf, int off, int len)
+			throws IOException, SquashFsException;
 
 }

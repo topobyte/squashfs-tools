@@ -26,104 +26,108 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DirectoryBuilder {
+public class DirectoryBuilder
+{
 
-  boolean dirty = false;
-  final List<Entry> entries = new ArrayList<>();
-  final List<DirectoryElement> elements = new ArrayList<>();
+	boolean dirty = false;
+	final List<Entry> entries = new ArrayList<>();
+	final List<DirectoryElement> elements = new ArrayList<>();
 
-  public void add(
-      String name,
-      int startBlock,
-      int inodeNumber,
-      short offset,
-      INodeType type) {
-    dirty = true;
-    byte[] nameBytes = name.getBytes(StandardCharsets.ISO_8859_1);
-    if (nameBytes.length < 1) {
-      throw new IllegalArgumentException("Filename is empty");
-    }
-    if (nameBytes.length > ((int) DirectoryEntry.MAX_FILENAME_LENGTH)) {
-      throw new IllegalArgumentException(String.format(
-          "Filename '%s' too long (%d bytes, max %d)",
-          name, nameBytes.length, DirectoryEntry.MAX_FILENAME_LENGTH));
-    }
-    entries.add(new Entry(
-        startBlock, inodeNumber, offset, type.dirValue(), nameBytes));
-  }
+	public void add(String name, int startBlock, int inodeNumber, short offset,
+			INodeType type)
+	{
+		dirty = true;
+		byte[] nameBytes = name.getBytes(StandardCharsets.ISO_8859_1);
+		if (nameBytes.length < 1) {
+			throw new IllegalArgumentException("Filename is empty");
+		}
+		if (nameBytes.length > ((int) DirectoryEntry.MAX_FILENAME_LENGTH)) {
+			throw new IllegalArgumentException(String.format(
+					"Filename '%s' too long (%d bytes, max %d)", name,
+					nameBytes.length, DirectoryEntry.MAX_FILENAME_LENGTH));
+		}
+		entries.add(new Entry(startBlock, inodeNumber, offset, type.dirValue(),
+				nameBytes));
+	}
 
-  public int getStructureSize() {
-    build();
-    int size = 0;
-    for (DirectoryElement element : elements) {
-      size += element.getStructureSize();
-    }
-    return size;
-  }
+	public int getStructureSize()
+	{
+		build();
+		int size = 0;
+		for (DirectoryElement element : elements) {
+			size += element.getStructureSize();
+		}
+		return size;
+	}
 
-  void build() {
-    if (!dirty) {
-      return;
-    }
-    elements.clear();
+	void build()
+	{
+		if (!dirty) {
+			return;
+		}
+		elements.clear();
 
-    DirectoryHeader header = null;
-    for (Entry entry : entries) {
-      header = advance(header, entry);
-      header.count++;
+		DirectoryHeader header = null;
+		for (Entry entry : entries) {
+			header = advance(header, entry);
+			header.count++;
 
-      DirectoryEntry dent = new DirectoryEntry();
-      dent.header = header;
-      dent.offset = entry.offset;
-      dent.inodeNumberDelta = (short) (entry.inodeNumber - header.inodeNumber);
-      dent.name = entry.name;
-      dent.type = entry.type;
-      dent.size = (short) (entry.name.length - 1);
+			DirectoryEntry dent = new DirectoryEntry();
+			dent.header = header;
+			dent.offset = entry.offset;
+			dent.inodeNumberDelta = (short) (entry.inodeNumber
+					- header.inodeNumber);
+			dent.name = entry.name;
+			dent.type = entry.type;
+			dent.size = (short) (entry.name.length - 1);
 
-      elements.add(dent);
-    }
-    dirty = false;
-  }
+			elements.add(dent);
+		}
+		dirty = false;
+	}
 
-  public void write(MetadataWriter out) throws IOException {
-    build();
-    for (DirectoryElement element : elements) {
-      element.writeData(out);
-    }
-  }
+	public void write(MetadataWriter out) throws IOException
+	{
+		build();
+		for (DirectoryElement element : elements) {
+			element.writeData(out);
+		}
+	}
 
-  private DirectoryHeader advance(DirectoryHeader header, Entry entry) {
-    if ((header != null) &&
-        (header.startBlock == entry.startBlock) &&
-        (entry.inodeNumber >= header.inodeNumber) &&
-        (entry.inodeNumber <= (header.inodeNumber + 0x7fff)) &&
-        (header.count < (DirectoryHeader.MAX_DIR_ENTRIES - 1))) {
-      return header;
-    }
+	private DirectoryHeader advance(DirectoryHeader header, Entry entry)
+	{
+		if ((header != null) && (header.startBlock == entry.startBlock)
+				&& (entry.inodeNumber >= header.inodeNumber)
+				&& (entry.inodeNumber <= (header.inodeNumber + 0x7fff))
+				&& (header.count < (DirectoryHeader.MAX_DIR_ENTRIES - 1))) {
+			return header;
+		}
 
-    header = new DirectoryHeader();
-    header.count = -1;
-    header.startBlock = entry.startBlock;
-    header.inodeNumber = entry.inodeNumber;
-    elements.add(header);
-    return header;
-  }
+		header = new DirectoryHeader();
+		header.count = -1;
+		header.startBlock = entry.startBlock;
+		header.inodeNumber = entry.inodeNumber;
+		elements.add(header);
+		return header;
+	}
 
-  static class Entry {
-    int startBlock;
-    int inodeNumber;
-    byte[] name;
-    short offset;
-    short type;
+	static class Entry
+	{
+		int startBlock;
+		int inodeNumber;
+		byte[] name;
+		short offset;
+		short type;
 
-    Entry(int startBlock, int inodeNumber, short offset, short type,
-        byte[] name) {
-      this.startBlock = startBlock;
-      this.inodeNumber = inodeNumber;
-      this.offset = offset;
-      this.type = type;
-      this.name = name;
-    }
-  }
+		Entry(int startBlock, int inodeNumber, short offset, short type,
+				byte[] name)
+		{
+			this.startBlock = startBlock;
+			this.inodeNumber = inodeNumber;
+			this.offset = offset;
+			this.type = type;
+			this.name = name;
+		}
+	}
 
 }

@@ -30,12 +30,14 @@ import org.junit.Test;
 
 import org.apache.hadoop.squashfs.test.INodeTestUtils;
 
-public class AbsExtendedDeviceINodeTest {
+public class AbsExtendedDeviceINodeTest
+{
 
 	AbstractExtendedDeviceINode inode;
 
 	@Before
-	public void setUp() {
+	public void setUp()
+	{
 		inode = new ExtendedBlockDeviceINode();
 		inode.setDevice(1);
 		inode.setNlink(2);
@@ -43,40 +45,46 @@ public class AbsExtendedDeviceINodeTest {
 	}
 
 	@Test
-	public void devicePropertyShouldWorkAsExpected() {
+	public void devicePropertyShouldWorkAsExpected()
+	{
 		assertEquals(1, inode.getDevice());
 		inode.setDevice(2);
 		assertEquals(2, inode.getDevice());
 	}
 
 	@Test
-	public void nlinkPropertyShouldWorkAsExpected() {
+	public void nlinkPropertyShouldWorkAsExpected()
+	{
 		assertEquals(2, inode.getNlink());
 		inode.setNlink(3);
 		assertEquals(3, inode.getNlink());
 	}
 
 	@Test
-	public void xattrIndexPropertyShouldWorkAsExpected() {
+	public void xattrIndexPropertyShouldWorkAsExpected()
+	{
 		assertEquals(3, inode.getXattrIndex());
 		inode.setXattrIndex(4);
 		assertEquals(4, inode.getXattrIndex());
 	}
 
 	@Test
-	public void isXattrPresentShouldReturnTrueIfPresent() {
+	public void isXattrPresentShouldReturnTrueIfPresent()
+	{
 		assertTrue(inode.isXattrPresent());
 		inode.setXattrIndex(-1);
 		assertFalse(inode.isXattrPresent());
 	}
 
 	@Test
-	public void getChildSerializedSizeShouldReturnCorrectValue() {
+	public void getChildSerializedSizeShouldReturnCorrectValue()
+	{
 		assertEquals(12, inode.getChildSerializedSize());
 	}
 
 	@Test
-	public void writeDataAndReadDataShouldBeReflexive() throws IOException {
+	public void writeDataAndReadDataShouldBeReflexive() throws IOException
+	{
 		byte[] data = INodeTestUtils.serializeINode(inode);
 		INode dest = INodeTestUtils.deserializeINode(data);
 
@@ -89,7 +97,8 @@ public class AbsExtendedDeviceINodeTest {
 	}
 
 	@Test
-	public void toStringShouldNotFail() {
+	public void toStringShouldNotFail()
+	{
 		System.out.println(inode.toString());
 	}
 }

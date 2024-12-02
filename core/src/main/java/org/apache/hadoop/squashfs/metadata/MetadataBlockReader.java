@@ -26,37 +26,44 @@ import org.apache.hadoop.squashfs.superblock.SuperBlock;
 import java.io.Closeable;
 import java.io.IOException;
 
-public interface MetadataBlockReader extends Closeable {
+public interface MetadataBlockReader extends Closeable
+{
 
-  public MetadataBlock read(int tag, long fileOffset)
-      throws IOException, SquashFsException;
+	public MetadataBlock read(int tag, long fileOffset)
+			throws IOException, SquashFsException;
 
-  public SuperBlock getSuperBlock(int tag);
+	public SuperBlock getSuperBlock(int tag);
 
-  public default MetadataReader reader(MetadataReference metaRef)
-      throws IOException, SquashFsException {
-    return MetadataBlock.reader(this, metaRef);
-  }
+	public default MetadataReader reader(MetadataReference metaRef)
+			throws IOException, SquashFsException
+	{
+		return MetadataBlock.reader(this, metaRef);
+	}
 
-  public default MetadataReader rawReader(int tag, long blockLocation,
-      short offset)
-      throws IOException, SquashFsException {
-    return reader(MetadataReference.raw(tag, blockLocation, offset));
-  }
+	public default MetadataReader rawReader(int tag, long blockLocation,
+			short offset) throws IOException, SquashFsException
+	{
+		return reader(MetadataReference.raw(tag, blockLocation, offset));
+	}
 
-  public default MetadataReader inodeReader(int tag, long inodeRef)
-      throws IOException, SquashFsException {
-    return reader(MetadataReference.inode(tag, getSuperBlock(tag), inodeRef));
-  }
+	public default MetadataReader inodeReader(int tag, long inodeRef)
+			throws IOException, SquashFsException
+	{
+		return reader(
+				MetadataReference.inode(tag, getSuperBlock(tag), inodeRef));
+	}
 
-  public default MetadataReader inodeReader(int tag, DirectoryEntry dirEnt)
-      throws IOException, SquashFsException {
-    return reader(MetadataReference.inode(tag, getSuperBlock(tag), dirEnt));
-  }
+	public default MetadataReader inodeReader(int tag, DirectoryEntry dirEnt)
+			throws IOException, SquashFsException
+	{
+		return reader(MetadataReference.inode(tag, getSuperBlock(tag), dirEnt));
+	}
 
-  public default MetadataReader directoryReader(int tag, DirectoryINode dir)
-      throws IOException, SquashFsException {
-    return reader(MetadataReference.directory(tag, getSuperBlock(tag), dir));
-  }
+	public default MetadataReader directoryReader(int tag, DirectoryINode dir)
+			throws IOException, SquashFsException
+	{
+		return reader(
+				MetadataReference.directory(tag, getSuperBlock(tag), dir));
+	}
 
 }

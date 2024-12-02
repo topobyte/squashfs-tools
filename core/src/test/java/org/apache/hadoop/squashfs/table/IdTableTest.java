@@ -38,49 +38,58 @@ import org.apache.hadoop.squashfs.metadata.MetadataBlockRef;
 import org.apache.hadoop.squashfs.metadata.MetadataWriter;
 import org.apache.hadoop.squashfs.superblock.SuperBlock;
 
-public class IdTableTest {
+public class IdTableTest
+{
 
 	List<MetadataBlockRef> entries;
 
 	@Test
-	public void readShouldHandleReadingEmptyTable() throws Exception {
+	public void readShouldHandleReadingEmptyTable() throws Exception
+	{
 		verify(0);
 	}
 
 	@Test
-	public void readShouldHandleReadingSingleEntry() throws Exception {
+	public void readShouldHandleReadingSingleEntry() throws Exception
+	{
 		verify(1);
 	}
 
 	@Test
-	public void readShouldHandleReadingSinglePage() throws Exception {
+	public void readShouldHandleReadingSinglePage() throws Exception
+	{
 		verify(2048);
 	}
 
 	@Test
-	public void readShouldHandleReadingFullTable() throws Exception {
+	public void readShouldHandleReadingFullTable() throws Exception
+	{
 		verify(65535);
 	}
 
 	@Test(expected = SquashFsException.class)
-	public void idFromIndexShouldFailOnOutOfRangeIndex() throws Exception {
+	public void idFromIndexShouldFailOnOutOfRangeIndex() throws Exception
+	{
 		IdTable table = verify(100);
 		table.idFromIndex((short) 100);
 	}
 
 	@Test
-	public void toStringShouldNotFail() throws Exception {
+	public void toStringShouldNotFail() throws Exception
+	{
 		IdTable table = verify(10);
 		System.out.println(table.toString());
 	}
 
 	@Test(expected = SquashFsException.class)
-	public void indexFromIdShouldFailOnUnknownValue() throws Exception {
+	public void indexFromIdShouldFailOnUnknownValue() throws Exception
+	{
 		IdTable table = verify(100);
 		table.indexFromId(100_100);
 	}
 
-	IdTable verify(int count) throws Exception {
+	IdTable verify(int count) throws Exception
+	{
 		byte[] tableData;
 
 		List<MetadataBlockRef> refs;
@@ -102,7 +111,8 @@ public class IdTableTest {
 				sb.writeData(dos);
 				for (MetadataBlockRef ref : refs) {
 					byte[] buf = new byte[8];
-					ByteBuffer.wrap(buf).order(ByteOrder.LITTLE_ENDIAN).putLong(ref.getLocation());
+					ByteBuffer.wrap(buf).order(ByteOrder.LITTLE_ENDIAN)
+							.putLong(ref.getLocation());
 					dos.write(buf);
 				}
 			}
@@ -111,7 +121,8 @@ public class IdTableTest {
 
 		int tag = 0;
 		TableReader tr = new MemoryTableReader(sb, tableData);
-		MetadataBlockReader mbr = new MemoryMetadataBlockReader(tag, sb, metadata);
+		MetadataBlockReader mbr = new MemoryMetadataBlockReader(tag, sb,
+				metadata);
 
 		IdTable idt = IdTable.read(tag, tr, mbr);
 		assertEquals(count, idt.getIdCount());
@@ -122,7 +133,9 @@ public class IdTableTest {
 		return idt;
 	}
 
-	List<MetadataBlockRef> createEntries(int count, DataOutput out) throws IOException {
+	List<MetadataBlockRef> createEntries(int count, DataOutput out)
+			throws IOException
+	{
 		List<MetadataBlockRef> refs = new ArrayList<>();
 
 		MetadataWriter writer = new MetadataWriter();

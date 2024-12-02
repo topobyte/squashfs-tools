@@ -18,37 +18,44 @@
 
 package org.apache.hadoop.squashfs.inode;
 
-public class INodeRef {
+public class INodeRef
+{
 
-  private final int location;
-  private final short offset;
+	private final int location;
+	private final short offset;
 
-  public INodeRef(long value) {
-    this.location = (int) ((value >> 16) & 0xffffffffL);
-    this.offset = (short) (value & 0xffff);
-  }
+	public INodeRef(long value)
+	{
+		this.location = (int) ((value >> 16) & 0xffffffffL);
+		this.offset = (short) (value & 0xffff);
+	}
 
-  public INodeRef(int location, short offset) {
-    this.location = location;
-    this.offset = offset;
-  }
+	public INodeRef(int location, short offset)
+	{
+		this.location = location;
+		this.offset = offset;
+	}
 
-  public int getLocation() {
-    return location;
-  }
+	public int getLocation()
+	{
+		return location;
+	}
 
-  public short getOffset() {
-    return offset;
-  }
+	public short getOffset()
+	{
+		return offset;
+	}
 
-  public long getRaw() {
-    return ((((long) location) & 0xffffffffL) << 16) |
-        (((long) (offset)) & 0xffffL);
-  }
+	public long getRaw()
+	{
+		return ((((long) location) & 0xffffffffL) << 16)
+				| (((long) (offset)) & 0xffffL);
+	}
 
-  @Override
-  public String toString() {
-    return String.format("{ location=%d, offset=%d }", location, offset);
-  }
+	@Override
+	public String toString()
+	{
+		return String.format("{ location=%d, offset=%d }", location, offset);
+	}
 
 }

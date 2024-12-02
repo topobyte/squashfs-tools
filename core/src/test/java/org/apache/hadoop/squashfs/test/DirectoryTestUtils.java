@@ -36,9 +36,12 @@ import org.apache.hadoop.squashfs.superblock.CompressionId;
 import org.apache.hadoop.squashfs.superblock.SuperBlock;
 import org.apache.hadoop.squashfs.util.BinUtils;
 
-public class DirectoryTestUtils {
+public class DirectoryTestUtils
+{
 
-	public static byte[] serializeDirectoryBuilder(DirectoryBuilder db) throws IOException {
+	public static byte[] serializeDirectoryBuilder(DirectoryBuilder db)
+			throws IOException
+	{
 		MetadataWriter writer = new MetadataWriter();
 		db.write(writer);
 
@@ -50,14 +53,17 @@ public class DirectoryTestUtils {
 			data = bos.toByteArray();
 
 			StringBuilder buf = new StringBuilder();
-			BinUtils.dumpBin(buf, 15, "serialized-data", data, 0, Math.min(256, data.length), 16, 2);
+			BinUtils.dumpBin(buf, 15, "serialized-data", data, 0,
+					Math.min(256, data.length), 16, 2);
 			System.out.println(buf.toString());
 		}
 
 		return data;
 	}
 
-	public static byte[] serializeDirectoryElement(DirectoryElement entry) throws IOException {
+	public static byte[] serializeDirectoryElement(DirectoryElement entry)
+			throws IOException
+	{
 		MetadataWriter writer = new MetadataWriter();
 		entry.writeData(writer);
 
@@ -69,14 +75,17 @@ public class DirectoryTestUtils {
 			data = bos.toByteArray();
 
 			StringBuilder buf = new StringBuilder();
-			BinUtils.dumpBin(buf, 15, "serialized-data", data, 0, Math.min(256, data.length), 16, 2);
+			BinUtils.dumpBin(buf, 15, "serialized-data", data, 0,
+					Math.min(256, data.length), 16, 2);
 			System.out.println(buf.toString());
 		}
 
 		return data;
 	}
 
-	public static DirectoryHeader deserializeDirectoryHeader(byte[] data) throws IOException {
+	public static DirectoryHeader deserializeDirectoryHeader(byte[] data)
+			throws IOException
+	{
 		SuperBlock sb = new SuperBlock();
 		sb.setCompressionId(CompressionId.ZLIB);
 		sb.setBlockSize(131072);
@@ -85,7 +94,8 @@ public class DirectoryTestUtils {
 		sb.setVersionMinor((short) 0);
 
 		int tag = 0;
-		try (MetadataBlockReader mbr = new MemoryMetadataBlockReader(tag, sb, data)) {
+		try (MetadataBlockReader mbr = new MemoryMetadataBlockReader(tag, sb,
+				data)) {
 			MetadataReader reader = mbr.rawReader(tag, 0L, (short) 0);
 			DirectoryHeader hdr = new DirectoryHeader();
 			hdr.readData(reader);
@@ -93,7 +103,9 @@ public class DirectoryTestUtils {
 		}
 	}
 
-	public static DirectoryEntry deserializeDirectoryEntry(DirectoryHeader header, byte[] data) throws IOException {
+	public static DirectoryEntry deserializeDirectoryEntry(
+			DirectoryHeader header, byte[] data) throws IOException
+	{
 		SuperBlock sb = new SuperBlock();
 		sb.setCompressionId(CompressionId.ZLIB);
 		sb.setBlockSize(131072);
@@ -102,7 +114,8 @@ public class DirectoryTestUtils {
 		sb.setVersionMinor((short) 0);
 
 		int tag = 0;
-		try (MetadataBlockReader mbr = new MemoryMetadataBlockReader(tag, sb, data)) {
+		try (MetadataBlockReader mbr = new MemoryMetadataBlockReader(tag, sb,
+				data)) {
 			MetadataReader reader = mbr.rawReader(tag, 0L, (short) 0);
 			DirectoryEntry entry = new DirectoryEntry();
 			entry.readData(header, reader);
@@ -110,7 +123,9 @@ public class DirectoryTestUtils {
 		}
 	}
 
-	public static List<DirectoryElement> deserializeDirectory(byte[] data) throws IOException {
+	public static List<DirectoryElement> deserializeDirectory(byte[] data)
+			throws IOException
+	{
 		List<DirectoryElement> results = new ArrayList<>();
 
 		SuperBlock sb = new SuperBlock();
@@ -121,7 +136,8 @@ public class DirectoryTestUtils {
 		sb.setVersionMinor((short) 0);
 
 		int tag = 0;
-		try (MetadataBlockReader mbr = new MemoryMetadataBlockReader(tag, sb, data)) {
+		try (MetadataBlockReader mbr = new MemoryMetadataBlockReader(tag, sb,
+				data)) {
 			MetadataReader reader = mbr.rawReader(tag, 0L, (short) 0);
 			reader.isEof();
 			while (reader.available() > 0) {

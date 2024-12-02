@@ -24,10 +24,11 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-public interface TableReader extends Closeable {
+public interface TableReader extends Closeable
+{
 
-  public ByteBuffer read(long fileOffset, int length) throws IOException;
+	public ByteBuffer read(long fileOffset, int length) throws IOException;
 
-  public SuperBlock getSuperBlock();
+	public SuperBlock getSuperBlock();
 
 }

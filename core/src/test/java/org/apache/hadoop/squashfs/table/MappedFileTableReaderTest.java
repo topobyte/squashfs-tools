@@ -34,7 +34,8 @@ import org.junit.rules.TemporaryFolder;
 import org.apache.hadoop.squashfs.io.MappedFile;
 import org.apache.hadoop.squashfs.superblock.SuperBlock;
 
-public class MappedFileTableReaderTest {
+public class MappedFileTableReaderTest
+{
 
 	@Rule
 	public TemporaryFolder temp = new TemporaryFolder();
@@ -47,7 +48,8 @@ public class MappedFileTableReaderTest {
 	MappedFileTableReader reader;
 
 	@Before
-	public void setUp() throws Exception {
+	public void setUp() throws Exception
+	{
 		tempFile = temp.newFile();
 		sb = new SuperBlock();
 		try (RandomAccessFile raf = new RandomAccessFile(tempFile, "rw")) {
@@ -66,33 +68,41 @@ public class MappedFileTableReaderTest {
 	}
 
 	@Test
-	public void readShouldExposeByteBuffer() throws Exception {
+	public void readShouldExposeByteBuffer() throws Exception
+	{
 		ByteBuffer bb = reader.read(SuperBlock.SIZE, data.length);
 		for (int i = 0; i < data.length; i++) {
-			assertEquals(String.format("Wrong value for element %d", i), (byte) (i & 0xff), bb.get());
+			assertEquals(String.format("Wrong value for element %d", i),
+					(byte) (i & 0xff), bb.get());
 		}
 	}
 
 	@Test
-	public void readShouldExposeByteBufferAtOffset() throws Exception {
+	public void readShouldExposeByteBufferAtOffset() throws Exception
+	{
 		ByteBuffer bb = reader.read(SuperBlock.SIZE + 1L, data.length - 1);
 		for (int i = 0; i < data.length - 1; i++) {
-			assertEquals(String.format("Wrong value for element %d", i), (byte) ((i + 1) & 0xff), bb.get());
+			assertEquals(String.format("Wrong value for element %d", i),
+					(byte) ((i + 1) & 0xff), bb.get());
 		}
 	}
 
 	@Test(expected = EOFException.class)
-	public void readShouldThrowExceptionOnEof() throws Exception {
+	public void readShouldThrowExceptionOnEof() throws Exception
+	{
 		reader.read(SuperBlock.SIZE + 1023L, 2);
 	}
 
 	@Test
-	public void getSuperBlockShouldReturnConstructedInstance() {
-		assertEquals(sb.getModificationTime(), reader.getSuperBlock().getModificationTime());
+	public void getSuperBlockShouldReturnConstructedInstance()
+	{
+		assertEquals(sb.getModificationTime(),
+				reader.getSuperBlock().getModificationTime());
 	}
 
 	@Test
-	public void getSuperBlockShouldReturnProvidedInstance() {
+	public void getSuperBlockShouldReturnProvidedInstance()
+	{
 		reader = new MappedFileTableReader(mmap, sb);
 		assertSame(sb, reader.getSuperBlock());
 	}

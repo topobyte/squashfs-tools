@@ -24,57 +24,67 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-public class FragmentTableEntryTest {
+public class FragmentTableEntryTest
+{
 
 	@Test
-	public void isCompressedShouldReturnTrueIfEntryIsCompressed() {
+	public void isCompressedShouldReturnTrueIfEntryIsCompressed()
+	{
 		FragmentTableEntry entry = new FragmentTableEntry(1L, 2, true);
 		assertTrue(entry.isCompressed());
 	}
 
 	@Test
-	public void isCompressedShouldReturnFalseIfEntryIsNotCompressed() {
+	public void isCompressedShouldReturnFalseIfEntryIsNotCompressed()
+	{
 		FragmentTableEntry entry = new FragmentTableEntry(1L, 2, false);
 		assertFalse(entry.isCompressed());
 	}
 
 	@Test
-	public void getStartShouldReturnStartValue() {
+	public void getStartShouldReturnStartValue()
+	{
 		FragmentTableEntry entry = new FragmentTableEntry(1L, 2, true);
 		assertEquals(1L, entry.getStart());
 	}
 
 	@Test
-	public void getSizeShouldReturnMaskedSizeIfNotCompressed() {
+	public void getSizeShouldReturnMaskedSizeIfNotCompressed()
+	{
 		FragmentTableEntry entry = new FragmentTableEntry(1L, 2, false);
 		assertEquals(0x1000002, entry.getSize());
 	}
 
 	@Test
-	public void getSizeShouldReturnSizeIfCompressed() {
+	public void getSizeShouldReturnSizeIfCompressed()
+	{
 		FragmentTableEntry entry = new FragmentTableEntry(1L, 2, true);
 		assertEquals(2, entry.getSize());
 	}
 
 	@Test
-	public void getDiskSizeShouldReturnSizeIfNotCompressed() {
+	public void getDiskSizeShouldReturnSizeIfNotCompressed()
+	{
 		FragmentTableEntry entry = new FragmentTableEntry(1L, 2, false);
 		assertEquals(2, entry.getDiskSize());
 	}
 
 	@Test
-	public void getDiskSizeShouldReturnSizeIfCompressed() {
+	public void getDiskSizeShouldReturnSizeIfCompressed()
+	{
 		FragmentTableEntry entry = new FragmentTableEntry(1L, 2, true);
 		assertEquals(2, entry.getDiskSize());
 	}
 
 	@Test
-	public void toStringShouldNotFailWhenCompressed() {
+	public void toStringShouldNotFailWhenCompressed()
+	{
 		System.out.println(new FragmentTableEntry(1L, 2, true).toString());
 	}
 
 	@Test
-	public void toStringShouldNotFailWhenNotCompressed() {
+	public void toStringShouldNotFailWhenNotCompressed()
+	{
 		System.out.println(new FragmentTableEntry(1L, 2, false).toString());
 	}
 

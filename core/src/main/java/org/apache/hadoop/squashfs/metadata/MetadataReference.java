@@ -27,117 +27,128 @@ import static org.apache.hadoop.squashfs.util.BinUtils.DumpOptions.DECIMAL;
 import static org.apache.hadoop.squashfs.util.BinUtils.DumpOptions.UNSIGNED;
 import static org.apache.hadoop.squashfs.util.BinUtils.dumpBin;
 
-public class MetadataReference {
+public class MetadataReference
+{
 
-  private final int tag;
-  private final long blockLocation;
-  private final short offset;
-  private final int maxLength;
+	private final int tag;
+	private final long blockLocation;
+	private final short offset;
+	private final int maxLength;
 
-  MetadataReference(int tag, long blockLocation, short offset, int maxLength) {
-    this.tag = tag;
-    this.blockLocation = blockLocation;
-    this.offset = offset;
-    this.maxLength = maxLength;
-  }
+	MetadataReference(int tag, long blockLocation, short offset, int maxLength)
+	{
+		this.tag = tag;
+		this.blockLocation = blockLocation;
+		this.offset = offset;
+		this.maxLength = maxLength;
+	}
 
-  public static MetadataReference inode(int tag, SuperBlock sb, long inodeRef)
-      throws SquashFsException {
-    long inodeBlockRel = (inodeRef & 0x0000ffffffff0000L) >> 16;
-    long inodeBlock = sb.getInodeTableStart() + inodeBlockRel;
+	public static MetadataReference inode(int tag, SuperBlock sb, long inodeRef)
+			throws SquashFsException
+	{
+		long inodeBlockRel = (inodeRef & 0x0000ffffffff0000L) >> 16;
+		long inodeBlock = sb.getInodeTableStart() + inodeBlockRel;
 
-    short inodeOffset = (short) (inodeRef & 0x7fff);
-    if (inodeOffset >= MetadataBlock.MAX_SIZE) {
-      throw new SquashFsException(
-          String.format("Invalid inode reference with offset %d (max = %d",
-              inodeOffset, MetadataBlock.MAX_SIZE - 1));
-    }
+		short inodeOffset = (short) (inodeRef & 0x7fff);
+		if (inodeOffset >= MetadataBlock.MAX_SIZE) {
+			throw new SquashFsException(String.format(
+					"Invalid inode reference with offset %d (max = %d",
+					inodeOffset, MetadataBlock.MAX_SIZE - 1));
+		}
 
-    return new MetadataReference(tag, inodeBlock, inodeOffset,
-        Integer.MAX_VALUE);
-  }
+		return new MetadataReference(tag, inodeBlock, inodeOffset,
+				Integer.MAX_VALUE);
+	}
 
-  public static MetadataReference inode(int tag, SuperBlock sb,
-      DirectoryEntry dirEnt)
-      throws SquashFsException {
+	public static MetadataReference inode(int tag, SuperBlock sb,
+			DirectoryEntry dirEnt) throws SquashFsException
+	{
 
-    long inodeBlockRel = (dirEnt.getHeader().getStartBlock() & 0xffffffffL);
-    return inode(tag, sb, inodeBlockRel, dirEnt.getOffset());
-  }
+		long inodeBlockRel = (dirEnt.getHeader().getStartBlock() & 0xffffffffL);
+		return inode(tag, sb, inodeBlockRel, dirEnt.getOffset());
+	}
 
-  private static MetadataReference inode(int tag, SuperBlock sb,
-      long inodeBlockRel, short inodeOffset)
-      throws SquashFsException {
+	private static MetadataReference inode(int tag, SuperBlock sb,
+			long inodeBlockRel, short inodeOffset) throws SquashFsException
+	{
 
-    long inodeBlock = sb.getInodeTableStart() + inodeBlockRel;
-    inodeOffset = (short) (inodeOffset & 0x7fff);
+		long inodeBlock = sb.getInodeTableStart() + inodeBlockRel;
+		inodeOffset = (short) (inodeOffset & 0x7fff);
 
-    if (inodeOffset >= MetadataBlock.MAX_SIZE) {
-      throw new SquashFsException(
-          String.format("Invalid inode reference with offset %d (max = %d",
-              inodeOffset, MetadataBlock.MAX_SIZE - 1));
-    }
+		if (inodeOffset >= MetadataBlock.MAX_SIZE) {
+			throw new SquashFsException(String.format(
+					"Invalid inode reference with offset %d (max = %d",
+					inodeOffset, MetadataBlock.MAX_SIZE - 1));
+		}
 
-    return new MetadataReference(tag, inodeBlock, inodeOffset,
-        Integer.MAX_VALUE);
-  }
+		return new MetadataReference(tag, inodeBlock, inodeOffset,
+				Integer.MAX_VALUE);
+	}
 
-  public static MetadataReference raw(int tag, long blockLocation, short offset)
-      throws SquashFsException {
+	public static MetadataReference raw(int tag, long blockLocation,
+			short offset) throws SquashFsException
+	{
 
-    offset = (short) (offset & 0x7fff);
+		offset = (short) (offset & 0x7fff);
 
-    if (offset >= MetadataBlock.MAX_SIZE) {
-      throw new SquashFsException(
-          String.format("Invalid raw reference with offset %d (max = %d",
-              offset, MetadataBlock.MAX_SIZE - 1));
-    }
+		if (offset >= MetadataBlock.MAX_SIZE) {
+			throw new SquashFsException(String.format(
+					"Invalid raw reference with offset %d (max = %d", offset,
+					MetadataBlock.MAX_SIZE - 1));
+		}
 
-    return new MetadataReference(tag, blockLocation, offset, Integer.MAX_VALUE);
-  }
+		return new MetadataReference(tag, blockLocation, offset,
+				Integer.MAX_VALUE);
+	}
 
-  public static MetadataReference directory(int tag, SuperBlock sb,
-      DirectoryINode dir) throws SquashFsException {
-    long dirBlockRel = dir.getStartBlock() & 0xffffffffL;
-    long dirBlock = sb.getDirectoryTableStart() + dirBlockRel;
-    short dirOffset = (short) (dir.getOffset() & 0x7fff);
+	public static MetadataReference directory(int tag, SuperBlock sb,
+			DirectoryINode dir) throws SquashFsException
+	{
+		long dirBlockRel = dir.getStartBlock() & 0xffffffffL;
+		long dirBlock = sb.getDirectoryTableStart() + dirBlockRel;
+		short dirOffset = (short) (dir.getOffset() & 0x7fff);
 
-    if (dirOffset >= MetadataBlock.MAX_SIZE) {
-      throw new SquashFsException(String
-          .format("Invalid directory table reference with offset %d (max = %d",
-              dirOffset, MetadataBlock.MAX_SIZE - 1));
-    }
+		if (dirOffset >= MetadataBlock.MAX_SIZE) {
+			throw new SquashFsException(String.format(
+					"Invalid directory table reference with offset %d (max = %d",
+					dirOffset, MetadataBlock.MAX_SIZE - 1));
+		}
 
-    return new MetadataReference(tag, dirBlock, dirOffset,
-        dir.getFileSize() - 3);
-  }
+		return new MetadataReference(tag, dirBlock, dirOffset,
+				dir.getFileSize() - 3);
+	}
 
-  public int getTag() {
-    return tag;
-  }
+	public int getTag()
+	{
+		return tag;
+	}
 
-  public long getBlockLocation() {
-    return blockLocation;
-  }
+	public long getBlockLocation()
+	{
+		return blockLocation;
+	}
 
-  public short getOffset() {
-    return offset;
-  }
+	public short getOffset()
+	{
+		return offset;
+	}
 
-  public int getMaxLength() {
-    return maxLength;
-  }
+	public int getMaxLength()
+	{
+		return maxLength;
+	}
 
-  @Override
-  public String toString() {
-    StringBuilder buf = new StringBuilder();
-    buf.append(String.format("metadata-reference: {%n"));
-    int width = 22;
-    dumpBin(buf, width, "tag", tag, DECIMAL, UNSIGNED);
-    dumpBin(buf, width, "blockLocation", blockLocation, DECIMAL, UNSIGNED);
-    dumpBin(buf, width, "offset", offset, DECIMAL, UNSIGNED);
-    dumpBin(buf, width, "maxLength", maxLength, DECIMAL, UNSIGNED);
-    buf.append("}");
-    return buf.toString();
-  }
+	@Override
+	public String toString()
+	{
+		StringBuilder buf = new StringBuilder();
+		buf.append(String.format("metadata-reference: {%n"));
+		int width = 22;
+		dumpBin(buf, width, "tag", tag, DECIMAL, UNSIGNED);
+		dumpBin(buf, width, "blockLocation", blockLocation, DECIMAL, UNSIGNED);
+		dumpBin(buf, width, "offset", offset, DECIMAL, UNSIGNED);
+		dumpBin(buf, width, "maxLength", maxLength, DECIMAL, UNSIGNED);
+		buf.append("}");
+		return buf.toString();
+	}
 }

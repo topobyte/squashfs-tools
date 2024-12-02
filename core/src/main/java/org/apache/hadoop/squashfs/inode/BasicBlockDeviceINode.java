@@ -19,39 +19,44 @@
 package org.apache.hadoop.squashfs.inode;
 
 public class BasicBlockDeviceINode extends AbstractBasicDeviceINode
-    implements BlockDeviceINode {
+		implements BlockDeviceINode
+{
 
-  static BlockDeviceINode simplify(BlockDeviceINode src) {
-    if (src instanceof BasicBlockDeviceINode) {
-      return src;
-    }
+	static BlockDeviceINode simplify(BlockDeviceINode src)
+	{
+		if (src instanceof BasicBlockDeviceINode) {
+			return src;
+		}
 
-    if (src.isXattrPresent()) {
-      return src;
-    }
+		if (src.isXattrPresent()) {
+			return src;
+		}
 
-    BasicBlockDeviceINode dest = new BasicBlockDeviceINode();
-    src.copyTo(dest);
+		BasicBlockDeviceINode dest = new BasicBlockDeviceINode();
+		src.copyTo(dest);
 
-    dest.setNlink(src.getNlink());
-    dest.setDevice(src.getDevice());
+		dest.setNlink(src.getNlink());
+		dest.setDevice(src.getDevice());
 
-    return dest;
-  }
+		return dest;
+	}
 
-  @Override
-  protected String getName() {
-    return "basic-block-dev-inode";
-  }
+	@Override
+	protected String getName()
+	{
+		return "basic-block-dev-inode";
+	}
 
-  @Override
-  public INodeType getInodeType() {
-    return INodeType.BASIC_BLOCK_DEVICE;
-  }
+	@Override
+	public INodeType getInodeType()
+	{
+		return INodeType.BASIC_BLOCK_DEVICE;
+	}
 
-  @Override
-  public BlockDeviceINode simplify() {
-    return this;
-  }
+	@Override
+	public BlockDeviceINode simplify()
+	{
+		return this;
+	}
 
 }

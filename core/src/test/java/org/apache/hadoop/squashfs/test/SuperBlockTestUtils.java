@@ -26,9 +26,11 @@ import java.io.IOException;
 
 import org.apache.hadoop.squashfs.superblock.SuperBlock;
 
-public class SuperBlockTestUtils {
+public class SuperBlockTestUtils
+{
 
-	public static byte[] serializeSuperBlock(SuperBlock sb) throws IOException {
+	public static byte[] serializeSuperBlock(SuperBlock sb) throws IOException
+	{
 		try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
 			try (DataOutputStream dos = new DataOutputStream(bos)) {
 				sb.writeData(dos);
@@ -37,7 +39,9 @@ public class SuperBlockTestUtils {
 		}
 	}
 
-	public static SuperBlock deserializeSuperBlock(byte[] data) throws IOException {
+	public static SuperBlock deserializeSuperBlock(byte[] data)
+			throws IOException
+	{
 		SuperBlock sb = new SuperBlock();
 		try (ByteArrayInputStream bis = new ByteArrayInputStream(data)) {
 			try (DataInputStream dis = new DataInputStream(bis)) {

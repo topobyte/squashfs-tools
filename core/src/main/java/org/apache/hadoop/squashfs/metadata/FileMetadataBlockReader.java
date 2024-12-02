@@ -25,61 +25,66 @@ import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 
-public class FileMetadataBlockReader implements MetadataBlockReader {
+public class FileMetadataBlockReader implements MetadataBlockReader
+{
 
-  private final int tag;
-  private final RandomAccessFile raf;
-  private final SuperBlock sb;
-  private final boolean shouldClose;
+	private final int tag;
+	private final RandomAccessFile raf;
+	private final SuperBlock sb;
+	private final boolean shouldClose;
 
-  public FileMetadataBlockReader(int tag, File file)
-      throws IOException, SquashFsException {
-    this.tag = tag;
-    this.raf = new RandomAccessFile(file, "r");
-    this.sb = SuperBlock.read(raf);
-    this.shouldClose = true;
-  }
+	public FileMetadataBlockReader(int tag, File file)
+			throws IOException, SquashFsException
+	{
+		this.tag = tag;
+		this.raf = new RandomAccessFile(file, "r");
+		this.sb = SuperBlock.read(raf);
+		this.shouldClose = true;
+	}
 
-  public FileMetadataBlockReader(
-      int tag,
-      RandomAccessFile raf,
-      SuperBlock sb,
-      boolean shouldClose) throws SquashFsException, IOException {
-    this.tag = tag;
-    this.raf = raf;
-    this.sb = sb;
-    this.shouldClose = shouldClose;
-  }
+	public FileMetadataBlockReader(int tag, RandomAccessFile raf, SuperBlock sb,
+			boolean shouldClose) throws SquashFsException, IOException
+	{
+		this.tag = tag;
+		this.raf = raf;
+		this.sb = sb;
+		this.shouldClose = shouldClose;
+	}
 
-  @Override
-  public SuperBlock getSuperBlock(int tag) {
-    if (this.tag != tag) {
-      throw new IllegalArgumentException(String.format("Invalid tag: %d", tag));
-    }
-    return sb;
-  }
+	@Override
+	public SuperBlock getSuperBlock(int tag)
+	{
+		if (this.tag != tag) {
+			throw new IllegalArgumentException(
+					String.format("Invalid tag: %d", tag));
+		}
+		return sb;
+	}
 
-  @Override
-  public MetadataBlock read(int tag, long fileOffset)
-      throws IOException, SquashFsException {
-    if (this.tag != tag) {
-      throw new IllegalArgumentException(String.format("Invalid tag: %d", tag));
-    }
-    long prevOffset = raf.getFilePointer();
-    try {
-      raf.seek(fileOffset);
-      MetadataBlock block = MetadataBlock.read(raf, sb);
-      return block;
-    } finally {
-      raf.seek(prevOffset);
-    }
-  }
+	@Override
+	public MetadataBlock read(int tag, long fileOffset)
+			throws IOException, SquashFsException
+	{
+		if (this.tag != tag) {
+			throw new IllegalArgumentException(
+					String.format("Invalid tag: %d", tag));
+		}
+		long prevOffset = raf.getFilePointer();
+		try {
+			raf.seek(fileOffset);
+			MetadataBlock block = MetadataBlock.read(raf, sb);
+			return block;
+		} finally {
+			raf.seek(prevOffset);
+		}
+	}
 
-  @Override
-  public void close() throws IOException {
-    if (shouldClose) {
-      raf.close();
-    }
-  }
+	@Override
+	public void close() throws IOException
+	{
+		if (shouldClose) {
+			raf.close();
+		}
+	}
 
 }

@@ -31,12 +31,14 @@ import org.junit.Test;
 
 import org.apache.hadoop.squashfs.test.INodeTestUtils;
 
-public class ExtendedFileINodeTest {
+public class ExtendedFileINodeTest
+{
 
 	ExtendedFileINode inode;
 
 	@Before
-	public void setUp() {
+	public void setUp()
+	{
 		inode = new ExtendedFileINode();
 		inode.setBlocksStart(1L);
 		inode.setFragmentBlockIndex(2);
@@ -49,87 +51,101 @@ public class ExtendedFileINodeTest {
 	}
 
 	@Test
-	public void getNameShouldReturnCorrectValue() {
+	public void getNameShouldReturnCorrectValue()
+	{
 		assertEquals("extended-file-inode", inode.getName());
 	}
 
 	@Test
-	public void getInodeTypeShouldReturnCorrectValue() {
+	public void getInodeTypeShouldReturnCorrectValue()
+	{
 		assertSame(INodeType.EXTENDED_FILE, inode.getInodeType());
 	}
 
 	@Test
-	public void blocksStartPropertyShouldWorkAsExpected() {
+	public void blocksStartPropertyShouldWorkAsExpected()
+	{
 		assertEquals(1L, inode.getBlocksStart());
 		inode.setBlocksStart(2L);
 		assertEquals(2L, inode.getBlocksStart());
 	}
 
 	@Test
-	public void fragmentBlockIndexPropertyShouldWorkAsExpected() {
+	public void fragmentBlockIndexPropertyShouldWorkAsExpected()
+	{
 		assertEquals(2, inode.getFragmentBlockIndex());
 		inode.setFragmentBlockIndex(3);
 		assertEquals(3, inode.getFragmentBlockIndex());
 	}
 
 	@Test
-	public void isFragmentPresentShouldReturnTrueIfFragmentBlockIndexSet() {
+	public void isFragmentPresentShouldReturnTrueIfFragmentBlockIndexSet()
+	{
 		assertTrue(inode.isFragmentPresent());
 		inode.setFragmentBlockIndex(-1);
 		assertFalse(inode.isFragmentPresent());
 	}
 
 	@Test
-	public void fragmentOffsetPropertyShouldWorkAsExpected() {
+	public void fragmentOffsetPropertyShouldWorkAsExpected()
+	{
 		assertEquals(3, inode.getFragmentOffset());
 		inode.setFragmentOffset(4);
 		assertEquals(4, inode.getFragmentOffset());
 	}
 
 	@Test
-	public void fileSizePropertyShouldWorkAsExpected() {
+	public void fileSizePropertyShouldWorkAsExpected()
+	{
 		assertEquals(131073L, inode.getFileSize());
 		inode.setFileSize(131074L);
 		assertEquals(131074L, inode.getFileSize());
 	}
 
 	@Test
-	public void sparsePropertyShouldWorkAsExpected() {
+	public void sparsePropertyShouldWorkAsExpected()
+	{
 		assertEquals(6L, inode.getSparse());
 		inode.setSparse(7L);
 		assertEquals(7L, inode.getSparse());
 	}
 
 	@Test
-	public void isSparseBlockPresentShouldReturnTrueIfSparseNonZero() {
+	public void isSparseBlockPresentShouldReturnTrueIfSparseNonZero()
+	{
 		assertTrue(inode.isSparseBlockPresent());
 		inode.setSparse(0L);
 		assertFalse(inode.isSparseBlockPresent());
 	}
 
 	@Test
-	public void getChildSerializedSizeShouldReturnCorrectValue() {
+	public void getChildSerializedSizeShouldReturnCorrectValue()
+	{
 		assertEquals(44, inode.getChildSerializedSize());
 		inode.setBlockSizes(new int[] { 1, 2, 3 });
 		assertEquals(52, inode.getChildSerializedSize());
 	}
 
 	@Test
-	public void xattrIndexPropertyShouldWorkAsExpected() {
+	public void xattrIndexPropertyShouldWorkAsExpected()
+	{
 		assertEquals(8, inode.getXattrIndex());
 		inode.setXattrIndex(9);
 		assertEquals(9, inode.getXattrIndex());
 	}
 
 	@Test
-	public void isXattrPresentShouldReturnTrueIfPresent() {
+	public void isXattrPresentShouldReturnTrueIfPresent()
+	{
 		assertTrue(inode.isXattrPresent());
 		inode.setXattrIndex(-1);
 		assertFalse(inode.isXattrPresent());
 	}
 
 	@Test
-	public void writeDataAndReadDataWithFragmentsShouldBeReflexive() throws IOException {
+	public void writeDataAndReadDataWithFragmentsShouldBeReflexive()
+			throws IOException
+	{
 		byte[] data = INodeTestUtils.serializeINode(inode);
 		INode dest = INodeTestUtils.deserializeINode(data);
 
@@ -137,17 +153,21 @@ public class ExtendedFileINodeTest {
 		ExtendedFileINode bDest = (ExtendedFileINode) dest;
 
 		assertEquals("wrong blocks start", 1L, bDest.getBlocksStart());
-		assertEquals("wrong fragment block index", 2, bDest.getFragmentBlockIndex());
+		assertEquals("wrong fragment block index", 2,
+				bDest.getFragmentBlockIndex());
 		assertEquals("wrong fragment offset", 3, bDest.getFragmentOffset());
 		assertEquals("wrong file size", 131073L, bDest.getFileSize());
-		assertArrayEquals("wrong block sizes", new int[] { 5 }, bDest.getBlockSizes());
+		assertArrayEquals("wrong block sizes", new int[] { 5 },
+				bDest.getBlockSizes());
 		assertEquals("wrong sparse", 6L, bDest.getSparse());
 		assertEquals("wrong nlink count", 7, bDest.getNlink());
 		assertEquals("wrong xattr index", 8, bDest.getXattrIndex());
 	}
 
 	@Test
-	public void writeDataAndReadDataWithoutFragmentsShouldBeReflexive() throws IOException {
+	public void writeDataAndReadDataWithoutFragmentsShouldBeReflexive()
+			throws IOException
+	{
 		inode.setFragmentOffset(0);
 		inode.setFragmentBlockIndex(-1);
 		inode.setFileSize(131072L);
@@ -159,17 +179,21 @@ public class ExtendedFileINodeTest {
 		ExtendedFileINode bDest = (ExtendedFileINode) dest;
 
 		assertEquals("wrong blocks start", 1L, bDest.getBlocksStart());
-		assertEquals("wrong fragment block index", -1, bDest.getFragmentBlockIndex());
+		assertEquals("wrong fragment block index", -1,
+				bDest.getFragmentBlockIndex());
 		assertEquals("wrong fragment offset", 0, bDest.getFragmentOffset());
 		assertEquals("wrong file size", 131072L, bDest.getFileSize());
-		assertArrayEquals("wrong block sizes", new int[] { 5 }, bDest.getBlockSizes());
+		assertArrayEquals("wrong block sizes", new int[] { 5 },
+				bDest.getBlockSizes());
 		assertEquals("wrong sparse", 6L, bDest.getSparse());
 		assertEquals("wrong nlink count", 7, bDest.getNlink());
 		assertEquals("wrong xattr index", 8, bDest.getXattrIndex());
 	}
 
 	@Test
-	public void writeDataAndReadDataWithShortEndBlockShouldBeReflexive() throws IOException {
+	public void writeDataAndReadDataWithShortEndBlockShouldBeReflexive()
+			throws IOException
+	{
 		inode.setFragmentOffset(0);
 		inode.setFragmentBlockIndex(-1);
 		inode.setFileSize(131071L);
@@ -181,10 +205,12 @@ public class ExtendedFileINodeTest {
 		ExtendedFileINode bDest = (ExtendedFileINode) dest;
 
 		assertEquals("wrong blocks start", 1L, bDest.getBlocksStart());
-		assertEquals("wrong fragment block index", -1, bDest.getFragmentBlockIndex());
+		assertEquals("wrong fragment block index", -1,
+				bDest.getFragmentBlockIndex());
 		assertEquals("wrong fragment offset", 0, bDest.getFragmentOffset());
 		assertEquals("wrong file size", 131071L, bDest.getFileSize());
-		assertArrayEquals("wrong block sizes", new int[] { 5 }, bDest.getBlockSizes());
+		assertArrayEquals("wrong block sizes", new int[] { 5 },
+				bDest.getBlockSizes());
 		assertEquals("wrong file size", 131071L, bDest.getFileSize());
 		assertEquals("wrong sparse", 6L, bDest.getSparse());
 		assertEquals("wrong nlink count", 7, bDest.getNlink());
@@ -192,7 +218,8 @@ public class ExtendedFileINodeTest {
 	}
 
 	@Test
-	public void simplifyShouldReturnBasicIfExtendedAttributesNotNeeded() {
+	public void simplifyShouldReturnBasicIfExtendedAttributesNotNeeded()
+	{
 		FileINode inode2 = new ExtendedFileINode();
 		inode2.setBlocksStart(1L);
 		inode2.setNlink(1);
@@ -204,15 +231,21 @@ public class ExtendedFileINodeTest {
 		FileINode result = inode2.simplify();
 		assertSame("wrong class", BasicFileINode.class, result.getClass());
 
-		assertEquals("wrong block start", inode2.getBlocksStart(), result.getBlocksStart());
-		assertEquals("wrong fragment block index", inode2.getFragmentBlockIndex(), result.getFragmentBlockIndex());
-		assertEquals("wrong fragment offset", inode2.getFragmentOffset(), result.getFragmentOffset());
-		assertEquals("wrong file size", inode2.getFileSize(), result.getFileSize());
-		assertArrayEquals("wrong block sizes", inode2.getBlockSizes(), result.getBlockSizes());
+		assertEquals("wrong block start", inode2.getBlocksStart(),
+				result.getBlocksStart());
+		assertEquals("wrong fragment block index",
+				inode2.getFragmentBlockIndex(), result.getFragmentBlockIndex());
+		assertEquals("wrong fragment offset", inode2.getFragmentOffset(),
+				result.getFragmentOffset());
+		assertEquals("wrong file size", inode2.getFileSize(),
+				result.getFileSize());
+		assertArrayEquals("wrong block sizes", inode2.getBlockSizes(),
+				result.getBlockSizes());
 	}
 
 	@Test
-	public void simplifyShouldReturnOriginalIfLinkCountGreaterThanOne() {
+	public void simplifyShouldReturnOriginalIfLinkCountGreaterThanOne()
+	{
 		FileINode inode2 = new ExtendedFileINode();
 		inode2.setBlocksStart(1L);
 		inode2.setNlink(2);
@@ -224,7 +257,8 @@ public class ExtendedFileINodeTest {
 	}
 
 	@Test
-	public void simplifyShouldReturnOriginalIfExtendedAttributes() {
+	public void simplifyShouldReturnOriginalIfExtendedAttributes()
+	{
 		FileINode inode2 = new ExtendedFileINode();
 		inode2.setBlocksStart(1L);
 		inode2.setNlink(1);
@@ -237,7 +271,8 @@ public class ExtendedFileINodeTest {
 	}
 
 	@Test
-	public void simplifyShouldReturnOriginalIfSparse() {
+	public void simplifyShouldReturnOriginalIfSparse()
+	{
 		FileINode inode2 = new ExtendedFileINode();
 		inode2.setBlocksStart(1L);
 		inode2.setNlink(1);
@@ -250,7 +285,8 @@ public class ExtendedFileINodeTest {
 	}
 
 	@Test
-	public void simplifyShouldReturnOriginalIfBlocksStartTooLarge() {
+	public void simplifyShouldReturnOriginalIfBlocksStartTooLarge()
+	{
 		FileINode inode2 = new ExtendedFileINode();
 		inode2.setBlocksStart(0x1_0000_0000L);
 		inode2.setNlink(1);
@@ -262,7 +298,8 @@ public class ExtendedFileINodeTest {
 	}
 
 	@Test
-	public void simplifyShouldReturnOriginalIfFileSizeTooLarge() {
+	public void simplifyShouldReturnOriginalIfFileSizeTooLarge()
+	{
 		FileINode inode2 = new ExtendedFileINode();
 		inode2.setBlocksStart(1L);
 		inode2.setNlink(1);
@@ -274,7 +311,8 @@ public class ExtendedFileINodeTest {
 	}
 
 	@Test
-	public void toStringShouldNotFail() {
+	public void toStringShouldNotFail()
+	{
 		System.out.println(inode.toString());
 	}
 

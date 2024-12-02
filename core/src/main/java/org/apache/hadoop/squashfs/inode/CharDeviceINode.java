@@ -18,8 +18,9 @@
 
 package org.apache.hadoop.squashfs.inode;
 
-public interface CharDeviceINode extends DeviceINode {
+public interface CharDeviceINode extends DeviceINode
+{
 
-  public CharDeviceINode simplify();
+	public CharDeviceINode simplify();
 
 }

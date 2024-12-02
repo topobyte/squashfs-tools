@@ -33,97 +33,106 @@ import static org.apache.hadoop.squashfs.util.BinUtils.DumpOptions.DECIMAL;
 import static org.apache.hadoop.squashfs.util.BinUtils.DumpOptions.UNSIGNED;
 import static org.apache.hadoop.squashfs.util.BinUtils.dumpBin;
 
-public class IdTable {
+public class IdTable
+{
 
-  public static final int ID_TABLE_RECORD_LENGTH = 8;
-  public static final int BYTES_PER_TABLE_ENTRY = 4;
-  public static final int ENTRIES_PER_BLOCK =
-      MetadataBlock.MAX_SIZE / BYTES_PER_TABLE_ENTRY;
-  private static final int[] EMPTY = new int[0];
-  final SortedMap<Long, Short> reverseMappings = new TreeMap<>();
-  int[] mappings = EMPTY;
+	public static final int ID_TABLE_RECORD_LENGTH = 8;
+	public static final int BYTES_PER_TABLE_ENTRY = 4;
+	public static final int ENTRIES_PER_BLOCK = MetadataBlock.MAX_SIZE
+			/ BYTES_PER_TABLE_ENTRY;
+	private static final int[] EMPTY = new int[0];
+	final SortedMap<Long, Short> reverseMappings = new TreeMap<>();
+	int[] mappings = EMPTY;
 
-  private static int numTables(int idCount) {
-    return (idCount / ENTRIES_PER_BLOCK) + (
-        ((idCount % ENTRIES_PER_BLOCK) == 0) ? 0 : 1);
-  }
+	private static int numTables(int idCount)
+	{
+		return (idCount / ENTRIES_PER_BLOCK)
+				+ (((idCount % ENTRIES_PER_BLOCK) == 0) ? 0 : 1);
+	}
 
-  public static IdTable read(int tag, TableReader tableReader,
-      MetadataBlockReader metaBlockReader)
-      throws IOException, SquashFsException {
+	public static IdTable read(int tag, TableReader tableReader,
+			MetadataBlockReader metaBlockReader)
+			throws IOException, SquashFsException
+	{
 
-    IdTable table = new IdTable();
-    table.readData(tag, tableReader, metaBlockReader);
-    return table;
-  }
+		IdTable table = new IdTable();
+		table.readData(tag, tableReader, metaBlockReader);
+		return table;
+	}
 
-  public int getIdCount() {
-    return mappings.length;
-  }
+	public int getIdCount()
+	{
+		return mappings.length;
+	}
 
-  public int idFromIndex(short index) throws SquashFsException {
-    int iIndex = (index & 0xffff);
-    if (iIndex >= mappings.length) {
-      throw new SquashFsException(
-          String.format("No UID/GID could be found for id ref %d", iIndex));
-    }
-    return mappings[iIndex];
-  }
+	public int idFromIndex(short index) throws SquashFsException
+	{
+		int iIndex = (index & 0xffff);
+		if (iIndex >= mappings.length) {
+			throw new SquashFsException(String
+					.format("No UID/GID could be found for id ref %d", iIndex));
+		}
+		return mappings[iIndex];
+	}
 
-  public short indexFromId(int id) throws SquashFsException {
-    Long key = Long.valueOf(id % 0xFFFFFFFFL);
-    Short value = reverseMappings.get(key);
-    if (value == null) {
-      throw new SquashFsException(
-          String.format("No id ref could be found for UID/GID %d", key));
-    }
-    return value.shortValue();
-  }
+	public short indexFromId(int id) throws SquashFsException
+	{
+		Long key = Long.valueOf(id % 0xFFFFFFFFL);
+		Short value = reverseMappings.get(key);
+		if (value == null) {
+			throw new SquashFsException(String
+					.format("No id ref could be found for UID/GID %d", key));
+		}
+		return value.shortValue();
+	}
 
-  public void readData(int tag, TableReader tableReader,
-      MetadataBlockReader metaBlockReader)
-      throws IOException, SquashFsException {
+	public void readData(int tag, TableReader tableReader,
+			MetadataBlockReader metaBlockReader)
+			throws IOException, SquashFsException
+	{
 
-    reverseMappings.clear();
+		reverseMappings.clear();
 
-    SuperBlock sb = tableReader.getSuperBlock();
-    int idCount = sb.getIdCount() & 0xffff;
-    int tableCount = numTables(idCount);
-    long[] tableRef = new long[tableCount];
+		SuperBlock sb = tableReader.getSuperBlock();
+		int idCount = sb.getIdCount() & 0xffff;
+		int tableCount = numTables(idCount);
+		long[] tableRef = new long[tableCount];
 
-    mappings = new int[idCount];
+		mappings = new int[idCount];
 
-    ByteBuffer tableData = tableReader
-        .read(sb.getIdTableStart(), tableCount * ID_TABLE_RECORD_LENGTH);
-    for (int i = 0; i < tableCount; i++) {
-      tableRef[i] = tableData.getLong();
-    }
+		ByteBuffer tableData = tableReader.read(sb.getIdTableStart(),
+				tableCount * ID_TABLE_RECORD_LENGTH);
+		for (int i = 0; i < tableCount; i++) {
+			tableRef[i] = tableData.getLong();
+		}
 
-    MetadataReader reader = null;
-    int table = 0;
-    for (int i = 0; i < idCount; i++) {
-      if ((i % ENTRIES_PER_BLOCK) == 0) {
-        reader = metaBlockReader.rawReader(tag, tableRef[table++], (short) 0);
-      }
-      int id = reader.readInt();
-      mappings[i] = id;
-      Long key = Long.valueOf(id & 0xFFFFFFFFL);
-      reverseMappings.put(key, Short.valueOf((short) (i & 0xffff)));
-    }
-  }
+		MetadataReader reader = null;
+		int table = 0;
+		for (int i = 0; i < idCount; i++) {
+			if ((i % ENTRIES_PER_BLOCK) == 0) {
+				reader = metaBlockReader.rawReader(tag, tableRef[table++],
+						(short) 0);
+			}
+			int id = reader.readInt();
+			mappings[i] = id;
+			Long key = Long.valueOf(id & 0xFFFFFFFFL);
+			reverseMappings.put(key, Short.valueOf((short) (i & 0xffff)));
+		}
+	}
 
-  @Override
-  public String toString() {
-    StringBuilder buf = new StringBuilder();
-    buf.append(String.format("id-table: {%n"));
-    int width = 17;
-    dumpBin(buf, width, "count", mappings.length, DECIMAL, UNSIGNED);
-    for (int i = 0; i < mappings.length; i++) {
-      dumpBin(buf, width, String.format("mappings[%d]", i), mappings[i],
-          DECIMAL, UNSIGNED);
-    }
-    buf.append("}");
-    return buf.toString();
-  }
+	@Override
+	public String toString()
+	{
+		StringBuilder buf = new StringBuilder();
+		buf.append(String.format("id-table: {%n"));
+		int width = 17;
+		dumpBin(buf, width, "count", mappings.length, DECIMAL, UNSIGNED);
+		for (int i = 0; i < mappings.length; i++) {
+			dumpBin(buf, width, String.format("mappings[%d]", i), mappings[i],
+					DECIMAL, UNSIGNED);
+		}
+		buf.append("}");
+		return buf.toString();
+	}
 
 }

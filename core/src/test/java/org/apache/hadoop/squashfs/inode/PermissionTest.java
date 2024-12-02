@@ -23,35 +23,43 @@ import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 
-public class PermissionTest {
+public class PermissionTest
+{
 
 	@Test
-	public void descriptionShouldReturnSomethingForAllValues() {
+	public void descriptionShouldReturnSomethingForAllValues()
+	{
 		for (Permission p : Permission.values()) {
-			assertNotNull(String.format("Null description found for %s", p), p.description());
+			assertNotNull(String.format("Null description found for %s", p),
+					p.description());
 		}
 	}
 
 	@Test
-	public void bitShouldBeInAscendingOrderForAllValues() {
+	public void bitShouldBeInAscendingOrderForAllValues()
+	{
 		int bit = 0;
 		for (Permission p : Permission.values()) {
-			assertEquals(String.format("Wrong bit value found for %s", p), bit, p.bit());
+			assertEquals(String.format("Wrong bit value found for %s", p), bit,
+					p.bit());
 			bit++;
 		}
 	}
 
 	@Test
-	public void maskShouldIncreaseByPowersOfTwoForAllValues() {
+	public void maskShouldIncreaseByPowersOfTwoForAllValues()
+	{
 		int mask = 1;
 		for (Permission p : Permission.values()) {
-			assertEquals(String.format("Wrong mask value found for %s", p), mask, p.mask());
+			assertEquals(String.format("Wrong mask value found for %s", p),
+					mask, p.mask());
 			mask = (mask << 1);
 		}
 	}
 
 	@Test
-	public void toDisplayShouldSucceedForCommonValues() {
+	public void toDisplayShouldSucceedForCommonValues()
+	{
 		assertEquals("rwxr-xr-x", Permission.toDisplay(Permission.from(0755)));
 		assertEquals("rw-r--r--", Permission.toDisplay(Permission.from(0644)));
 		assertEquals("---------", Permission.toDisplay(Permission.from(0000)));
@@ -65,7 +73,8 @@ public class PermissionTest {
 	}
 
 	@Test
-	public void toValueShouldSucceedForCommonValues() {
+	public void toValueShouldSucceedForCommonValues()
+	{
 		assertEquals(0755, Permission.toValue(Permission.from("rwxr-xr-x")));
 		assertEquals(0644, Permission.toValue(Permission.from("rw-r--r--")));
 		assertEquals(0000, Permission.toValue(Permission.from("---------")));
@@ -79,16 +88,20 @@ public class PermissionTest {
 	}
 
 	@Test(expected = IllegalArgumentException.class)
-	public void toValueShouldFailForStringsLessThan9Chars() {
+	public void toValueShouldFailForStringsLessThan9Chars()
+	{
 		Permission.toValue("rwxrwxr-");
 	}
 
 	@Test
-	public void toDisplayAndToValueShouldBeReflexive() {
+	public void toDisplayAndToValueShouldBeReflexive()
+	{
 		for (int i = 0; i < 07777; i++) {
 			String display = Permission.toDisplay(i);
 			int value = Permission.toValue(display);
-			assertEquals(String.format("Mismatch between toDisplay('%s') and toValue(%o)", display, i), i, value);
+			assertEquals(String.format(
+					"Mismatch between toDisplay('%s') and toValue(%o)", display,
+					i), i, value);
 		}
 	}
 

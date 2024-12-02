@@ -19,37 +19,42 @@
 package org.apache.hadoop.squashfs.inode;
 
 public class BasicSocketINode extends AbstractBasicIpcINode
-    implements SocketINode {
+		implements SocketINode
+{
 
-  static SocketINode simplify(SocketINode src) {
-    if (src instanceof BasicSocketINode) {
-      return src;
-    }
+	static SocketINode simplify(SocketINode src)
+	{
+		if (src instanceof BasicSocketINode) {
+			return src;
+		}
 
-    if (src.isXattrPresent()) {
-      return src;
-    }
+		if (src.isXattrPresent()) {
+			return src;
+		}
 
-    BasicSocketINode dest = new BasicSocketINode();
-    src.copyTo(dest);
+		BasicSocketINode dest = new BasicSocketINode();
+		src.copyTo(dest);
 
-    dest.setNlink(src.getNlink());
-    return dest;
-  }
+		dest.setNlink(src.getNlink());
+		return dest;
+	}
 
-  @Override
-  protected String getName() {
-    return "basic-socket-inode";
-  }
+	@Override
+	protected String getName()
+	{
+		return "basic-socket-inode";
+	}
 
-  @Override
-  public INodeType getInodeType() {
-    return INodeType.BASIC_SOCKET;
-  }
+	@Override
+	public INodeType getInodeType()
+	{
+		return INodeType.BASIC_SOCKET;
+	}
 
-  @Override
-  public SocketINode simplify() {
-    return this;
-  }
+	@Override
+	public SocketINode simplify()
+	{
+		return this;
+	}
 
 }

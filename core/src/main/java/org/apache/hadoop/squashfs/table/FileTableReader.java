@@ -27,49 +27,54 @@ import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
-public class FileTableReader implements TableReader {
+public class FileTableReader implements TableReader
+{
 
-  private final RandomAccessFile raf;
-  private final SuperBlock sb;
-  private final boolean shouldClose;
+	private final RandomAccessFile raf;
+	private final SuperBlock sb;
+	private final boolean shouldClose;
 
-  public FileTableReader(File file) throws IOException, SquashFsException {
-    this.raf = new RandomAccessFile(file, "r");
-    this.sb = SuperBlock.read(raf);
-    this.shouldClose = true;
-  }
+	public FileTableReader(File file) throws IOException, SquashFsException
+	{
+		this.raf = new RandomAccessFile(file, "r");
+		this.sb = SuperBlock.read(raf);
+		this.shouldClose = true;
+	}
 
-  public FileTableReader(RandomAccessFile raf, SuperBlock sb,
-      boolean shouldClose)
-      throws SquashFsException, IOException {
-    this.raf = raf;
-    this.sb = sb;
-    this.shouldClose = shouldClose;
-  }
+	public FileTableReader(RandomAccessFile raf, SuperBlock sb,
+			boolean shouldClose) throws SquashFsException, IOException
+	{
+		this.raf = raf;
+		this.sb = sb;
+		this.shouldClose = shouldClose;
+	}
 
-  @Override
-  public SuperBlock getSuperBlock() {
-    return sb;
-  }
+	@Override
+	public SuperBlock getSuperBlock()
+	{
+		return sb;
+	}
 
-  @Override
-  public ByteBuffer read(long fileOffset, int length) throws IOException {
-    long prevPosition = raf.getFilePointer();
-    try {
-      raf.seek(fileOffset);
-      byte[] buf = new byte[length];
-      raf.readFully(buf);
-      return ByteBuffer.wrap(buf).order(ByteOrder.LITTLE_ENDIAN);
-    } finally {
-      raf.seek(prevPosition);
-    }
-  }
+	@Override
+	public ByteBuffer read(long fileOffset, int length) throws IOException
+	{
+		long prevPosition = raf.getFilePointer();
+		try {
+			raf.seek(fileOffset);
+			byte[] buf = new byte[length];
+			raf.readFully(buf);
+			return ByteBuffer.wrap(buf).order(ByteOrder.LITTLE_ENDIAN);
+		} finally {
+			raf.seek(prevPosition);
+		}
+	}
 
-  @Override
-  public void close() throws IOException {
-    if (shouldClose) {
-      raf.close();
-    }
-  }
+	@Override
+	public void close() throws IOException
+	{
+		if (shouldClose) {
+			raf.close();
+		}
+	}
 
 }

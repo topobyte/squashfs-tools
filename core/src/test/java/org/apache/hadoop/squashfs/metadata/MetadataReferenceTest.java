@@ -29,15 +29,18 @@ import org.apache.hadoop.squashfs.inode.BasicDirectoryINode;
 import org.apache.hadoop.squashfs.inode.INodeRef;
 import org.apache.hadoop.squashfs.superblock.SuperBlock;
 
-public class MetadataReferenceTest {
+public class MetadataReferenceTest
+{
 
 	@Test
-	public void inodeWithInodeRefShouldBeRelativeToInodeTable() throws Exception {
+	public void inodeWithInodeRefShouldBeRelativeToInodeTable() throws Exception
+	{
 		SuperBlock sb = new SuperBlock();
 		sb.setInodeTableStart(12345L);
 
 		INodeRef inodeRef = new INodeRef(54321, (short) 1234);
-		MetadataReference ref = MetadataReference.inode(10101, sb, inodeRef.getRaw());
+		MetadataReference ref = MetadataReference.inode(10101, sb,
+				inodeRef.getRaw());
 		System.out.println(ref);
 		assertEquals(10101, ref.getTag());
 		assertEquals(66666L, ref.getBlockLocation());
@@ -46,7 +49,8 @@ public class MetadataReferenceTest {
 	}
 
 	@Test(expected = SquashFsException.class)
-	public void inodeWithInodeRefShouldFailIfOffsetIsTooLarge() throws Exception {
+	public void inodeWithInodeRefShouldFailIfOffsetIsTooLarge() throws Exception
+	{
 		SuperBlock sb = new SuperBlock();
 		sb.setInodeTableStart(12345L);
 
@@ -55,7 +59,9 @@ public class MetadataReferenceTest {
 	}
 
 	@Test
-	public void inodeWithDirectoryEntryShouldBeRelativeToInodeTable() throws Exception {
+	public void inodeWithDirectoryEntryShouldBeRelativeToInodeTable()
+			throws Exception
+	{
 		SuperBlock sb = new SuperBlock();
 		sb.setInodeTableStart(12345L);
 
@@ -80,7 +86,9 @@ public class MetadataReferenceTest {
 	}
 
 	@Test(expected = SquashFsException.class)
-	public void inodeWithDirectoryEntryShouldFailIfOffsetIsTooLarge() throws Exception {
+	public void inodeWithDirectoryEntryShouldFailIfOffsetIsTooLarge()
+			throws Exception
+	{
 		SuperBlock sb = new SuperBlock();
 		sb.setInodeTableStart(12345L);
 
@@ -100,8 +108,10 @@ public class MetadataReferenceTest {
 	}
 
 	@Test
-	public void rawShouldBeRelativeToInodeTable() throws Exception {
-		MetadataReference ref = MetadataReference.raw(10101, 12345L, (short) 6789);
+	public void rawShouldBeRelativeToInodeTable() throws Exception
+	{
+		MetadataReference ref = MetadataReference.raw(10101, 12345L,
+				(short) 6789);
 		System.out.println(ref);
 		assertEquals(10101, ref.getTag());
 		assertEquals(12345L, ref.getBlockLocation());
@@ -110,12 +120,14 @@ public class MetadataReferenceTest {
 	}
 
 	@Test(expected = SquashFsException.class)
-	public void rawShouldFailIfOffsetIsTooLarge() throws Exception {
+	public void rawShouldFailIfOffsetIsTooLarge() throws Exception
+	{
 		MetadataReference.raw(10101, 12345L, (short) 8192);
 	}
 
 	@Test
-	public void directoryShouldBeRelativeToDirectoryTable() throws Exception {
+	public void directoryShouldBeRelativeToDirectoryTable() throws Exception
+	{
 		SuperBlock sb = new SuperBlock();
 		sb.setDirectoryTableStart(12345L);
 
@@ -133,7 +145,8 @@ public class MetadataReferenceTest {
 	}
 
 	@Test(expected = SquashFsException.class)
-	public void directoryShouldFailIfOffsetIsTooLarge() throws Exception {
+	public void directoryShouldFailIfOffsetIsTooLarge() throws Exception
+	{
 		SuperBlock sb = new SuperBlock();
 		sb.setDirectoryTableStart(12345L);
 

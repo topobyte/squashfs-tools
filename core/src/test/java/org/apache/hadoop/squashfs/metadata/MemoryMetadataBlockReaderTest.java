@@ -32,7 +32,8 @@ import org.junit.Test;
 import org.apache.hadoop.squashfs.superblock.SuperBlock;
 import org.apache.hadoop.squashfs.test.MetadataTestUtils;
 
-public class MemoryMetadataBlockReaderTest {
+public class MemoryMetadataBlockReaderTest
+{
 
 	File tempFile;
 	MemoryMetadataBlockReader reader;
@@ -43,7 +44,8 @@ public class MemoryMetadataBlockReaderTest {
 	int offset2;
 
 	@Before
-	public void setUp() throws Exception {
+	public void setUp() throws Exception
+	{
 		sb = new SuperBlock();
 		// write a block
 		block = new byte[1024];
@@ -60,11 +62,13 @@ public class MemoryMetadataBlockReaderTest {
 		encoded = new byte[data1.length + data2.length];
 		System.arraycopy(data1, 0, encoded, 0, data1.length);
 		System.arraycopy(data2, 0, encoded, data1.length, data2.length);
-		reader = new MemoryMetadataBlockReader(10101, sb, encoded, 0, encoded.length);
+		reader = new MemoryMetadataBlockReader(10101, sb, encoded, 0,
+				encoded.length);
 	}
 
 	@After
-	public void tearDown() {
+	public void tearDown()
+	{
 		reader.close();
 		reader = null;
 		encoded = null;
@@ -74,26 +78,30 @@ public class MemoryMetadataBlockReaderTest {
 	}
 
 	@Test
-	public void getSuperBlockShouldReturnConstructedInstance() {
+	public void getSuperBlockShouldReturnConstructedInstance()
+	{
 		assertSame(sb, reader.getSuperBlock(10101));
 	}
 
 	@Test
-	public void readFirstBlockShouldSucceed() throws Exception {
+	public void readFirstBlockShouldSucceed() throws Exception
+	{
 		MetadataBlock mb = reader.read(10101, 0L);
 		assertEquals(1024, mb.data.length);
 		assertArrayEquals(block, mb.data);
 	}
 
 	@Test
-	public void readSecondBlockShouldSucceed() throws Exception {
+	public void readSecondBlockShouldSucceed() throws Exception
+	{
 		MetadataBlock mb = reader.read(10101, offset2);
 		assertEquals(1024, mb.data.length);
 		assertArrayEquals(block2, mb.data);
 	}
 
 	@Test(expected = EOFException.class)
-	public void readPastEofShouldFail() throws Exception {
+	public void readPastEofShouldFail() throws Exception
+	{
 		reader.read(10101, encoded.length);
 	}
 

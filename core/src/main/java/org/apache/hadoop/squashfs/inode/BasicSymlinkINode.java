@@ -29,113 +29,131 @@ import static org.apache.hadoop.squashfs.util.BinUtils.DumpOptions.DECIMAL;
 import static org.apache.hadoop.squashfs.util.BinUtils.DumpOptions.UNSIGNED;
 import static org.apache.hadoop.squashfs.util.BinUtils.dumpBin;
 
-public class BasicSymlinkINode extends AbstractINode implements SymlinkINode {
+public class BasicSymlinkINode extends AbstractINode implements SymlinkINode
+{
 
-  private static final byte[] EMPTY = new byte[0];
+	private static final byte[] EMPTY = new byte[0];
 
-  int nlink = 1;
-  byte[] targetPath = EMPTY;
+	int nlink = 1;
+	byte[] targetPath = EMPTY;
 
-  static SymlinkINode simplify(SymlinkINode src) {
-    if (src instanceof BasicSymlinkINode) {
-      return src;
-    }
+	static SymlinkINode simplify(SymlinkINode src)
+	{
+		if (src instanceof BasicSymlinkINode) {
+			return src;
+		}
 
-    if (src.isXattrPresent()) {
-      return src;
-    }
+		if (src.isXattrPresent()) {
+			return src;
+		}
 
-    BasicSymlinkINode dest = new BasicSymlinkINode();
-    src.copyTo(dest);
-    dest.setNlink(src.getNlink());
-    dest.setTargetPath(src.getTargetPath());
+		BasicSymlinkINode dest = new BasicSymlinkINode();
+		src.copyTo(dest);
+		dest.setNlink(src.getNlink());
+		dest.setTargetPath(src.getTargetPath());
 
-    return dest;
-  }
+		return dest;
+	}
 
-  @Override
-  public int getNlink() {
-    return nlink;
-  }
+	@Override
+	public int getNlink()
+	{
+		return nlink;
+	}
 
-  @Override
-  public void setNlink(int nlink) {
-    this.nlink = nlink;
-  }
+	@Override
+	public void setNlink(int nlink)
+	{
+		this.nlink = nlink;
+	}
 
-  @Override
-  public byte[] getTargetPath() {
-    return targetPath;
-  }
+	@Override
+	public byte[] getTargetPath()
+	{
+		return targetPath;
+	}
 
-  @Override
-  public void setTargetPath(byte[] targetPath) {
-    this.targetPath = (targetPath == null) ? EMPTY : targetPath;
-  }
+	@Override
+	public void setTargetPath(byte[] targetPath)
+	{
+		this.targetPath = (targetPath == null) ? EMPTY : targetPath;
+	}
 
-  @Override
-  public int getXattrIndex() {
-    return XATTR_NOT_PRESENT;
-  }
+	@Override
+	public int getXattrIndex()
+	{
+		return XATTR_NOT_PRESENT;
+	}
 
-  @Override
-  public void setXattrIndex(int xattrIndex) {
-    if (xattrIndex != XATTR_NOT_PRESENT) {
-      throw new IllegalArgumentException(
-          "Basic symlink inodes do not support extended attributes");
-    }
-  }
+	@Override
+	public void setXattrIndex(int xattrIndex)
+	{
+		if (xattrIndex != XATTR_NOT_PRESENT) {
+			throw new IllegalArgumentException(
+					"Basic symlink inodes do not support extended attributes");
+		}
+	}
 
-  @Override
-  public boolean isXattrPresent() {
-    return false;
-  }
+	@Override
+	public boolean isXattrPresent()
+	{
+		return false;
+	}
 
-  @Override
-  protected int getChildSerializedSize() {
-    return 8 + targetPath.length;
-  }
+	@Override
+	protected int getChildSerializedSize()
+	{
+		return 8 + targetPath.length;
+	}
 
-  @Override
-  protected String getName() {
-    return "basic-symlink-inode";
-  }
+	@Override
+	protected String getName()
+	{
+		return "basic-symlink-inode";
+	}
 
-  @Override
-  public INodeType getInodeType() {
-    return INodeType.BASIC_SYMLINK;
-  }
+	@Override
+	public INodeType getInodeType()
+	{
+		return INodeType.BASIC_SYMLINK;
+	}
 
-  @Override
-  protected void readExtraData(SuperBlock sb, DataInput in)
-      throws SquashFsException, IOException {
-    nlink = in.readInt();
-    int targetSize = in.readInt();
-    targetPath = new byte[targetSize];
-    in.readFully(targetPath);
-  }
+	@Override
+	protected void readExtraData(SuperBlock sb, DataInput in)
+			throws SquashFsException, IOException
+	{
+		nlink = in.readInt();
+		int targetSize = in.readInt();
+		targetPath = new byte[targetSize];
+		in.readFully(targetPath);
+	}
 
-  @Override
-  protected void writeExtraData(MetadataWriter out) throws IOException {
-    out.writeInt(nlink);
-    out.writeInt(targetPath.length);
-    out.write(targetPath);
-  }
+	@Override
+	protected void writeExtraData(MetadataWriter out) throws IOException
+	{
+		out.writeInt(nlink);
+		out.writeInt(targetPath.length);
+		out.write(targetPath);
+	}
 
-  @Override
-  protected int getPreferredDumpWidth() {
-    return 12;
-  }
+	@Override
+	protected int getPreferredDumpWidth()
+	{
+		return 12;
+	}
 
-  @Override
-  protected void dumpProperties(StringBuilder buf, int width) {
-    dumpBin(buf, width, "nlink", nlink, DECIMAL, UNSIGNED);
-    dumpBin(buf, width, "targetSize", targetPath.length, DECIMAL, UNSIGNED);
-    dumpBin(buf, width, "targetPath", targetPath, 0, targetPath.length, 16, 2);
-  }
+	@Override
+	protected void dumpProperties(StringBuilder buf, int width)
+	{
+		dumpBin(buf, width, "nlink", nlink, DECIMAL, UNSIGNED);
+		dumpBin(buf, width, "targetSize", targetPath.length, DECIMAL, UNSIGNED);
+		dumpBin(buf, width, "targetPath", targetPath, 0, targetPath.length, 16,
+				2);
+	}
 
-  @Override
-  public SymlinkINode simplify() {
-    return this;
-  }
+	@Override
+	public SymlinkINode simplify()
+	{
+		return this;
+	}
 }

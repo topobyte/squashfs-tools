@@ -28,48 +28,62 @@ import org.apache.hadoop.squashfs.metadata.MetadataBlock;
 import org.apache.hadoop.squashfs.metadata.MetadataBlockReader;
 import org.apache.hadoop.squashfs.superblock.SuperBlock;
 
-public class MetadataBlockReaderMock implements MetadataBlockReader {
+public class MetadataBlockReaderMock implements MetadataBlockReader
+{
 
 	private final int tag;
 	private final SuperBlock sb;
 	private final Map<Long, MetadataBlock> blockMap;
 	private volatile boolean closed = false;
 
-	public MetadataBlockReaderMock(int tag, SuperBlock sb, long expectedFileOffset, MetadataBlock block) {
-		this(tag, sb, Collections.singletonMap(Long.valueOf(expectedFileOffset), block));
+	public MetadataBlockReaderMock(int tag, SuperBlock sb,
+			long expectedFileOffset, MetadataBlock block)
+	{
+		this(tag, sb, Collections.singletonMap(Long.valueOf(expectedFileOffset),
+				block));
 	}
 
-	public MetadataBlockReaderMock(int tag, SuperBlock sb, Map<Long, MetadataBlock> blockMap) {
+	public MetadataBlockReaderMock(int tag, SuperBlock sb,
+			Map<Long, MetadataBlock> blockMap)
+	{
 		this.tag = tag;
 		this.sb = sb;
 		this.blockMap = blockMap;
 	}
 
-	public boolean isClosed() {
+	public boolean isClosed()
+	{
 		return closed;
 	}
 
 	@Override
-	public void close() throws IOException {
+	public void close() throws IOException
+	{
 		closed = true;
 	}
 
 	@Override
-	public MetadataBlock read(int tag, long fileOffset) throws IOException, SquashFsException {
+	public MetadataBlock read(int tag, long fileOffset)
+			throws IOException, SquashFsException
+	{
 		if (this.tag != tag) {
-			throw new IllegalArgumentException(String.format("Invalid tag: %d", tag));
+			throw new IllegalArgumentException(
+					String.format("Invalid tag: %d", tag));
 		}
 		MetadataBlock block = blockMap.get(Long.valueOf(fileOffset));
 		if (block == null) {
-			throw new EOFException(String.format("unexpected block %d", fileOffset));
+			throw new EOFException(
+					String.format("unexpected block %d", fileOffset));
 		}
 		return block;
 	}
 
 	@Override
-	public SuperBlock getSuperBlock(int tag) {
+	public SuperBlock getSuperBlock(int tag)
+	{
 		if (this.tag != tag) {
-			throw new IllegalArgumentException(String.format("Invalid tag: %d", tag));
+			throw new IllegalArgumentException(
+					String.format("Invalid tag: %d", tag));
 		}
 		return sb;
 	}

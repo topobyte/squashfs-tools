@@ -18,8 +18,9 @@
 
 package org.apache.hadoop.squashfs.inode;
 
-public interface SocketINode extends IpcINode {
+public interface SocketINode extends IpcINode
+{
 
-  public SocketINode simplify();
+	public SocketINode simplify();
 
 }

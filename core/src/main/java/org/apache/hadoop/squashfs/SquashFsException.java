@@ -20,23 +20,28 @@ package org.apache.hadoop.squashfs;
 
 import java.io.IOException;
 
-public class SquashFsException extends IOException {
+public class SquashFsException extends IOException
+{
 
-  private static final long serialVersionUID = 3728141657958154845L;
+	private static final long serialVersionUID = 3728141657958154845L;
 
-  public SquashFsException() {
-  }
+	public SquashFsException()
+	{
+	}
 
-  public SquashFsException(String message) {
-    super(message);
-  }
+	public SquashFsException(String message)
+	{
+		super(message);
+	}
 
-  public SquashFsException(Throwable cause) {
-    super(cause);
-  }
+	public SquashFsException(Throwable cause)
+	{
+		super(cause);
+	}
 
-  public SquashFsException(String message, Throwable cause) {
-    super(message, cause);
-  }
+	public SquashFsException(String message, Throwable cause)
+	{
+		super(message, cause);
+	}
 
 }

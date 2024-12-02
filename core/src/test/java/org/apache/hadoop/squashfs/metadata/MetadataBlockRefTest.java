@@ -25,39 +25,46 @@ import org.junit.Test;
 
 import org.apache.hadoop.squashfs.inode.INodeRef;
 
-public class MetadataBlockRefTest {
+public class MetadataBlockRefTest
+{
 
 	MetadataBlockRef ref;
 
 	@Before
-	public void setUp() {
+	public void setUp()
+	{
 		ref = new MetadataBlockRef(1, (short) 2);
 	}
 
 	@Test
-	public void getLocationShouldReturnConstructedValue() {
+	public void getLocationShouldReturnConstructedValue()
+	{
 		assertEquals("wrong value", 1, ref.getLocation());
 	}
 
 	@Test
-	public void getOffsetShouldReturnConstructedValue() {
+	public void getOffsetShouldReturnConstructedValue()
+	{
 		assertEquals("wrong value", (short) 2, ref.getOffset());
 	}
 
 	@Test
-	public void toStringShouldNotFail() {
+	public void toStringShouldNotFail()
+	{
 		System.out.println(ref.toString());
 	}
 
 	@Test
-	public void testToINodeRef() {
+	public void testToINodeRef()
+	{
 		INodeRef inodeRef = ref.toINodeRef();
 		assertEquals(1, inodeRef.getLocation());
 		assertEquals((short) 2, inodeRef.getOffset());
 	}
 
 	@Test
-	public void testToINodeRefRaw() {
+	public void testToINodeRefRaw()
+	{
 		long raw = ref.toINodeRefRaw();
 
 		INodeRef inodeRef = new INodeRef(raw);

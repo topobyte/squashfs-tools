@@ -34,12 +34,14 @@ import org.junit.Test;
 import org.apache.hadoop.squashfs.SquashFsException;
 import org.apache.hadoop.squashfs.test.DirectoryTestUtils;
 
-public class DirectoryEntryTest {
+public class DirectoryEntryTest
+{
 
 	DirectoryEntry entry;
 
 	@Before
-	public void setUp() {
+	public void setUp()
+	{
 		DirectoryHeader hdr = new DirectoryHeader();
 		hdr.count = 0;
 		hdr.startBlock = 1;
@@ -55,7 +57,8 @@ public class DirectoryEntryTest {
 	}
 
 	@Test
-	public void headerPropertyWorksAsExpected() {
+	public void headerPropertyWorksAsExpected()
+	{
 		assertNotNull(entry.getHeader());
 		DirectoryHeader hdr2 = new DirectoryHeader();
 		entry.header = hdr2;
@@ -63,56 +66,66 @@ public class DirectoryEntryTest {
 	}
 
 	@Test
-	public void offsetPropertyWorksAsExpected() {
+	public void offsetPropertyWorksAsExpected()
+	{
 		assertEquals((short) 3, entry.getOffset());
 		entry.offset = (short) 4;
 		assertEquals((short) 4, entry.getOffset());
 	}
 
 	@Test
-	public void inodeNumberDeltaPropertyWorksAsExpected() {
+	public void inodeNumberDeltaPropertyWorksAsExpected()
+	{
 		assertEquals(4, entry.getInodeNumberDelta());
 		entry.inodeNumberDelta = 5;
 		assertEquals(5, entry.getInodeNumberDelta());
 	}
 
 	@Test
-	public void typePropertyWorksAsExpected() {
+	public void typePropertyWorksAsExpected()
+	{
 		assertEquals((short) 5, entry.getType());
 		entry.type = (short) 6;
 		assertEquals((short) 6, entry.getType());
 	}
 
 	@Test
-	public void sizePropertyWorksAsExpected() {
+	public void sizePropertyWorksAsExpected()
+	{
 		assertEquals((short) 3, entry.getSize());
 		entry.size = (short) 4;
 		assertEquals((short) 4, entry.getSize());
 	}
 
 	@Test
-	public void namePropertyWorksAsExpected() {
-		assertEquals("test", new String(entry.getName(), StandardCharsets.ISO_8859_1));
+	public void namePropertyWorksAsExpected()
+	{
+		assertEquals("test",
+				new String(entry.getName(), StandardCharsets.ISO_8859_1));
 		entry.name = "test2".getBytes(StandardCharsets.ISO_8859_1);
-		assertEquals("test2", new String(entry.getName(), StandardCharsets.ISO_8859_1));
+		assertEquals("test2",
+				new String(entry.getName(), StandardCharsets.ISO_8859_1));
 	}
 
 	@Test
-	public void nameAsStringPropertyWorksAsExpected() {
+	public void nameAsStringPropertyWorksAsExpected()
+	{
 		assertEquals("test", entry.getNameAsString());
 		entry.name = "test2".getBytes(StandardCharsets.ISO_8859_1);
 		assertEquals("test2", entry.getNameAsString());
 	}
 
 	@Test
-	public void getStructureSizeReturnsCorrectValue() {
+	public void getStructureSizeReturnsCorrectValue()
+	{
 		assertEquals(12, entry.getStructureSize());
 		entry.name = "test2".getBytes(StandardCharsets.ISO_8859_1);
 		assertEquals(13, entry.getStructureSize());
 	}
 
 	@Test
-	public void readShouldSucceed() throws Exception {
+	public void readShouldSucceed() throws Exception
+	{
 		byte[] buf = new byte[12];
 		ByteBuffer bb = ByteBuffer.wrap(buf);
 		bb.putShort((short) 3); // offset
@@ -126,16 +139,19 @@ public class DirectoryEntryTest {
 				DirectoryEntry dest = DirectoryEntry.read(entry.header, dis);
 				assertSame("wrong header", entry.header, dest.header);
 				assertEquals("wrong offset", (short) 3, dest.getOffset());
-				assertEquals("wrong inode number delta", (short) 4, dest.getInodeNumberDelta());
+				assertEquals("wrong inode number delta", (short) 4,
+						dest.getInodeNumberDelta());
 				assertEquals("wrong offset", (short) 5, dest.getType());
 				assertEquals("wrong size", (short) 3, dest.getSize());
-				assertEquals("wrong name", "test", new String(dest.getName(), StandardCharsets.ISO_8859_1));
+				assertEquals("wrong name", "test", new String(dest.getName(),
+						StandardCharsets.ISO_8859_1));
 			}
 		}
 	}
 
 	@Test(expected = SquashFsException.class)
-	public void readShouldFailIfSizeIsTooLarge() throws Exception {
+	public void readShouldFailIfSizeIsTooLarge() throws Exception
+	{
 		byte[] buf = new byte[261];
 		ByteBuffer bb = ByteBuffer.wrap(buf);
 		bb.putShort((short) 3); // offset
@@ -152,20 +168,25 @@ public class DirectoryEntryTest {
 	}
 
 	@Test
-	public void writeDataAndReadDataShouldBeReflexive() throws IOException {
+	public void writeDataAndReadDataShouldBeReflexive() throws IOException
+	{
 		byte[] data = DirectoryTestUtils.serializeDirectoryElement(entry);
-		DirectoryEntry dest = DirectoryTestUtils.deserializeDirectoryEntry(entry.header, data);
+		DirectoryEntry dest = DirectoryTestUtils
+				.deserializeDirectoryEntry(entry.header, data);
 
 		assertSame("wrong header", entry.header, dest.header);
 		assertEquals("wrong offset", (short) 3, dest.getOffset());
-		assertEquals("wrong inode number delta", (short) 4, dest.getInodeNumberDelta());
+		assertEquals("wrong inode number delta", (short) 4,
+				dest.getInodeNumberDelta());
 		assertEquals("wrong offset", (short) 5, dest.getType());
 		assertEquals("wrong size", (short) 3, dest.getSize());
-		assertEquals("wrong name", "test", new String(dest.getName(), StandardCharsets.ISO_8859_1));
+		assertEquals("wrong name", "test",
+				new String(dest.getName(), StandardCharsets.ISO_8859_1));
 	}
 
 	@Test
-	public void toStringShouldNotFail() {
+	public void toStringShouldNotFail()
+	{
 		System.out.println(entry.toString());
 	}
 

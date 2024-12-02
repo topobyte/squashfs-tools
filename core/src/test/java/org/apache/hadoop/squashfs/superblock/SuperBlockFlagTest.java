@@ -26,99 +26,121 @@ import java.util.EnumSet;
 
 import org.junit.Test;
 
-public class SuperBlockFlagTest {
+public class SuperBlockFlagTest
+{
 
 	@Test
-	public void maskShouldReturnSuccessivePowersOfTwo() {
+	public void maskShouldReturnSuccessivePowersOfTwo()
+	{
 		SuperBlockFlag[] values = SuperBlockFlag.values();
 
 		int mask = 1;
 		for (int i = 0; i < values.length; i++) {
-			assertEquals(String.format("Wrong mask for %s", values[i]), mask, values[i].mask());
+			assertEquals(String.format("Wrong mask for %s", values[i]), mask,
+					values[i].mask());
 			mask = mask << 1;
 		}
 	}
 
 	@Test
-	public void isSetShouldReturnTrueIfMaskIsPresent() {
+	public void isSetShouldReturnTrueIfMaskIsPresent()
+	{
 		SuperBlockFlag[] values = SuperBlockFlag.values();
 
 		short mask = 1;
 		for (int i = 0; i < values.length; i++) {
-			assertTrue(String.format("Wrong isSet() for %s", values[i]), values[i].isSet(mask));
+			assertTrue(String.format("Wrong isSet() for %s", values[i]),
+					values[i].isSet(mask));
 			mask = (short) (mask << 1);
 		}
 	}
 
 	@Test
-	public void isSetShouldReturnFalseIfMaskIsNotPresent() {
+	public void isSetShouldReturnFalseIfMaskIsNotPresent()
+	{
 		SuperBlockFlag[] values = SuperBlockFlag.values();
 
 		short mask = 1;
 		for (int i = 0; i < values.length; i++) {
-			assertFalse(String.format("Wrong isSet() for %s", values[i]), values[i].isSet((short) (~mask & 0xffff)));
+			assertFalse(String.format("Wrong isSet() for %s", values[i]),
+					values[i].isSet((short) (~mask & 0xffff)));
 			mask = (short) (mask << 1);
 		}
 	}
 
 	@Test
-	public void flagsPresentShouldIncludeValueContainingMask() {
+	public void flagsPresentShouldIncludeValueContainingMask()
+	{
 		SuperBlockFlag[] values = SuperBlockFlag.values();
 
 		short mask = 1;
 		for (int i = 0; i < values.length; i++) {
 			EnumSet<SuperBlockFlag> flags = SuperBlockFlag.flagsPresent(mask);
-			assertTrue(String.format("Flag not present for %s", values[i]), flags.contains(values[i]));
+			assertTrue(String.format("Flag not present for %s", values[i]),
+					flags.contains(values[i]));
 			mask = (short) (mask << 1);
 		}
 	}
 
 	@Test
-	public void flagsPresentShouldNotIncludeValueNotContainingMask() {
+	public void flagsPresentShouldNotIncludeValueNotContainingMask()
+	{
 		SuperBlockFlag[] values = SuperBlockFlag.values();
 
 		short mask = 1;
 		for (int i = 0; i < values.length; i++) {
-			EnumSet<SuperBlockFlag> flags = SuperBlockFlag.flagsPresent((short) (~mask & 0xffff));
-			assertFalse(String.format("Flag present for %s", values[i]), flags.contains(values[i]));
+			EnumSet<SuperBlockFlag> flags = SuperBlockFlag
+					.flagsPresent((short) (~mask & 0xffff));
+			assertFalse(String.format("Flag present for %s", values[i]),
+					flags.contains(values[i]));
 			mask = (short) (mask << 1);
 		}
 	}
 
 	@Test
-	public void flagsForCollectionShouldIncludePassedInValue() {
+	public void flagsForCollectionShouldIncludePassedInValue()
+	{
 		SuperBlockFlag[] values = SuperBlockFlag.values();
 
 		short mask = 1;
 		for (int i = 0; i < values.length; i++) {
 			short value = SuperBlockFlag.flagsFor(EnumSet.of(values[i]));
-			assertEquals(String.format("Wrong result for %s", values[i]), mask, value);
+			assertEquals(String.format("Wrong result for %s", values[i]), mask,
+					value);
 			mask = (short) (mask << 1);
 		}
 	}
 
 	@Test
-	public void flagsForVarArgsShouldIncludePassedInValue() {
+	public void flagsForVarArgsShouldIncludePassedInValue()
+	{
 		SuperBlockFlag[] values = SuperBlockFlag.values();
 
 		short mask = 1;
 		for (int i = 0; i < values.length; i++) {
 			short value = SuperBlockFlag.flagsFor(values[i]);
-			assertEquals(String.format("Wrong result for %s", values[i]), mask, value);
+			assertEquals(String.format("Wrong result for %s", values[i]), mask,
+					value);
 			mask = (short) (mask << 1);
 		}
 	}
 
 	@Test
-	public void flagsForCollectionShouldIncludeMultipleFlags() {
-		short mask = SuperBlockFlag.flagsFor(EnumSet.of(SuperBlockFlag.EXPORTABLE, SuperBlockFlag.DUPLICATES));
-		assertEquals("Wrong mask", SuperBlockFlag.EXPORTABLE.mask() | SuperBlockFlag.DUPLICATES.mask(), mask);
+	public void flagsForCollectionShouldIncludeMultipleFlags()
+	{
+		short mask = SuperBlockFlag.flagsFor(EnumSet
+				.of(SuperBlockFlag.EXPORTABLE, SuperBlockFlag.DUPLICATES));
+		assertEquals("Wrong mask", SuperBlockFlag.EXPORTABLE.mask()
+				| SuperBlockFlag.DUPLICATES.mask(), mask);
 	}
 
 	@Test
-	public void flagsForVarargsShouldIncludeMultipleFlags() {
-		short mask = SuperBlockFlag.flagsFor(SuperBlockFlag.EXPORTABLE, SuperBlockFlag.DUPLICATES);
-		assertEquals("Wrong mask", SuperBlockFlag.EXPORTABLE.mask() | SuperBlockFlag.DUPLICATES.mask(), mask);
+	public void flagsForVarargsShouldIncludeMultipleFlags()
+	{
+		short mask = SuperBlockFlag.flagsFor(SuperBlockFlag.EXPORTABLE,
+				SuperBlockFlag.DUPLICATES);
+		assertEquals("Wrong mask", SuperBlockFlag.EXPORTABLE.mask()
+				| SuperBlockFlag.DUPLICATES.mask(), mask);
 	}
 
 }

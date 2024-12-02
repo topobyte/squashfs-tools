@@ -25,50 +25,58 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class TaggedMetadataBlockReader implements MetadataBlockReader {
+public class TaggedMetadataBlockReader implements MetadataBlockReader
+{
 
-  private final boolean close;
-  private final Map<Integer, MetadataBlockReader> readers = new HashMap<>();
+	private final boolean close;
+	private final Map<Integer, MetadataBlockReader> readers = new HashMap<>();
 
-  public TaggedMetadataBlockReader(boolean close) {
-    this.close = close;
-  }
+	public TaggedMetadataBlockReader(boolean close)
+	{
+		this.close = close;
+	}
 
-  public synchronized void add(int tag, MetadataBlockReader reader) {
-    Integer key = Integer.valueOf(tag);
-    if (readers.containsKey(key)) {
-      throw new IllegalArgumentException(
-          String.format("Tag '%d' is already in use", tag));
-    }
-    readers.put(key, reader);
-  }
+	public synchronized void add(int tag, MetadataBlockReader reader)
+	{
+		Integer key = Integer.valueOf(tag);
+		if (readers.containsKey(key)) {
+			throw new IllegalArgumentException(
+					String.format("Tag '%d' is already in use", tag));
+		}
+		readers.put(key, reader);
+	}
 
-  @Override
-  public synchronized void close() throws IOException {
-    if (close) {
-      for (MetadataBlockReader reader : readers.values()) {
-        reader.close();
-      }
-    }
-  }
+	@Override
+	public synchronized void close() throws IOException
+	{
+		if (close) {
+			for (MetadataBlockReader reader : readers.values()) {
+				reader.close();
+			}
+		}
+	}
 
-  synchronized MetadataBlockReader readerFor(int tag) {
-    MetadataBlockReader mbr = readers.get(Integer.valueOf(tag));
-    if (mbr == null) {
-      throw new IllegalArgumentException(String.format("Invalid tag: %d", tag));
-    }
-    return mbr;
-  }
+	synchronized MetadataBlockReader readerFor(int tag)
+	{
+		MetadataBlockReader mbr = readers.get(Integer.valueOf(tag));
+		if (mbr == null) {
+			throw new IllegalArgumentException(
+					String.format("Invalid tag: %d", tag));
+		}
+		return mbr;
+	}
 
-  @Override
-  public MetadataBlock read(int tag, long fileOffset)
-      throws IOException, SquashFsException {
-    return readerFor(tag).read(tag, fileOffset);
-  }
+	@Override
+	public MetadataBlock read(int tag, long fileOffset)
+			throws IOException, SquashFsException
+	{
+		return readerFor(tag).read(tag, fileOffset);
+	}
 
-  @Override
-  public SuperBlock getSuperBlock(int tag) {
-    return readerFor(tag).getSuperBlock(tag);
-  }
+	@Override
+	public SuperBlock getSuperBlock(int tag)
+	{
+		return readerFor(tag).getSuperBlock(tag);
+	}
 
 }

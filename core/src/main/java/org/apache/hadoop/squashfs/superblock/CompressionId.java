@@ -21,31 +21,34 @@ package org.apache.hadoop.squashfs.superblock;
 import org.apache.hadoop.squashfs.SquashFsException;
 
 public enum CompressionId {
-  NONE(0),
-  ZLIB(1),
-  LZMA(2),
-  LZO(3),
-  XZ(4),
-  LZ4(5),
-  ZSTD(6);
+	NONE(0),
+	ZLIB(1),
+	LZMA(2),
+	LZO(3),
+	XZ(4),
+	LZ4(5),
+	ZSTD(6);
 
-  private final short value;
+	private final short value;
 
-  private CompressionId(int value) {
-    this.value = (short) value;
-  }
+	private CompressionId(int value)
+	{
+		this.value = (short) value;
+	}
 
-  public static CompressionId fromValue(short value) throws SquashFsException {
-    for (CompressionId id : values()) {
-      if (id.value == value) {
-        return id;
-      }
-    }
-    throw new SquashFsException(
-        String.format("Unknown compression id %d", value));
-  }
+	public static CompressionId fromValue(short value) throws SquashFsException
+	{
+		for (CompressionId id : values()) {
+			if (id.value == value) {
+				return id;
+			}
+		}
+		throw new SquashFsException(
+				String.format("Unknown compression id %d", value));
+	}
 
-  public short value() {
-    return value;
-  }
+	public short value()
+	{
+		return value;
+	}
 }

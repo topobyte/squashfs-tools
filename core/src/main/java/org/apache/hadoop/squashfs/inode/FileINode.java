@@ -18,48 +18,49 @@
 
 package org.apache.hadoop.squashfs.inode;
 
-public interface FileINode extends INode {
+public interface FileINode extends INode
+{
 
-  public static final int FRAGMENT_BLOCK_INDEX_NONE = 0xffff_ffff;
+	public static final int FRAGMENT_BLOCK_INDEX_NONE = 0xffff_ffff;
 
-  public long getBlocksStart();
+	public long getBlocksStart();
 
-  public void setBlocksStart(long blocksStart);
+	public void setBlocksStart(long blocksStart);
 
-  public int getFragmentBlockIndex();
+	public int getFragmentBlockIndex();
 
-  public void setFragmentBlockIndex(int fragmentBlockIndex);
+	public void setFragmentBlockIndex(int fragmentBlockIndex);
 
-  public int getFragmentOffset();
+	public int getFragmentOffset();
 
-  public void setFragmentOffset(int fragmentOffset);
+	public void setFragmentOffset(int fragmentOffset);
 
-  public long getFileSize();
+	public long getFileSize();
 
-  public void setFileSize(long fileSize);
+	public void setFileSize(long fileSize);
 
-  public int[] getBlockSizes();
+	public int[] getBlockSizes();
 
-  public void setBlockSizes(int[] blockSizes);
+	public void setBlockSizes(int[] blockSizes);
 
-  public long getSparse();
+	public long getSparse();
 
-  public void setSparse(long sparse);
+	public void setSparse(long sparse);
 
-  public int getNlink();
+	public int getNlink();
 
-  public void setNlink(int nlink);
+	public void setNlink(int nlink);
 
-  public int getXattrIndex();
+	public int getXattrIndex();
 
-  public void setXattrIndex(int xattrIndex);
+	public void setXattrIndex(int xattrIndex);
 
-  public boolean isSparseBlockPresent();
+	public boolean isSparseBlockPresent();
 
-  public boolean isFragmentPresent();
+	public boolean isFragmentPresent();
 
-  public boolean isXattrPresent();
+	public boolean isXattrPresent();
 
-  public FileINode simplify();
+	public FileINode simplify();
 
 }

@@ -19,21 +19,25 @@
 package org.apache.hadoop.squashfs.inode;
 
 public class ExtendedSocketINode extends AbstractExtendedIpcINode
-    implements SocketINode {
+		implements SocketINode
+{
 
-  @Override
-  protected String getName() {
-    return "extended-socket-inode";
-  }
+	@Override
+	protected String getName()
+	{
+		return "extended-socket-inode";
+	}
 
-  @Override
-  public INodeType getInodeType() {
-    return INodeType.EXTENDED_SOCKET;
-  }
+	@Override
+	public INodeType getInodeType()
+	{
+		return INodeType.EXTENDED_SOCKET;
+	}
 
-  @Override
-  public SocketINode simplify() {
-    return BasicSocketINode.simplify(this);
-  }
+	@Override
+	public SocketINode simplify()
+	{
+		return BasicSocketINode.simplify(this);
+	}
 
 }

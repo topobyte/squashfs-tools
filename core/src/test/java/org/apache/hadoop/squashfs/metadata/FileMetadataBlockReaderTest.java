@@ -36,7 +36,8 @@ import org.junit.rules.TemporaryFolder;
 import org.apache.hadoop.squashfs.superblock.SuperBlock;
 import org.apache.hadoop.squashfs.test.MetadataTestUtils;
 
-public class FileMetadataBlockReaderTest {
+public class FileMetadataBlockReaderTest
+{
 
 	@Rule
 	public TemporaryFolder temp = new TemporaryFolder();
@@ -49,7 +50,8 @@ public class FileMetadataBlockReaderTest {
 	byte[] encoded;
 
 	@Before
-	public void setUp() throws Exception {
+	public void setUp() throws Exception
+	{
 		tag = 1;
 		tempFile = temp.newFile();
 		sb = new SuperBlock();
@@ -69,7 +71,8 @@ public class FileMetadataBlockReaderTest {
 	}
 
 	@After
-	public void tearDown() throws Exception {
+	public void tearDown() throws Exception
+	{
 		reader.close();
 		reader = null;
 		encoded = null;
@@ -78,12 +81,16 @@ public class FileMetadataBlockReaderTest {
 	}
 
 	@Test
-	public void getSuperBlockShouldReturnVersionReadFromFile() {
-		assertEquals(sb.getModificationTime(), reader.getSuperBlock(tag).getModificationTime());
+	public void getSuperBlockShouldReturnVersionReadFromFile()
+	{
+		assertEquals(sb.getModificationTime(),
+				reader.getSuperBlock(tag).getModificationTime());
 	}
 
 	@Test
-	public void getSuperBlockShouldReturnConstructedVersionIfApplicable() throws Exception {
+	public void getSuperBlockShouldReturnConstructedVersionIfApplicable()
+			throws Exception
+	{
 		try (RandomAccessFile raf = new RandomAccessFile(tempFile, "r")) {
 			reader = new FileMetadataBlockReader(tag, raf, sb, true);
 		}
@@ -91,14 +98,17 @@ public class FileMetadataBlockReaderTest {
 	}
 
 	@Test
-	public void readFromFileOffsetShouldSucceed() throws Exception {
+	public void readFromFileOffsetShouldSucceed() throws Exception
+	{
 		MetadataBlock mb = reader.read(tag, SuperBlock.SIZE);
 		assertEquals(1024, mb.data.length);
 		assertArrayEquals(block, mb.data);
 	}
 
 	@Test
-	public void readFromFileOffsetOnRandomAccessFileBackedReaderShouldSucceed() throws Exception {
+	public void readFromFileOffsetOnRandomAccessFileBackedReaderShouldSucceed()
+			throws Exception
+	{
 		try (RandomAccessFile raf = new RandomAccessFile(tempFile, "r")) {
 			reader = new FileMetadataBlockReader(tag, raf, sb, true);
 			MetadataBlock mb = reader.read(tag, SuperBlock.SIZE);
@@ -108,7 +118,8 @@ public class FileMetadataBlockReaderTest {
 	}
 
 	@Test
-	public void closeShouldCloseUnderlyingReaderIfRequested() throws Exception {
+	public void closeShouldCloseUnderlyingReaderIfRequested() throws Exception
+	{
 		try (RandomAccessFile raf = new RandomAccessFile(tempFile, "r")) {
 			reader = new FileMetadataBlockReader(tag, raf, sb, true);
 			reader.close();
@@ -123,7 +134,9 @@ public class FileMetadataBlockReaderTest {
 	}
 
 	@Test
-	public void closeShouldNotCloseUnderlyingReaderIfNotRequested() throws Exception {
+	public void closeShouldNotCloseUnderlyingReaderIfNotRequested()
+			throws Exception
+	{
 		try (RandomAccessFile raf = new RandomAccessFile(tempFile, "r")) {
 			reader = new FileMetadataBlockReader(tag, raf, sb, false);
 			reader.close();

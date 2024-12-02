@@ -24,38 +24,45 @@ import static org.junit.Assert.assertSame;
 import org.junit.Before;
 import org.junit.Test;
 
-public class BasicSocketINodeTest {
+public class BasicSocketINodeTest
+{
 
 	BasicSocketINode inode;
 
 	@Before
-	public void setUp() {
+	public void setUp()
+	{
 		inode = new BasicSocketINode();
 		inode.setNlink(2);
 	}
 
 	@Test
-	public void getNameShouldReturnCorrectValue() {
+	public void getNameShouldReturnCorrectValue()
+	{
 		assertEquals("basic-socket-inode", inode.getName());
 	}
 
 	@Test
-	public void getInodeTypeShouldReturnCorrectValue() {
+	public void getInodeTypeShouldReturnCorrectValue()
+	{
 		assertSame(INodeType.BASIC_SOCKET, inode.getInodeType());
 	}
 
 	@Test
-	public void simplifyShouldReturnSelf() {
+	public void simplifyShouldReturnSelf()
+	{
 		assertSame(inode, inode.simplify());
 	}
 
 	@Test
-	public void staticSimplifyMethodShouldReturnOriginalIfBasic() {
+	public void staticSimplifyMethodShouldReturnOriginalIfBasic()
+	{
 		assertSame(inode, BasicSocketINode.simplify(inode));
 	}
 
 	@Test
-	public void staticSimplifyMethodShouldReturnOriginalIfExtendedAttributesPresent() {
+	public void staticSimplifyMethodShouldReturnOriginalIfExtendedAttributesPresent()
+	{
 		SocketINode inode2 = new ExtendedSocketINode();
 		inode2.setNlink(2);
 		inode2.setXattrIndex(3);
@@ -63,7 +70,8 @@ public class BasicSocketINodeTest {
 	}
 
 	@Test
-	public void staticSimplifyMethodShouldReturnBasicIfExtendedAttributesNotPresent() {
+	public void staticSimplifyMethodShouldReturnBasicIfExtendedAttributesNotPresent()
+	{
 		SocketINode inode2 = new ExtendedSocketINode();
 		inode2.setNlink(2);
 		inode2.setXattrIndex(-1);
@@ -74,7 +82,8 @@ public class BasicSocketINodeTest {
 	}
 
 	@Test
-	public void toStringShouldNotFail() {
+	public void toStringShouldNotFail()
+	{
 		System.out.println(inode.toString());
 	}
 

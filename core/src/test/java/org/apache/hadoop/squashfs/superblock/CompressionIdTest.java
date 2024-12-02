@@ -25,19 +25,23 @@ import org.junit.Test;
 
 import org.apache.hadoop.squashfs.SquashFsException;
 
-public class CompressionIdTest {
+public class CompressionIdTest
+{
 
 	@Test
-	public void valueShouldReturnIncrementingValues() {
+	public void valueShouldReturnIncrementingValues()
+	{
 		CompressionId[] values = CompressionId.values();
 
 		for (int i = 0; i < values.length; i++) {
-			assertEquals(String.format("Wrong value for %s", values[i]), (short) i, values[i].value());
+			assertEquals(String.format("Wrong value for %s", values[i]),
+					(short) i, values[i].value());
 		}
 	}
 
 	@Test
-	public void fromValueShouldReturnCorrectItem() throws Exception {
+	public void fromValueShouldReturnCorrectItem() throws Exception
+	{
 		CompressionId[] values = CompressionId.values();
 
 		for (int i = 0; i < values.length; i++) {
@@ -46,7 +50,8 @@ public class CompressionIdTest {
 	}
 
 	@Test(expected = SquashFsException.class)
-	public void fromValueShouldThrowExceptionOnInvalidValue() throws Exception {
+	public void fromValueShouldThrowExceptionOnInvalidValue() throws Exception
+	{
 		CompressionId.fromValue((short) CompressionId.values().length);
 	}
 }

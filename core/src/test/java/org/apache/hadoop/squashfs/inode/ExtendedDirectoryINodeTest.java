@@ -30,12 +30,14 @@ import org.junit.Test;
 
 import org.apache.hadoop.squashfs.test.INodeTestUtils;
 
-public class ExtendedDirectoryINodeTest {
+public class ExtendedDirectoryINodeTest
+{
 
 	ExtendedDirectoryINode inode;
 
 	@Before
-	public void setUp() {
+	public void setUp()
+	{
 		inode = new ExtendedDirectoryINode();
 		inode.setStartBlock(1);
 		inode.setNlink(2);
@@ -47,85 +49,98 @@ public class ExtendedDirectoryINodeTest {
 	}
 
 	@Test
-	public void getNameShouldReturnCorrectValue() {
+	public void getNameShouldReturnCorrectValue()
+	{
 		assertEquals("extended-directory-inode", inode.getName());
 	}
 
 	@Test
-	public void getInodeTypeShouldReturnCorrectValue() {
+	public void getInodeTypeShouldReturnCorrectValue()
+	{
 		assertSame(INodeType.EXTENDED_DIRECTORY, inode.getInodeType());
 	}
 
 	@Test
-	public void startBlockPropertyShouldWorkAsExpected() {
+	public void startBlockPropertyShouldWorkAsExpected()
+	{
 		assertEquals(1, inode.getStartBlock());
 		inode.setStartBlock(2);
 		assertEquals(2, inode.getStartBlock());
 	}
 
 	@Test
-	public void nlinkPropertyShouldWorkAsExpected() {
+	public void nlinkPropertyShouldWorkAsExpected()
+	{
 		assertEquals(2, inode.getNlink());
 		inode.setNlink(3);
 		assertEquals(3, inode.getNlink());
 	}
 
 	@Test
-	public void fileSizePropertyShouldWorkAsExpected() {
+	public void fileSizePropertyShouldWorkAsExpected()
+	{
 		assertEquals(3, inode.getFileSize());
 		inode.setFileSize(4);
 		assertEquals(4, inode.getFileSize());
 	}
 
 	@Test
-	public void offsetPropertyShouldWorkAsExpected() {
+	public void offsetPropertyShouldWorkAsExpected()
+	{
 		assertEquals((short) 4, inode.getOffset());
 		inode.setOffset((short) 5);
 		assertEquals((short) 5, inode.getOffset());
 	}
 
 	@Test
-	public void parentInodeNumberPropertyShouldWorkAsExpected() {
+	public void parentInodeNumberPropertyShouldWorkAsExpected()
+	{
 		assertEquals(5, inode.getParentInodeNumber());
 		inode.setParentInodeNumber(6);
 		assertEquals(6, inode.getParentInodeNumber());
 	}
 
 	@Test
-	public void indexCountPropertyShouldWorkAsExpected() {
+	public void indexCountPropertyShouldWorkAsExpected()
+	{
 		assertEquals((short) 6, inode.getIndexCount());
 		inode.setIndexCount((short) 7);
 		assertEquals((short) 7, inode.getIndexCount());
 	}
 
 	@Test
-	public void isIndexPresentShouldReturnCorrectValue() {
+	public void isIndexPresentShouldReturnCorrectValue()
+	{
 		assertTrue(inode.isIndexPresent());
 		inode.setIndexCount((short) 0);
 		assertFalse(inode.isIndexPresent());
 	}
 
 	@Test
-	public void xattrIndexPropertyShouldWorkAsExpected() {
+	public void xattrIndexPropertyShouldWorkAsExpected()
+	{
 		assertEquals(7, inode.getXattrIndex());
 		inode.setXattrIndex(8);
 		assertEquals(8, inode.getXattrIndex());
 	}
 
 	@Test
-	public void isXattrPresentShouldReturnTrueIfPresent() {
+	public void isXattrPresentShouldReturnTrueIfPresent()
+	{
 		assertTrue(inode.isXattrPresent());
 		inode.setXattrIndex(-1);
 		assertFalse(inode.isXattrPresent());
 	}
 
 	@Test
-	public void getChildSerializedSizeShouldReturnCorrectValue() {
+	public void getChildSerializedSizeShouldReturnCorrectValue()
+	{
 		assertEquals(24, inode.getChildSerializedSize());
 	}
 
 	@Test
-	public void writeDataAndReadDataShouldBeReflexive() throws IOException {
+	public void writeDataAndReadDataShouldBeReflexive() throws IOException
+	{
 		byte[] data = INodeTestUtils.serializeINode(inode);
 		INode dest = INodeTestUtils.deserializeINode(data);
 
@@ -136,13 +151,15 @@ public class ExtendedDirectoryINodeTest {
 		assertEquals("wrong nlink count", 2, bDest.getNlink());
 		assertEquals("wrong file size", 3, bDest.getFileSize());
 		assertEquals("wrong offset", (short) 4, bDest.getOffset());
-		assertEquals("wrong parent inode number", 5, bDest.getParentInodeNumber());
+		assertEquals("wrong parent inode number", 5,
+				bDest.getParentInodeNumber());
 		assertEquals("wrong index count", (short) 6, bDest.getIndexCount());
 		assertEquals("wrong xattr index", 7, bDest.getXattrIndex());
 	}
 
 	@Test
-	public void simplifyShouldReturnBasicIfExtendedAttributesNotNeeded() {
+	public void simplifyShouldReturnBasicIfExtendedAttributesNotNeeded()
+	{
 		DirectoryINode inode2 = new ExtendedDirectoryINode();
 		inode2.setStartBlock(1);
 		inode2.setNlink(2);
@@ -155,15 +172,19 @@ public class ExtendedDirectoryINodeTest {
 		DirectoryINode result = inode2.simplify();
 		assertSame("wrong class", BasicDirectoryINode.class, result.getClass());
 
-		assertEquals("wrong start block", inode2.getStartBlock(), result.getStartBlock());
+		assertEquals("wrong start block", inode2.getStartBlock(),
+				result.getStartBlock());
 		assertEquals("wrong nlink count", inode2.getNlink(), result.getNlink());
-		assertEquals("wrong file size", inode2.getFileSize(), result.getFileSize());
+		assertEquals("wrong file size", inode2.getFileSize(),
+				result.getFileSize());
 		assertEquals("wrong offset", inode2.getOffset(), result.getOffset());
-		assertEquals("wrong parent inode number", inode2.getParentInodeNumber(), result.getParentInodeNumber());
+		assertEquals("wrong parent inode number", inode2.getParentInodeNumber(),
+				result.getParentInodeNumber());
 	}
 
 	@Test
-	public void simplifyShouldReturnOriginalIfFileSizeTooLarge() {
+	public void simplifyShouldReturnOriginalIfFileSizeTooLarge()
+	{
 		DirectoryINode inode2 = new ExtendedDirectoryINode();
 		inode2.setStartBlock(1);
 		inode2.setNlink(2);
@@ -176,7 +197,8 @@ public class ExtendedDirectoryINodeTest {
 	}
 
 	@Test
-	public void simplifyShouldReturnOriginalIfIndexPresent() {
+	public void simplifyShouldReturnOriginalIfIndexPresent()
+	{
 		DirectoryINode inode2 = new ExtendedDirectoryINode();
 		inode2.setStartBlock(1);
 		inode2.setNlink(2);
@@ -189,7 +211,8 @@ public class ExtendedDirectoryINodeTest {
 	}
 
 	@Test
-	public void simplifyShouldReturnOriginalIfExtendedAttributesPresent() {
+	public void simplifyShouldReturnOriginalIfExtendedAttributesPresent()
+	{
 		DirectoryINode inode2 = new ExtendedDirectoryINode();
 		inode2.setStartBlock(1);
 		inode2.setNlink(2);
@@ -202,7 +225,8 @@ public class ExtendedDirectoryINodeTest {
 	}
 
 	@Test
-	public void toStringShouldNotFail() {
+	public void toStringShouldNotFail()
+	{
 		System.out.println(inode.toString());
 	}
 

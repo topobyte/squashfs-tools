@@ -42,34 +42,35 @@ import org.junit.Test;
 
 import org.apache.hadoop.squashfs.SquashFsException;
 
-public class INodeTypeTest {
+public class INodeTypeTest
+{
 
 	@Test
-	public void basicShouldReturnTrueOnlyForBasicSubtypes() {
-		EnumSet<INodeType> basics = EnumSet.of(
-				BASIC_BLOCK_DEVICE,
-				BASIC_CHAR_DEVICE,
-				BASIC_DIRECTORY,
-				BASIC_FIFO,
-				BASIC_FILE,
-				BASIC_SOCKET,
-				BASIC_SYMLINK);
+	public void basicShouldReturnTrueOnlyForBasicSubtypes()
+	{
+		EnumSet<INodeType> basics = EnumSet.of(BASIC_BLOCK_DEVICE,
+				BASIC_CHAR_DEVICE, BASIC_DIRECTORY, BASIC_FIFO, BASIC_FILE,
+				BASIC_SOCKET, BASIC_SYMLINK);
 
 		for (INodeType type : INodeType.values()) {
-			assertEquals(String.format("Wrong basic() result for %s", type), basics.contains(type), type.basic());
+			assertEquals(String.format("Wrong basic() result for %s", type),
+					basics.contains(type), type.basic());
 		}
 	}
 
 	@Test
-	public void directoryShouldReturnTrueOnlyForDirectorySubtypes() {
+	public void directoryShouldReturnTrueOnlyForDirectorySubtypes()
+	{
 		for (INodeType type : INodeType.values()) {
 			assertEquals(String.format("Wrong directory() result for %s", type),
-					type == BASIC_DIRECTORY || type == EXTENDED_DIRECTORY, type.directory());
+					type == BASIC_DIRECTORY || type == EXTENDED_DIRECTORY,
+					type.directory());
 		}
 	}
 
 	@Test
-	public void fileShouldReturnTrueOnlyForFileSubtypes() {
+	public void fileShouldReturnTrueOnlyForFileSubtypes()
+	{
 		for (INodeType type : INodeType.values()) {
 			assertEquals(String.format("Wrong file() result for %s", type),
 					type == BASIC_FILE || type == EXTENDED_FILE, type.file());
@@ -77,31 +78,40 @@ public class INodeTypeTest {
 	}
 
 	@Test
-	public void symlinkShouldReturnTrueOnlyForSymlinkSubtypes() {
+	public void symlinkShouldReturnTrueOnlyForSymlinkSubtypes()
+	{
 		for (INodeType type : INodeType.values()) {
 			assertEquals(String.format("Wrong symlink() result for %s", type),
-					type == BASIC_SYMLINK || type == EXTENDED_SYMLINK, type.symlink());
+					type == BASIC_SYMLINK || type == EXTENDED_SYMLINK,
+					type.symlink());
 		}
 	}
 
 	@Test
-	public void blockDeviceShouldReturnTrueOnlyForBlockDeviceSubtypes() {
+	public void blockDeviceShouldReturnTrueOnlyForBlockDeviceSubtypes()
+	{
 		for (INodeType type : INodeType.values()) {
-			assertEquals(String.format("Wrong blockDevice() result for %s", type),
-					type == BASIC_BLOCK_DEVICE || type == EXTENDED_BLOCK_DEVICE, type.blockDevice());
+			assertEquals(
+					String.format("Wrong blockDevice() result for %s", type),
+					type == BASIC_BLOCK_DEVICE || type == EXTENDED_BLOCK_DEVICE,
+					type.blockDevice());
 		}
 	}
 
 	@Test
-	public void charDeviceShouldReturnTrueOnlyForCharDeviceSubtypes() {
+	public void charDeviceShouldReturnTrueOnlyForCharDeviceSubtypes()
+	{
 		for (INodeType type : INodeType.values()) {
-			assertEquals(String.format("Wrong blockDevice() result for %s", type),
-					type == BASIC_CHAR_DEVICE || type == EXTENDED_CHAR_DEVICE, type.charDevice());
+			assertEquals(
+					String.format("Wrong blockDevice() result for %s", type),
+					type == BASIC_CHAR_DEVICE || type == EXTENDED_CHAR_DEVICE,
+					type.charDevice());
 		}
 	}
 
 	@Test
-	public void deviceShouldReturnTrueOnlyForDeviceSubtypes() {
+	public void deviceShouldReturnTrueOnlyForDeviceSubtypes()
+	{
 		for (INodeType type : INodeType.values()) {
 			assertEquals(String.format("Wrong device() result for %s", type),
 					type.charDevice() || type.blockDevice(), type.device());
@@ -109,7 +119,8 @@ public class INodeTypeTest {
 	}
 
 	@Test
-	public void fifoShouldReturnTrueOnlyForFifoSubtypes() {
+	public void fifoShouldReturnTrueOnlyForFifoSubtypes()
+	{
 		for (INodeType type : INodeType.values()) {
 			assertEquals(String.format("Wrong fifo() result for %s", type),
 					type == BASIC_FIFO || type == EXTENDED_FIFO, type.fifo());
@@ -117,15 +128,18 @@ public class INodeTypeTest {
 	}
 
 	@Test
-	public void socketShouldReturnTrueOnlyForSocketSubtypes() {
+	public void socketShouldReturnTrueOnlyForSocketSubtypes()
+	{
 		for (INodeType type : INodeType.values()) {
 			assertEquals(String.format("Wrong socket() result for %s", type),
-					type == BASIC_SOCKET || type == EXTENDED_SOCKET, type.socket());
+					type == BASIC_SOCKET || type == EXTENDED_SOCKET,
+					type.socket());
 		}
 	}
 
 	@Test
-	public void ipcShouldReturnTrueOnlyForIpcSubtypes() {
+	public void ipcShouldReturnTrueOnlyForIpcSubtypes()
+	{
 		for (INodeType type : INodeType.values()) {
 			assertEquals(String.format("Wrong ipc() result for %s", type),
 					type.fifo() || type.socket(), type.ipc());
@@ -133,61 +147,83 @@ public class INodeTypeTest {
 	}
 
 	@Test
-	public void valueShouldReturnIncrementingValues() {
+	public void valueShouldReturnIncrementingValues()
+	{
 		short value = 1;
 		for (INodeType type : INodeType.values()) {
-			assertEquals(String.format("Wrong value() result for %s", type), value, type.value());
+			assertEquals(String.format("Wrong value() result for %s", type),
+					value, type.value());
 			value++;
 		}
 	}
 
 	@Test
-	public void dirValueShouldAlwaysResolveToABasicTypeWithSameMode() throws SquashFsException {
+	public void dirValueShouldAlwaysResolveToABasicTypeWithSameMode()
+			throws SquashFsException
+	{
 		for (INodeType type : INodeType.values()) {
 			INodeType other = INodeType.fromValue(type.dirValue());
-			assertEquals(String.format("Wrong mode() result for %s", type), other.mode(), type.mode());
+			assertEquals(String.format("Wrong mode() result for %s", type),
+					other.mode(), type.mode());
 		}
 	}
 
 	@Test
-	public void createShouldReturnAnINodeWithProperType() {
+	public void createShouldReturnAnINodeWithProperType()
+	{
 		for (INodeType type : INodeType.values()) {
 			INode inode = type.create();
-			assertSame(String.format("Wrong create() result for %s", type), inode.getInodeType(), type);
+			assertSame(String.format("Wrong create() result for %s", type),
+					inode.getInodeType(), type);
 		}
 	}
 
 	@Test
-	public void fromValueShouldProperlyFindAllValuesFromOneToFourteen() throws SquashFsException {
+	public void fromValueShouldProperlyFindAllValuesFromOneToFourteen()
+			throws SquashFsException
+	{
 		EnumSet<INodeType> pending = EnumSet.allOf(INodeType.class);
 		for (short i = 1; i <= 14; i++) {
 			INodeType it = INodeType.fromValue(i);
-			assertEquals(String.format("Wrong fromValue() result for %d", i), i, it.value());
-			assertTrue(String.format("Duplicate entry found for %s", it), pending.remove(it));
+			assertEquals(String.format("Wrong fromValue() result for %d", i), i,
+					it.value());
+			assertTrue(String.format("Duplicate entry found for %s", it),
+					pending.remove(it));
 		}
-		assertEquals(String.format("Didn't find all values: %s", pending), 0, pending.size());
+		assertEquals(String.format("Didn't find all values: %s", pending), 0,
+				pending.size());
 	}
 
 	@Test(expected = SquashFsException.class)
-	public void fromValueShouldThrowExceptionForOutOfRangeValue() throws SquashFsException {
+	public void fromValueShouldThrowExceptionForOutOfRangeValue()
+			throws SquashFsException
+	{
 		INodeType.fromValue((short) 15);
 	}
 
 	@Test
-	public void fromDirectoryValueShouldProperlyFindAllValuesFromOneToSeven() throws SquashFsException {
+	public void fromDirectoryValueShouldProperlyFindAllValuesFromOneToSeven()
+			throws SquashFsException
+	{
 		EnumSet<INodeType> pending = EnumSet.allOf(INodeType.class);
 		pending.removeIf(it -> !it.basic());
 
 		for (short i = 1; i <= 7; i++) {
 			INodeType it = INodeType.fromDirectoryValue(i);
-			assertEquals(String.format("Wrong fromDirectoryValue() result for %d", i), i, it.value());
-			assertTrue(String.format("Duplicate entry found for %s", it), pending.remove(it));
+			assertEquals(String
+					.format("Wrong fromDirectoryValue() result for %d", i), i,
+					it.value());
+			assertTrue(String.format("Duplicate entry found for %s", it),
+					pending.remove(it));
 		}
-		assertEquals(String.format("Didn't find all values: %s", pending), 0, pending.size());
+		assertEquals(String.format("Didn't find all values: %s", pending), 0,
+				pending.size());
 	}
 
 	@Test(expected = SquashFsException.class)
-	public void fromDirectoryValueShouldThrowExceptionForOutOfRangeValue() throws SquashFsException {
+	public void fromDirectoryValueShouldThrowExceptionForOutOfRangeValue()
+			throws SquashFsException
+	{
 		INodeType.fromDirectoryValue((short) 8);
 	}
 

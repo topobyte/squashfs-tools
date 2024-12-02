@@ -22,44 +22,52 @@ import static org.apache.hadoop.squashfs.util.BinUtils.DumpOptions.DECIMAL;
 import static org.apache.hadoop.squashfs.util.BinUtils.DumpOptions.UNSIGNED;
 import static org.apache.hadoop.squashfs.util.BinUtils.dumpBin;
 
-public class FragmentTableEntry {
-  private final long start;
-  private final int size;
+public class FragmentTableEntry
+{
+	private final long start;
+	private final int size;
 
-  public FragmentTableEntry(long start, int size, boolean compressed) {
-    this(start, compressed ? size : (size | 0x1000000));
-  }
+	public FragmentTableEntry(long start, int size, boolean compressed)
+	{
+		this(start, compressed ? size : (size | 0x1000000));
+	}
 
-  public FragmentTableEntry(long start, int size) {
-    this.start = start;
-    this.size = size;
-  }
+	public FragmentTableEntry(long start, int size)
+	{
+		this.start = start;
+		this.size = size;
+	}
 
-  public long getStart() {
-    return start;
-  }
+	public long getStart()
+	{
+		return start;
+	}
 
-  public int getSize() {
-    return size;
-  }
+	public int getSize()
+	{
+		return size;
+	}
 
-  public boolean isCompressed() {
-    return (size & 0x1000000) == 0;
-  }
+	public boolean isCompressed()
+	{
+		return (size & 0x1000000) == 0;
+	}
 
-  public int getDiskSize() {
-    return (size & 0xFFFFF);
-  }
+	public int getDiskSize()
+	{
+		return (size & 0xFFFFF);
+	}
 
-  @Override
-  public String toString() {
-    StringBuilder buf = new StringBuilder();
-    buf.append(String.format("fragment-table-entry {%n"));
-    int width = 10;
-    dumpBin(buf, width, "start", start, DECIMAL, UNSIGNED);
-    dumpBin(buf, width, "compressed", isCompressed() ? "true" : "false");
-    dumpBin(buf, width, "diskSize", getDiskSize(), DECIMAL, UNSIGNED);
-    buf.append("}");
-    return buf.toString();
-  }
+	@Override
+	public String toString()
+	{
+		StringBuilder buf = new StringBuilder();
+		buf.append(String.format("fragment-table-entry {%n"));
+		int width = 10;
+		dumpBin(buf, width, "start", start, DECIMAL, UNSIGNED);
+		dumpBin(buf, width, "compressed", isCompressed() ? "true" : "false");
+		dumpBin(buf, width, "diskSize", getDiskSize(), DECIMAL, UNSIGNED);
+		buf.append("}");
+		return buf.toString();
+	}
 }

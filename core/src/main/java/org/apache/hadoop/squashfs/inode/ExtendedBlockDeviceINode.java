@@ -19,21 +19,25 @@
 package org.apache.hadoop.squashfs.inode;
 
 public class ExtendedBlockDeviceINode extends AbstractExtendedDeviceINode
-    implements BlockDeviceINode {
+		implements BlockDeviceINode
+{
 
-  @Override
-  protected String getName() {
-    return "extended-block-dev-inode";
-  }
+	@Override
+	protected String getName()
+	{
+		return "extended-block-dev-inode";
+	}
 
-  @Override
-  public INodeType getInodeType() {
-    return INodeType.EXTENDED_BLOCK_DEVICE;
-  }
+	@Override
+	public INodeType getInodeType()
+	{
+		return INodeType.EXTENDED_BLOCK_DEVICE;
+	}
 
-  @Override
-  public BlockDeviceINode simplify() {
-    return BasicBlockDeviceINode.simplify(this);
-  }
+	@Override
+	public BlockDeviceINode simplify()
+	{
+		return BasicBlockDeviceINode.simplify(this);
+	}
 
 }

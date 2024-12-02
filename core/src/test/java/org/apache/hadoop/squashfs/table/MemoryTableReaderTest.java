@@ -29,14 +29,16 @@ import org.junit.Test;
 
 import org.apache.hadoop.squashfs.superblock.SuperBlock;
 
-public class MemoryTableReaderTest {
+public class MemoryTableReaderTest
+{
 
 	SuperBlock sb;
 	byte[] data;
 	MemoryTableReader reader;
 
 	@Before
-	public void setUp() throws Exception {
+	public void setUp() throws Exception
+	{
 		sb = new SuperBlock();
 		data = new byte[1024];
 		for (int i = 0; i < data.length; i++) {
@@ -46,33 +48,40 @@ public class MemoryTableReaderTest {
 	}
 
 	@Test
-	public void readShouldExposeByteBuffer() throws Exception {
+	public void readShouldExposeByteBuffer() throws Exception
+	{
 		ByteBuffer bb = reader.read(0L, data.length);
 		for (int i = 0; i < data.length; i++) {
-			assertEquals(String.format("Wrong value for element %d", i), (byte) (i & 0xff), bb.get());
+			assertEquals(String.format("Wrong value for element %d", i),
+					(byte) (i & 0xff), bb.get());
 		}
 	}
 
 	@Test
-	public void readShouldExposeByteBufferAtOffset() throws Exception {
+	public void readShouldExposeByteBufferAtOffset() throws Exception
+	{
 		ByteBuffer bb = reader.read(1L, data.length - 1);
 		for (int i = 0; i < data.length - 1; i++) {
-			assertEquals(String.format("Wrong value for element %d", i), (byte) ((i + 1) & 0xff), bb.get());
+			assertEquals(String.format("Wrong value for element %d", i),
+					(byte) ((i + 1) & 0xff), bb.get());
 		}
 	}
 
 	@Test(expected = EOFException.class)
-	public void readShouldThrowExceptionOnEof() throws Exception {
+	public void readShouldThrowExceptionOnEof() throws Exception
+	{
 		reader.read(1023L, 2);
 	}
 
 	@Test
-	public void getSuperBlockShouldReturnConstructedInstance() {
+	public void getSuperBlockShouldReturnConstructedInstance()
+	{
 		assertSame(sb, reader.getSuperBlock());
 	}
 
 	@Test
-	public void coverClose() {
+	public void coverClose()
+	{
 		reader.close();
 	}
 

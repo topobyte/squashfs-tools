@@ -24,12 +24,14 @@ import static org.junit.Assert.assertSame;
 import org.junit.Before;
 import org.junit.Test;
 
-public class ExtendedCharDeviceINodeTest {
+public class ExtendedCharDeviceINodeTest
+{
 
 	ExtendedCharDeviceINode inode;
 
 	@Before
-	public void setUp() {
+	public void setUp()
+	{
 		inode = new ExtendedCharDeviceINode();
 		inode.setDevice(1);
 		inode.setNlink(2);
@@ -37,17 +39,20 @@ public class ExtendedCharDeviceINodeTest {
 	}
 
 	@Test
-	public void getNameShouldReturnCorrectValue() {
+	public void getNameShouldReturnCorrectValue()
+	{
 		assertEquals("extended-char-dev-inode", inode.getName());
 	}
 
 	@Test
-	public void getInodeTypeShouldReturnCorrectValue() {
+	public void getInodeTypeShouldReturnCorrectValue()
+	{
 		assertSame(INodeType.EXTENDED_CHAR_DEVICE, inode.getInodeType());
 	}
 
 	@Test
-	public void simplifyShouldReturnOriginalIfExtendedAttributesPresent() {
+	public void simplifyShouldReturnOriginalIfExtendedAttributesPresent()
+	{
 		CharDeviceINode inode2 = new ExtendedCharDeviceINode();
 		inode2.setDevice(1);
 		inode2.setNlink(2);
@@ -56,20 +61,23 @@ public class ExtendedCharDeviceINodeTest {
 	}
 
 	@Test
-	public void simplifyShouldReturnBasicIfExtendedAttributesNotPresent() {
+	public void simplifyShouldReturnBasicIfExtendedAttributesNotPresent()
+	{
 		CharDeviceINode inode2 = new ExtendedCharDeviceINode();
 		inode2.setDevice(1);
 		inode2.setNlink(2);
 		inode2.setXattrIndex(-1);
 
 		CharDeviceINode result = inode2.simplify();
-		assertSame("wrong class", BasicCharDeviceINode.class, result.getClass());
+		assertSame("wrong class", BasicCharDeviceINode.class,
+				result.getClass());
 		assertSame("wrong device", 1, result.getDevice());
 		assertSame("wrong nlink count", 2, result.getNlink());
 	}
 
 	@Test
-	public void toStringShouldNotFail() {
+	public void toStringShouldNotFail()
+	{
 		System.out.println(inode.toString());
 	}
 

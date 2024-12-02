@@ -24,28 +24,33 @@ import static org.junit.Assert.assertSame;
 import org.junit.Before;
 import org.junit.Test;
 
-public class ExtendedFifoINodeTest {
+public class ExtendedFifoINodeTest
+{
 
 	ExtendedFifoINode inode;
 
 	@Before
-	public void setUp() {
+	public void setUp()
+	{
 		inode = new ExtendedFifoINode();
 		inode.setNlink(2);
 	}
 
 	@Test
-	public void getNameShouldReturnCorrectValue() {
+	public void getNameShouldReturnCorrectValue()
+	{
 		assertEquals("extended-fifo-inode", inode.getName());
 	}
 
 	@Test
-	public void getInodeTypeShouldReturnCorrectValue() {
+	public void getInodeTypeShouldReturnCorrectValue()
+	{
 		assertSame(INodeType.EXTENDED_FIFO, inode.getInodeType());
 	}
 
 	@Test
-	public void simplifyShouldReturnOriginalIfExtendedAttributesPresent() {
+	public void simplifyShouldReturnOriginalIfExtendedAttributesPresent()
+	{
 		FifoINode inode2 = new ExtendedFifoINode();
 		inode2.setNlink(2);
 		inode2.setXattrIndex(3);
@@ -53,7 +58,8 @@ public class ExtendedFifoINodeTest {
 	}
 
 	@Test
-	public void simplifyShouldReturnBasicIfExtendedAttributesNotPresent() {
+	public void simplifyShouldReturnBasicIfExtendedAttributesNotPresent()
+	{
 		FifoINode inode2 = new ExtendedFifoINode();
 		inode2.setNlink(2);
 		inode2.setXattrIndex(-1);
@@ -64,7 +70,8 @@ public class ExtendedFifoINodeTest {
 	}
 
 	@Test
-	public void toStringShouldNotFail() {
+	public void toStringShouldNotFail()
+	{
 		System.out.println(inode.toString());
 	}
 

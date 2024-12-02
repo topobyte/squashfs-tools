@@ -30,151 +30,176 @@ import static org.apache.hadoop.squashfs.util.BinUtils.DumpOptions.UNSIGNED;
 import static org.apache.hadoop.squashfs.util.BinUtils.dumpBin;
 
 public class ExtendedDirectoryINode extends AbstractINode
-    implements DirectoryINode {
+		implements DirectoryINode
+{
 
-  int nlink = 1;
-  int fileSize; // 3 + # of uncompressed bytes in directory table
-  int startBlock;
-  int parentInodeNumber;
-  short indexCount;
-  short offset;
-  int xattrIndex = XATTR_NOT_PRESENT;
+	int nlink = 1;
+	int fileSize; // 3 + # of uncompressed bytes in directory table
+	int startBlock;
+	int parentInodeNumber;
+	short indexCount;
+	short offset;
+	int xattrIndex = XATTR_NOT_PRESENT;
 
-  @Override
-  public int getStartBlock() {
-    return startBlock;
-  }
+	@Override
+	public int getStartBlock()
+	{
+		return startBlock;
+	}
 
-  @Override
-  public void setStartBlock(int startBlock) {
-    this.startBlock = startBlock;
-  }
+	@Override
+	public void setStartBlock(int startBlock)
+	{
+		this.startBlock = startBlock;
+	}
 
-  @Override
-  public int getNlink() {
-    return nlink;
-  }
+	@Override
+	public int getNlink()
+	{
+		return nlink;
+	}
 
-  @Override
-  public void setNlink(int nlink) {
-    this.nlink = nlink;
-  }
+	@Override
+	public void setNlink(int nlink)
+	{
+		this.nlink = nlink;
+	}
 
-  @Override
-  public int getFileSize() {
-    return fileSize;
-  }
+	@Override
+	public int getFileSize()
+	{
+		return fileSize;
+	}
 
-  @Override
-  public void setFileSize(int fileSize) {
-    this.fileSize = fileSize;
-  }
+	@Override
+	public void setFileSize(int fileSize)
+	{
+		this.fileSize = fileSize;
+	}
 
-  @Override
-  public short getOffset() {
-    return offset;
-  }
+	@Override
+	public short getOffset()
+	{
+		return offset;
+	}
 
-  @Override
-  public void setOffset(short offset) {
-    this.offset = offset;
-  }
+	@Override
+	public void setOffset(short offset)
+	{
+		this.offset = offset;
+	}
 
-  @Override
-  public int getParentInodeNumber() {
-    return parentInodeNumber;
-  }
+	@Override
+	public int getParentInodeNumber()
+	{
+		return parentInodeNumber;
+	}
 
-  @Override
-  public void setParentInodeNumber(int parentInodeNumber) {
-    this.parentInodeNumber = parentInodeNumber;
-  }
+	@Override
+	public void setParentInodeNumber(int parentInodeNumber)
+	{
+		this.parentInodeNumber = parentInodeNumber;
+	}
 
-  @Override
-  public short getIndexCount() {
-    return indexCount;
-  }
+	@Override
+	public short getIndexCount()
+	{
+		return indexCount;
+	}
 
-  @Override
-  public void setIndexCount(short indexCount) {
-    this.indexCount = indexCount;
-  }
+	@Override
+	public void setIndexCount(short indexCount)
+	{
+		this.indexCount = indexCount;
+	}
 
-  @Override
-  public boolean isIndexPresent() {
-    return indexCount != (short) 0;
-  }
+	@Override
+	public boolean isIndexPresent()
+	{
+		return indexCount != (short) 0;
+	}
 
-  public int getXattrIndex() {
-    return xattrIndex;
-  }
+	public int getXattrIndex()
+	{
+		return xattrIndex;
+	}
 
-  public void setXattrIndex(int xattrIndex) {
-    this.xattrIndex = xattrIndex;
-  }
+	public void setXattrIndex(int xattrIndex)
+	{
+		this.xattrIndex = xattrIndex;
+	}
 
-  @Override
-  public boolean isXattrPresent() {
-    return xattrIndex != XATTR_NOT_PRESENT;
-  }
+	@Override
+	public boolean isXattrPresent()
+	{
+		return xattrIndex != XATTR_NOT_PRESENT;
+	}
 
-  @Override
-  protected int getChildSerializedSize() {
-    return 24;
-  }
+	@Override
+	protected int getChildSerializedSize()
+	{
+		return 24;
+	}
 
-  @Override
-  protected String getName() {
-    return "extended-directory-inode";
-  }
+	@Override
+	protected String getName()
+	{
+		return "extended-directory-inode";
+	}
 
-  @Override
-  public INodeType getInodeType() {
-    return INodeType.EXTENDED_DIRECTORY;
-  }
+	@Override
+	public INodeType getInodeType()
+	{
+		return INodeType.EXTENDED_DIRECTORY;
+	}
 
-  @Override
-  protected void readExtraData(SuperBlock sb, DataInput in)
-      throws SquashFsException, IOException {
-    nlink = in.readInt();
-    fileSize = in.readInt();
-    startBlock = in.readInt();
-    parentInodeNumber = in.readInt();
-    indexCount = in.readShort();
-    offset = in.readShort();
-    xattrIndex = in.readInt();
-  }
+	@Override
+	protected void readExtraData(SuperBlock sb, DataInput in)
+			throws SquashFsException, IOException
+	{
+		nlink = in.readInt();
+		fileSize = in.readInt();
+		startBlock = in.readInt();
+		parentInodeNumber = in.readInt();
+		indexCount = in.readShort();
+		offset = in.readShort();
+		xattrIndex = in.readInt();
+	}
 
-  @Override
-  protected void writeExtraData(MetadataWriter out) throws IOException {
-    out.writeInt(nlink);
-    out.writeInt(fileSize);
-    out.writeInt(startBlock);
-    out.writeInt(parentInodeNumber);
-    out.writeShort(indexCount);
-    out.writeShort(offset);
-    out.writeInt(xattrIndex);
-  }
+	@Override
+	protected void writeExtraData(MetadataWriter out) throws IOException
+	{
+		out.writeInt(nlink);
+		out.writeInt(fileSize);
+		out.writeInt(startBlock);
+		out.writeInt(parentInodeNumber);
+		out.writeShort(indexCount);
+		out.writeShort(offset);
+		out.writeInt(xattrIndex);
+	}
 
-  @Override
-  protected int getPreferredDumpWidth() {
-    return 19;
-  }
+	@Override
+	protected int getPreferredDumpWidth()
+	{
+		return 19;
+	}
 
-  @Override
-  protected void dumpProperties(StringBuilder buf, int width) {
-    dumpBin(buf, width, "nlink", nlink, DECIMAL, UNSIGNED);
-    dumpBin(buf, width, "fileSize", fileSize, DECIMAL, UNSIGNED);
-    dumpBin(buf, width, "startBlock", startBlock, DECIMAL, UNSIGNED);
-    dumpBin(buf, width, "parentInodeNumber", parentInodeNumber, DECIMAL,
-        UNSIGNED);
-    dumpBin(buf, width, "indexCount", indexCount, DECIMAL, UNSIGNED);
-    dumpBin(buf, width, "offset", offset, DECIMAL, UNSIGNED);
-    dumpBin(buf, width, "xattrIndex", xattrIndex, DECIMAL, UNSIGNED);
-  }
+	@Override
+	protected void dumpProperties(StringBuilder buf, int width)
+	{
+		dumpBin(buf, width, "nlink", nlink, DECIMAL, UNSIGNED);
+		dumpBin(buf, width, "fileSize", fileSize, DECIMAL, UNSIGNED);
+		dumpBin(buf, width, "startBlock", startBlock, DECIMAL, UNSIGNED);
+		dumpBin(buf, width, "parentInodeNumber", parentInodeNumber, DECIMAL,
+				UNSIGNED);
+		dumpBin(buf, width, "indexCount", indexCount, DECIMAL, UNSIGNED);
+		dumpBin(buf, width, "offset", offset, DECIMAL, UNSIGNED);
+		dumpBin(buf, width, "xattrIndex", xattrIndex, DECIMAL, UNSIGNED);
+	}
 
-  @Override
-  public DirectoryINode simplify() {
-    return BasicDirectoryINode.simplify(this);
-  }
+	@Override
+	public DirectoryINode simplify()
+	{
+		return BasicDirectoryINode.simplify(this);
+	}
 }

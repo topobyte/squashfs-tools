@@ -29,99 +29,110 @@ import static org.apache.hadoop.squashfs.util.BinUtils.DumpOptions.DECIMAL;
 import static org.apache.hadoop.squashfs.util.BinUtils.DumpOptions.UNSIGNED;
 import static org.apache.hadoop.squashfs.util.BinUtils.dumpBin;
 
-public class DirectoryEntry implements DirectoryElement {
+public class DirectoryEntry implements DirectoryElement
+{
 
-  private static final byte[] EMPTY = new byte[0];
+	private static final byte[] EMPTY = new byte[0];
 
-  public static final short MAX_FILENAME_LENGTH = 256;
+	public static final short MAX_FILENAME_LENGTH = 256;
 
-  protected DirectoryHeader header;
+	protected DirectoryHeader header;
 
-  protected short offset; // offset into inode block where data starts
-  protected short inodeNumberDelta; // amount to add to header inodeNumber
-  protected short type; // inode type
-  protected short size; // size of name (1 less than actual size)
-  protected byte[] name = EMPTY; // filename (not null terminated)
+	protected short offset; // offset into inode block where data starts
+	protected short inodeNumberDelta; // amount to add to header inodeNumber
+	protected short type; // inode type
+	protected short size; // size of name (1 less than actual size)
+	protected byte[] name = EMPTY; // filename (not null terminated)
 
-  public DirectoryHeader getHeader() {
-    return header;
-  }
+	public DirectoryHeader getHeader()
+	{
+		return header;
+	}
 
-  public short getOffset() {
-    return offset;
-  }
+	public short getOffset()
+	{
+		return offset;
+	}
 
-  public short getInodeNumberDelta() {
-    return inodeNumberDelta;
-  }
+	public short getInodeNumberDelta()
+	{
+		return inodeNumberDelta;
+	}
 
-  public short getType() {
-    return type;
-  }
+	public short getType()
+	{
+		return type;
+	}
 
-  public short getSize() {
-    return size;
-  }
+	public short getSize()
+	{
+		return size;
+	}
 
-  public byte[] getName() {
-    return name;
-  }
+	public byte[] getName()
+	{
+		return name;
+	}
 
-  public String getNameAsString() {
-    return new String(name, StandardCharsets.ISO_8859_1);
-  }
+	public String getNameAsString()
+	{
+		return new String(name, StandardCharsets.ISO_8859_1);
+	}
 
-  public int getStructureSize() {
-    return 8 + name.length;
-  }
+	public int getStructureSize()
+	{
+		return 8 + name.length;
+	}
 
-  public static DirectoryEntry read(DirectoryHeader header, DataInput in)
-      throws SquashFsException, IOException {
-    DirectoryEntry entry = new DirectoryEntry();
-    entry.readData(header, in);
-    return entry;
-  }
+	public static DirectoryEntry read(DirectoryHeader header, DataInput in)
+			throws SquashFsException, IOException
+	{
+		DirectoryEntry entry = new DirectoryEntry();
+		entry.readData(header, in);
+		return entry;
+	}
 
-  public void readData(DirectoryHeader header, DataInput in)
-      throws SquashFsException, IOException {
-    this.header = header;
-    offset = in.readShort();
-    inodeNumberDelta = in.readShort();
-    type = in.readShort();
-    size = (short) (in.readShort() & 0x7fff);
-    if (size + 1 > MAX_FILENAME_LENGTH) {
-      throw new SquashFsException(String.format(
-          "Invalid directory entry: Found filename of length %d (max = %d)%n%s",
-          size + 1,
-          MAX_FILENAME_LENGTH,
-          this));
-    }
-    name = new byte[size + 1];
-    in.readFully(name);
-  }
+	public void readData(DirectoryHeader header, DataInput in)
+			throws SquashFsException, IOException
+	{
+		this.header = header;
+		offset = in.readShort();
+		inodeNumberDelta = in.readShort();
+		type = in.readShort();
+		size = (short) (in.readShort() & 0x7fff);
+		if (size + 1 > MAX_FILENAME_LENGTH) {
+			throw new SquashFsException(String.format(
+					"Invalid directory entry: Found filename of length %d (max = %d)%n%s",
+					size + 1, MAX_FILENAME_LENGTH, this));
+		}
+		name = new byte[size + 1];
+		in.readFully(name);
+	}
 
-  @Override
-  public void writeData(DataOutput out) throws IOException {
-    out.writeShort(offset);
-    out.writeShort(inodeNumberDelta);
-    out.writeShort(type);
-    out.writeShort(size);
-    out.write(name);
-  }
+	@Override
+	public void writeData(DataOutput out) throws IOException
+	{
+		out.writeShort(offset);
+		out.writeShort(inodeNumberDelta);
+		out.writeShort(type);
+		out.writeShort(size);
+		out.write(name);
+	}
 
-  @Override
-  public String toString() {
-    StringBuilder buf = new StringBuilder();
-    buf.append(String.format("directory-entry {%n"));
-    int width = 18;
-    dumpBin(buf, width, "offset", offset, DECIMAL, UNSIGNED);
-    dumpBin(buf, width, "inodeNumberDelta", inodeNumberDelta, DECIMAL,
-        UNSIGNED);
-    dumpBin(buf, width, "type", type, DECIMAL, UNSIGNED);
-    dumpBin(buf, width, "size", size, DECIMAL, UNSIGNED);
-    dumpBin(buf, width, "name", name, 0, name.length, 16, 2);
-    buf.append("}");
-    return buf.toString();
-  }
+	@Override
+	public String toString()
+	{
+		StringBuilder buf = new StringBuilder();
+		buf.append(String.format("directory-entry {%n"));
+		int width = 18;
+		dumpBin(buf, width, "offset", offset, DECIMAL, UNSIGNED);
+		dumpBin(buf, width, "inodeNumberDelta", inodeNumberDelta, DECIMAL,
+				UNSIGNED);
+		dumpBin(buf, width, "type", type, DECIMAL, UNSIGNED);
+		dumpBin(buf, width, "size", size, DECIMAL, UNSIGNED);
+		dumpBin(buf, width, "name", name, 0, name.length, 16, 2);
+		buf.append("}");
+		return buf.toString();
+	}
 
 }

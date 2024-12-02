@@ -26,82 +26,92 @@ import java.nio.channels.FileChannel.MapMode;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MappedFile {
+public class MappedFile
+{
 
-  private final long fileSize;
-  private final MappedByteBuffer[] buffers;
-  private final int mapSize;
-  private final int windowSize;
+	private final long fileSize;
+	private final MappedByteBuffer[] buffers;
+	private final int mapSize;
+	private final int windowSize;
 
-  MappedFile(long fileSize, MappedByteBuffer[] buffers, int mapSize,
-      int windowSize) {
-    this.fileSize = fileSize;
-    this.buffers = buffers;
-    this.mapSize = mapSize;
-    this.windowSize = windowSize;
-  }
+	MappedFile(long fileSize, MappedByteBuffer[] buffers, int mapSize,
+			int windowSize)
+	{
+		this.fileSize = fileSize;
+		this.buffers = buffers;
+		this.mapSize = mapSize;
+		this.windowSize = windowSize;
+	}
 
-  public static MappedFile mmap(FileChannel channel, int bufferSize,
-      int windowSize) throws IOException {
-    long size = channel.size();
+	public static MappedFile mmap(FileChannel channel, int bufferSize,
+			int windowSize) throws IOException
+	{
+		long size = channel.size();
 
-    List<MappedByteBuffer> buffers = new ArrayList<>();
+		List<MappedByteBuffer> buffers = new ArrayList<>();
 
-    long offset = 0L;
-    long remain = size;
+		long offset = 0L;
+		long remain = size;
 
-    while (offset < size) {
-      long mapSize = Math.min(windowSize, remain);
+		while (offset < size) {
+			long mapSize = Math.min(windowSize, remain);
 
-      buffers.add(channel.map(MapMode.READ_ONLY, offset, mapSize));
-      offset += bufferSize;
-      remain -= bufferSize;
-    }
+			buffers.add(channel.map(MapMode.READ_ONLY, offset, mapSize));
+			offset += bufferSize;
+			remain -= bufferSize;
+		}
 
-    MappedByteBuffer[] bufferArray =
-        buffers.toArray(new MappedByteBuffer[buffers.size()]);
+		MappedByteBuffer[] bufferArray = buffers
+				.toArray(new MappedByteBuffer[buffers.size()]);
 
-    return new MappedFile(size, bufferArray, bufferSize, windowSize);
-  }
+		return new MappedFile(size, bufferArray, bufferSize, windowSize);
+	}
 
-  public long getFileSize() {
-    return fileSize;
-  }
+	public long getFileSize()
+	{
+		return fileSize;
+	}
 
-  public int getMapSize() {
-    return mapSize;
-  }
+	public int getMapSize()
+	{
+		return mapSize;
+	}
 
-  public int getWindowSize() {
-    return windowSize;
-  }
+	public int getWindowSize()
+	{
+		return windowSize;
+	}
 
-  MappedByteBuffer buffer(long offset) {
-    long remain = offset % mapSize;
-    int block = (int) ((offset - remain) / mapSize);
-    return buffers[block];
-  }
+	MappedByteBuffer buffer(long offset)
+	{
+		long remain = offset % mapSize;
+		int block = (int) ((offset - remain) / mapSize);
+		return buffers[block];
+	}
 
-  int bufferOffset(long offset) {
-    long remain = offset % mapSize;
-    return (int) remain;
-  }
+	int bufferOffset(long offset)
+	{
+		long remain = offset % mapSize;
+		return (int) remain;
+	}
 
-  public ByteBuffer from(long offset) {
-    MappedByteBuffer src = buffer(offset);
-    int bufOffset = bufferOffset(offset);
+	public ByteBuffer from(long offset)
+	{
+		MappedByteBuffer src = buffer(offset);
+		int bufOffset = bufferOffset(offset);
 
-    ByteBuffer copy = src.duplicate();
-    copy.position(copy.position() + bufOffset);
-    ByteBuffer slice = copy.slice();
-    return slice;
-  }
+		ByteBuffer copy = src.duplicate();
+		copy.position(copy.position() + bufOffset);
+		ByteBuffer slice = copy.slice();
+		return slice;
+	}
 
-  @Override
-  public String toString() {
-    return String.format(
-        "mapped-file: { size=%d, buffers=%d, mapSize=%d, windowSize=%d }",
-        fileSize, buffers.length, mapSize, windowSize);
-  }
+	@Override
+	public String toString()
+	{
+		return String.format(
+				"mapped-file: { size=%d, buffers=%d, mapSize=%d, windowSize=%d }",
+				fileSize, buffers.length, mapSize, windowSize);
+	}
 
 }

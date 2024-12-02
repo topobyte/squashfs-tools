@@ -31,134 +31,152 @@ import static org.apache.hadoop.squashfs.util.BinUtils.DumpOptions.UNIX_TIMESTAM
 import static org.apache.hadoop.squashfs.util.BinUtils.DumpOptions.UNSIGNED;
 import static org.apache.hadoop.squashfs.util.BinUtils.dumpBin;
 
-abstract public class AbstractINode implements INode {
+abstract public class AbstractINode implements INode
+{
 
-  short permissions;
-  short uidIdx;
-  short gidIdx;
-  int modifiedTime;
-  int inodeNumber;
+	short permissions;
+	short uidIdx;
+	short gidIdx;
+	int modifiedTime;
+	int inodeNumber;
 
-  @Override
-  public final void copyTo(INode dest) {
-    dest.setPermissions(permissions);
-    dest.setUidIdx(uidIdx);
-    dest.setGidIdx(gidIdx);
-    dest.setModifiedTime(modifiedTime);
-    dest.setInodeNumber(inodeNumber);
-  }
+	@Override
+	public final void copyTo(INode dest)
+	{
+		dest.setPermissions(permissions);
+		dest.setUidIdx(uidIdx);
+		dest.setGidIdx(gidIdx);
+		dest.setModifiedTime(modifiedTime);
+		dest.setInodeNumber(inodeNumber);
+	}
 
-  @Override
-  public final int getSerializedSize() {
-    return 16 + getChildSerializedSize();
-  }
+	@Override
+	public final int getSerializedSize()
+	{
+		return 16 + getChildSerializedSize();
+	}
 
-  @Override
-  public short getPermissions() {
-    return permissions;
-  }
+	@Override
+	public short getPermissions()
+	{
+		return permissions;
+	}
 
-  @Override
-  public void setPermissions(short permissions) {
-    this.permissions = permissions;
-  }
+	@Override
+	public void setPermissions(short permissions)
+	{
+		this.permissions = permissions;
+	}
 
-  @Override
-  public short getUidIdx() {
-    return uidIdx;
-  }
+	@Override
+	public short getUidIdx()
+	{
+		return uidIdx;
+	}
 
-  @Override
-  public void setUidIdx(short uidIdx) {
-    this.uidIdx = uidIdx;
-  }
+	@Override
+	public void setUidIdx(short uidIdx)
+	{
+		this.uidIdx = uidIdx;
+	}
 
-  @Override
-  public short getGidIdx() {
-    return gidIdx;
-  }
+	@Override
+	public short getGidIdx()
+	{
+		return gidIdx;
+	}
 
-  @Override
-  public void setGidIdx(short gidIdx) {
-    this.gidIdx = gidIdx;
-  }
+	@Override
+	public void setGidIdx(short gidIdx)
+	{
+		this.gidIdx = gidIdx;
+	}
 
-  @Override
-  public int getModifiedTime() {
-    return modifiedTime;
-  }
+	@Override
+	public int getModifiedTime()
+	{
+		return modifiedTime;
+	}
 
-  @Override
-  public void setModifiedTime(int modifiedTime) {
-    this.modifiedTime = modifiedTime;
-  }
+	@Override
+	public void setModifiedTime(int modifiedTime)
+	{
+		this.modifiedTime = modifiedTime;
+	}
 
-  @Override
-  public int getInodeNumber() {
-    return inodeNumber;
-  }
+	@Override
+	public int getInodeNumber()
+	{
+		return inodeNumber;
+	}
 
-  @Override
-  public void setInodeNumber(int inodeNumber) {
-    this.inodeNumber = inodeNumber;
-  }
+	@Override
+	public void setInodeNumber(int inodeNumber)
+	{
+		this.inodeNumber = inodeNumber;
+	}
 
-  abstract protected int getChildSerializedSize();
+	abstract protected int getChildSerializedSize();
 
-  @Override
-  public final void readData(SuperBlock sb, DataInput in)
-      throws SquashFsException, IOException {
-    permissions = in.readShort();
-    uidIdx = in.readShort();
-    gidIdx = in.readShort();
-    modifiedTime = in.readInt();
-    inodeNumber = in.readInt();
+	@Override
+	public final void readData(SuperBlock sb, DataInput in)
+			throws SquashFsException, IOException
+	{
+		permissions = in.readShort();
+		uidIdx = in.readShort();
+		gidIdx = in.readShort();
+		modifiedTime = in.readInt();
+		inodeNumber = in.readInt();
 
-    readExtraData(sb, in);
-  }
+		readExtraData(sb, in);
+	}
 
-  @Override
-  public final void writeData(MetadataWriter out) throws IOException {
-    out.writeShort(getInodeType().value());
-    out.writeShort(permissions);
-    out.writeShort(uidIdx);
-    out.writeShort(gidIdx);
-    out.writeInt(modifiedTime);
-    out.writeInt(inodeNumber);
+	@Override
+	public final void writeData(MetadataWriter out) throws IOException
+	{
+		out.writeShort(getInodeType().value());
+		out.writeShort(permissions);
+		out.writeShort(uidIdx);
+		out.writeShort(gidIdx);
+		out.writeInt(modifiedTime);
+		out.writeInt(inodeNumber);
 
-    writeExtraData(out);
-  }
+		writeExtraData(out);
+	}
 
-  abstract protected String getName();
+	abstract protected String getName();
 
-  abstract public INodeType getInodeType();
+	abstract public INodeType getInodeType();
 
-  abstract protected void writeExtraData(MetadataWriter out) throws IOException;
+	abstract protected void writeExtraData(MetadataWriter out)
+			throws IOException;
 
-  abstract protected void readExtraData(SuperBlock sb, DataInput in)
-      throws SquashFsException, IOException;
+	abstract protected void readExtraData(SuperBlock sb, DataInput in)
+			throws SquashFsException, IOException;
 
-  abstract protected int getPreferredDumpWidth();
+	abstract protected int getPreferredDumpWidth();
 
-  abstract protected void dumpProperties(StringBuilder buf, int width);
+	abstract protected void dumpProperties(StringBuilder buf, int width);
 
-  @Override
-  public String toString() {
-    int width = Math.max(21, getPreferredDumpWidth());
-    INodeType it = getInodeType();
+	@Override
+	public String toString()
+	{
+		int width = Math.max(21, getPreferredDumpWidth());
+		INodeType it = getInodeType();
 
-    StringBuilder buf = new StringBuilder();
-    buf.append(String.format("%s {%n", getName()));
-    dumpBin(buf, width, "inodeType", it.value(), DECIMAL, UNSIGNED);
-    dumpBin(buf, width, "inodeType (decoded)", it.name());
-    dumpBin(buf, width, "permissions", permissions, OCTAL, DECIMAL, UNSIGNED);
-    dumpBin(buf, width, "uidIdx", uidIdx, DECIMAL, UNSIGNED);
-    dumpBin(buf, width, "gidIdx", gidIdx, DECIMAL, UNSIGNED);
-    dumpBin(buf, width, "modifiedTime", modifiedTime, DECIMAL, UNSIGNED,
-        UNIX_TIMESTAMP);
-    dumpBin(buf, width, "inodeNumber", inodeNumber, DECIMAL, UNSIGNED);
-    dumpProperties(buf, width);
-    buf.append("}");
-    return buf.toString();
-  }
+		StringBuilder buf = new StringBuilder();
+		buf.append(String.format("%s {%n", getName()));
+		dumpBin(buf, width, "inodeType", it.value(), DECIMAL, UNSIGNED);
+		dumpBin(buf, width, "inodeType (decoded)", it.name());
+		dumpBin(buf, width, "permissions", permissions, OCTAL, DECIMAL,
+				UNSIGNED);
+		dumpBin(buf, width, "uidIdx", uidIdx, DECIMAL, UNSIGNED);
+		dumpBin(buf, width, "gidIdx", gidIdx, DECIMAL, UNSIGNED);
+		dumpBin(buf, width, "modifiedTime", modifiedTime, DECIMAL, UNSIGNED,
+				UNIX_TIMESTAMP);
+		dumpBin(buf, width, "inodeNumber", inodeNumber, DECIMAL, UNSIGNED);
+		dumpProperties(buf, width);
+		buf.append("}");
+		return buf.toString();
+	}
 }

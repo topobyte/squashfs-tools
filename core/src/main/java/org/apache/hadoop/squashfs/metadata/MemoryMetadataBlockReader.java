@@ -26,56 +26,64 @@ import java.io.DataInputStream;
 import java.io.EOFException;
 import java.io.IOException;
 
-public class MemoryMetadataBlockReader implements MetadataBlockReader {
+public class MemoryMetadataBlockReader implements MetadataBlockReader
+{
 
-  private final int tag;
-  private final SuperBlock sb;
-  private final byte[] data;
-  private final int offset;
-  private final int length;
+	private final int tag;
+	private final SuperBlock sb;
+	private final byte[] data;
+	private final int offset;
+	private final int length;
 
-  public MemoryMetadataBlockReader(int tag, SuperBlock sb, byte[] data) {
-    this(tag, sb, data, 0, data.length);
-  }
+	public MemoryMetadataBlockReader(int tag, SuperBlock sb, byte[] data)
+	{
+		this(tag, sb, data, 0, data.length);
+	}
 
-  public MemoryMetadataBlockReader(int tag, SuperBlock sb, byte[] data,
-      int offset, int length) {
-    this.tag = tag;
-    this.sb = sb;
-    this.data = data;
-    this.offset = offset;
-    this.length = length;
-  }
+	public MemoryMetadataBlockReader(int tag, SuperBlock sb, byte[] data,
+			int offset, int length)
+	{
+		this.tag = tag;
+		this.sb = sb;
+		this.data = data;
+		this.offset = offset;
+		this.length = length;
+	}
 
-  @Override
-  public SuperBlock getSuperBlock(int tag) {
-    if (this.tag != tag) {
-      throw new IllegalArgumentException(String.format("Invalid tag: %d", tag));
-    }
-    return sb;
-  }
+	@Override
+	public SuperBlock getSuperBlock(int tag)
+	{
+		if (this.tag != tag) {
+			throw new IllegalArgumentException(
+					String.format("Invalid tag: %d", tag));
+		}
+		return sb;
+	}
 
-  @Override
-  public MetadataBlock read(int tag, long fileOffset)
-      throws IOException, SquashFsException {
-    if (this.tag != tag) {
-      throw new IllegalArgumentException(String.format("Invalid tag: %d", tag));
-    }
-    if (fileOffset >= length) {
-      throw new EOFException("Read past end of buffer");
-    }
-    int localOffset = (int) fileOffset;
+	@Override
+	public MetadataBlock read(int tag, long fileOffset)
+			throws IOException, SquashFsException
+	{
+		if (this.tag != tag) {
+			throw new IllegalArgumentException(
+					String.format("Invalid tag: %d", tag));
+		}
+		if (fileOffset >= length) {
+			throw new EOFException("Read past end of buffer");
+		}
+		int localOffset = (int) fileOffset;
 
-    try (ByteArrayInputStream bis = new ByteArrayInputStream(data,
-        offset + localOffset, length - localOffset)) {
-      try (DataInputStream dis = new DataInputStream(bis)) {
-        return MetadataBlock.read(dis, sb);
-      }
-    }
-  }
+		try (ByteArrayInputStream bis = new ByteArrayInputStream(data,
+				offset + localOffset, length - localOffset)) {
+			try (DataInputStream dis = new DataInputStream(bis)) {
+				return MetadataBlock.read(dis, sb);
+			}
+		}
+	}
 
-  @Override
-  public void close() {
-  }
+	@Override
+	public void close()
+	{
+	}
 
 }

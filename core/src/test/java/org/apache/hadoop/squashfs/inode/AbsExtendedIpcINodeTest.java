@@ -30,45 +30,52 @@ import org.junit.Test;
 
 import org.apache.hadoop.squashfs.test.INodeTestUtils;
 
-public class AbsExtendedIpcINodeTest {
+public class AbsExtendedIpcINodeTest
+{
 
 	AbstractExtendedIpcINode inode;
 
 	@Before
-	public void setUp() {
+	public void setUp()
+	{
 		inode = new ExtendedSocketINode();
 		inode.setNlink(2);
 		inode.setXattrIndex(3);
 	}
 
 	@Test
-	public void nlinkPropertyShouldWorkAsExpected() {
+	public void nlinkPropertyShouldWorkAsExpected()
+	{
 		assertEquals(2, inode.getNlink());
 		inode.setNlink(3);
 		assertEquals(3, inode.getNlink());
 	}
 
 	@Test
-	public void xattrIndexPropertyShouldWorkAsExpected() {
+	public void xattrIndexPropertyShouldWorkAsExpected()
+	{
 		assertEquals(3, inode.getXattrIndex());
 		inode.setXattrIndex(4);
 		assertEquals(4, inode.getXattrIndex());
 	}
 
 	@Test
-	public void isXattrPresentShouldReturnTrueIfPresent() {
+	public void isXattrPresentShouldReturnTrueIfPresent()
+	{
 		assertTrue(inode.isXattrPresent());
 		inode.setXattrIndex(-1);
 		assertFalse(inode.isXattrPresent());
 	}
 
 	@Test
-	public void getChildSerializedSizeShouldReturnCorrectValue() {
+	public void getChildSerializedSizeShouldReturnCorrectValue()
+	{
 		assertEquals(8, inode.getChildSerializedSize());
 	}
 
 	@Test
-	public void writeDataAndReadDataShouldBeReflexive() throws IOException {
+	public void writeDataAndReadDataShouldBeReflexive() throws IOException
+	{
 		byte[] data = INodeTestUtils.serializeINode(inode);
 		INode dest = INodeTestUtils.deserializeINode(data);
 
@@ -80,7 +87,8 @@ public class AbsExtendedIpcINodeTest {
 	}
 
 	@Test
-	public void toStringShouldNotFail() {
+	public void toStringShouldNotFail()
+	{
 		System.out.println(inode.toString());
 	}
 }

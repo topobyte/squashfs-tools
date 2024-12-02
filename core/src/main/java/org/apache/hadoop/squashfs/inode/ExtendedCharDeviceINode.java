@@ -19,21 +19,25 @@
 package org.apache.hadoop.squashfs.inode;
 
 public class ExtendedCharDeviceINode extends AbstractExtendedDeviceINode
-    implements CharDeviceINode {
+		implements CharDeviceINode
+{
 
-  @Override
-  protected String getName() {
-    return "extended-char-dev-inode";
-  }
+	@Override
+	protected String getName()
+	{
+		return "extended-char-dev-inode";
+	}
 
-  @Override
-  public INodeType getInodeType() {
-    return INodeType.EXTENDED_CHAR_DEVICE;
-  }
+	@Override
+	public INodeType getInodeType()
+	{
+		return INodeType.EXTENDED_CHAR_DEVICE;
+	}
 
-  @Override
-  public CharDeviceINode simplify() {
-    return BasicCharDeviceINode.simplify(this);
-  }
+	@Override
+	public CharDeviceINode simplify()
+	{
+		return BasicCharDeviceINode.simplify(this);
+	}
 
 }

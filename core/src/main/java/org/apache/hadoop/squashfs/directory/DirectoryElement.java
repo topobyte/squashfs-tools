@@ -21,10 +21,11 @@ package org.apache.hadoop.squashfs.directory;
 import java.io.DataOutput;
 import java.io.IOException;
 
-public interface DirectoryElement {
+public interface DirectoryElement
+{
 
-  public int getStructureSize();
+	public int getStructureSize();
 
-  public void writeData(DataOutput out) throws IOException;
+	public void writeData(DataOutput out) throws IOException;
 
 }

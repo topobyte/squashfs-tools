@@ -32,7 +32,8 @@ import org.junit.Test;
 import org.apache.hadoop.squashfs.superblock.SuperBlock;
 import org.apache.hadoop.squashfs.test.MetadataTestUtils;
 
-public class TaggedMetadataBlockTest {
+public class TaggedMetadataBlockTest
+{
 
 	File tempFile;
 	TaggedMetadataBlockReader taggedReader;
@@ -44,7 +45,8 @@ public class TaggedMetadataBlockTest {
 	int offset2;
 
 	@Before
-	public void setUp() throws Exception {
+	public void setUp() throws Exception
+	{
 		sb = new SuperBlock();
 		// write a block
 		block = new byte[1024];
@@ -61,13 +63,15 @@ public class TaggedMetadataBlockTest {
 		encoded = new byte[data1.length + data2.length];
 		System.arraycopy(data1, 0, encoded, 0, data1.length);
 		System.arraycopy(data2, 0, encoded, data1.length, data2.length);
-		reader = new MemoryMetadataBlockReader(10101, sb, encoded, 0, encoded.length);
+		reader = new MemoryMetadataBlockReader(10101, sb, encoded, 0,
+				encoded.length);
 		taggedReader = new TaggedMetadataBlockReader(true);
 		taggedReader.add(10101, reader);
 	}
 
 	@After
-	public void tearDown() throws Exception {
+	public void tearDown() throws Exception
+	{
 		taggedReader.close();
 		taggedReader = null;
 		reader = null;
@@ -78,41 +82,48 @@ public class TaggedMetadataBlockTest {
 	}
 
 	@Test(expected = IllegalArgumentException.class)
-	public void addOfExistingTagShouldFail() {
+	public void addOfExistingTagShouldFail()
+	{
 		taggedReader.add(10101, reader);
 	}
 
 	@Test
-	public void addOfNewTagShouldSucceed() {
+	public void addOfNewTagShouldSucceed()
+	{
 		taggedReader.add(10102, reader);
 	}
 
 	@Test
-	public void getSuperBlockShouldReturnConstructedInstance() {
+	public void getSuperBlockShouldReturnConstructedInstance()
+	{
 		assertSame(sb, taggedReader.getSuperBlock(10101));
 	}
 
 	@Test(expected = IllegalArgumentException.class)
-	public void getSuperBlockShouldFailOnIncorrectTag() {
+	public void getSuperBlockShouldFailOnIncorrectTag()
+	{
 		taggedReader.getSuperBlock(10102);
 	}
 
 	@Test
-	public void readFirstBlockShouldSucceed() throws Exception {
+	public void readFirstBlockShouldSucceed() throws Exception
+	{
 		MetadataBlock mb = taggedReader.read(10101, 0L);
 		assertEquals(1024, mb.data.length);
 		assertArrayEquals(block, mb.data);
 	}
 
 	@Test
-	public void readSecondBlockShouldSucceed() throws Exception {
+	public void readSecondBlockShouldSucceed() throws Exception
+	{
 		MetadataBlock mb = taggedReader.read(10101, offset2);
 		assertEquals(1024, mb.data.length);
 		assertArrayEquals(block2, mb.data);
 	}
 
 	@Test(expected = EOFException.class)
-	public void readPastEofShouldFail() throws Exception {
+	public void readPastEofShouldFail() throws Exception
+	{
 		taggedReader.read(10101, encoded.length);
 	}
 

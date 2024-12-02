@@ -25,43 +25,49 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
-public class MemoryTableReader implements TableReader {
+public class MemoryTableReader implements TableReader
+{
 
-  private final SuperBlock sb;
-  private final byte[] data;
-  private final int offset;
-  private final int length;
+	private final SuperBlock sb;
+	private final byte[] data;
+	private final int offset;
+	private final int length;
 
-  public MemoryTableReader(SuperBlock sb, byte[] data) {
-    this(sb, data, 0, data.length);
-  }
+	public MemoryTableReader(SuperBlock sb, byte[] data)
+	{
+		this(sb, data, 0, data.length);
+	}
 
-  public MemoryTableReader(SuperBlock sb, byte[] data, int offset, int length) {
-    this.sb = sb;
-    this.data = data;
-    this.offset = offset;
-    this.length = length;
-  }
+	public MemoryTableReader(SuperBlock sb, byte[] data, int offset, int length)
+	{
+		this.sb = sb;
+		this.data = data;
+		this.offset = offset;
+		this.length = length;
+	}
 
-  @Override
-  public SuperBlock getSuperBlock() {
-    return sb;
-  }
+	@Override
+	public SuperBlock getSuperBlock()
+	{
+		return sb;
+	}
 
-  @Override
-  public ByteBuffer read(long fileOffset, int length) throws IOException {
-    if ((fileOffset + length) > (long) this.length) {
-      throw new EOFException(String.format(
-          "Read past end of table (offset = %d, length = %d, available = %d)",
-          fileOffset, length, this.length - fileOffset));
-    }
-    int localOffset = ((int) fileOffset) + offset;
-    return ByteBuffer.wrap(data, localOffset, length)
-        .order(ByteOrder.LITTLE_ENDIAN);
-  }
+	@Override
+	public ByteBuffer read(long fileOffset, int length) throws IOException
+	{
+		if ((fileOffset + length) > (long) this.length) {
+			throw new EOFException(String.format(
+					"Read past end of table (offset = %d, length = %d, available = %d)",
+					fileOffset, length, this.length - fileOffset));
+		}
+		int localOffset = ((int) fileOffset) + offset;
+		return ByteBuffer.wrap(data, localOffset, length)
+				.order(ByteOrder.LITTLE_ENDIAN);
+	}
 
-  @Override
-  public void close() {
-  }
+	@Override
+	public void close()
+	{
+	}
 
 }

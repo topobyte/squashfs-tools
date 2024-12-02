@@ -20,39 +20,44 @@ package org.apache.hadoop.squashfs.metadata;
 
 import org.apache.hadoop.squashfs.inode.INodeRef;
 
-public class MetadataBlockRef {
+public class MetadataBlockRef
+{
 
-  private final int location;
-  private final short offset;
+	private final int location;
+	private final short offset;
 
-  public MetadataBlockRef(int location, short offset) {
-    this.location = location;
-    this.offset = offset;
-  }
+	public MetadataBlockRef(int location, short offset)
+	{
+		this.location = location;
+		this.offset = offset;
+	}
 
-  public int getLocation() {
-    return location;
-  }
+	public int getLocation()
+	{
+		return location;
+	}
 
-  public short getOffset() {
-    return offset;
-  }
+	public short getOffset()
+	{
+		return offset;
+	}
 
-  @Override
-  public String toString() {
-    return String.format(
-        "metadata-block-ref { location=%d, offset=%d }",
-        location,
-        offset);
-  }
+	@Override
+	public String toString()
+	{
+		return String.format("metadata-block-ref { location=%d, offset=%d }",
+				location, offset);
+	}
 
-  public INodeRef toINodeRef() {
-    return new INodeRef(location, offset);
-  }
+	public INodeRef toINodeRef()
+	{
+		return new INodeRef(location, offset);
+	}
 
-  public long toINodeRefRaw() {
-    return ((long) (location & 0xffffffffL) << 16) | ((long) (offset
-        & 0xffffL));
-  }
+	public long toINodeRefRaw()
+	{
+		return ((long) (location & 0xffffffffL) << 16)
+				| ((long) (offset & 0xffffL));
+	}
 
 }

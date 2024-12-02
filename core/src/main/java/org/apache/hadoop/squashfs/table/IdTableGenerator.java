@@ -31,56 +31,61 @@ import static org.apache.hadoop.squashfs.util.BinUtils.DumpOptions.DECIMAL;
 import static org.apache.hadoop.squashfs.util.BinUtils.DumpOptions.UNSIGNED;
 import static org.apache.hadoop.squashfs.util.BinUtils.dumpBin;
 
-public class IdTableGenerator {
+public class IdTableGenerator
+{
 
-  private final List<Integer> forward = new ArrayList<>();
-  private final SortedMap<Long, Short> reverse = new TreeMap<>();
+	private final List<Integer> forward = new ArrayList<>();
+	private final SortedMap<Long, Short> reverse = new TreeMap<>();
 
-  public short addUidGid(int value) {
-    Long key = Long.valueOf(value & 0xffffffffL);
-    Short result = reverse.get(key);
-    if (result != null) {
-      return result.shortValue();
-    }
-    forward.add(value);
-    result = Short.valueOf((short) (forward.size() - 1));
-    reverse.put(key, result);
-    return result.shortValue();
-  }
+	public short addUidGid(int value)
+	{
+		Long key = Long.valueOf(value & 0xffffffffL);
+		Short result = reverse.get(key);
+		if (result != null) {
+			return result.shortValue();
+		}
+		forward.add(value);
+		result = Short.valueOf((short) (forward.size() - 1));
+		reverse.put(key, result);
+		return result.shortValue();
+	}
 
-  public int getIdCount() {
-    return forward.size();
-  }
+	public int getIdCount()
+	{
+		return forward.size();
+	}
 
-  public List<MetadataBlockRef> save(MetadataWriter writer) throws IOException {
+	public List<MetadataBlockRef> save(MetadataWriter writer) throws IOException
+	{
 
-    List<MetadataBlockRef> idRefs = new ArrayList<>();
+		List<MetadataBlockRef> idRefs = new ArrayList<>();
 
-    int index = 0;
-    for (int i = 0; i < forward.size(); i++) {
-      if (index % IdTable.ENTRIES_PER_BLOCK == 0) {
-        idRefs.add(writer.getCurrentReference());
-      }
-      int value = forward.get(i).intValue();
-      writer.writeInt(value);
-      index++;
-    }
+		int index = 0;
+		for (int i = 0; i < forward.size(); i++) {
+			if (index % IdTable.ENTRIES_PER_BLOCK == 0) {
+				idRefs.add(writer.getCurrentReference());
+			}
+			int value = forward.get(i).intValue();
+			writer.writeInt(value);
+			index++;
+		}
 
-    return idRefs;
-  }
+		return idRefs;
+	}
 
-  @Override
-  public String toString() {
-    StringBuilder buf = new StringBuilder();
-    buf.append(String.format("id-table-generator: {%n"));
-    int width = 17;
-    dumpBin(buf, width, "count", forward.size(), DECIMAL, UNSIGNED);
-    for (int i = 0; i < forward.size(); i++) {
-      dumpBin(buf, width, String.format("mappings[%d]", i), forward.get(i),
-          DECIMAL, UNSIGNED);
-    }
-    buf.append("}");
-    return buf.toString();
-  }
+	@Override
+	public String toString()
+	{
+		StringBuilder buf = new StringBuilder();
+		buf.append(String.format("id-table-generator: {%n"));
+		int width = 17;
+		dumpBin(buf, width, "count", forward.size(), DECIMAL, UNSIGNED);
+		for (int i = 0; i < forward.size(); i++) {
+			dumpBin(buf, width, String.format("mappings[%d]", i),
+					forward.get(i), DECIMAL, UNSIGNED);
+		}
+		buf.append("}");
+		return buf.toString();
+	}
 
 }

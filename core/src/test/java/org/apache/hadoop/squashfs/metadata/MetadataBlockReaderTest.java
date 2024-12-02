@@ -30,19 +30,24 @@ import org.apache.hadoop.squashfs.superblock.SuperBlock;
 import org.apache.hadoop.squashfs.test.MetadataBlockReaderMock;
 import org.apache.hadoop.squashfs.test.MetadataTestUtils;
 
-public class MetadataBlockReaderTest {
+public class MetadataBlockReaderTest
+{
 
 	@Test
-	public void readerShouldBeAbleToLocateDataFromMetadataReference() throws Exception {
+	public void readerShouldBeAbleToLocateDataFromMetadataReference()
+			throws Exception
+	{
 		SuperBlock sb = new SuperBlock();
 
-		MetadataReference meta = new MetadataReference(10101, 12345L, (short) 6789, Integer.MAX_VALUE);
+		MetadataReference meta = new MetadataReference(10101, 12345L,
+				(short) 6789, Integer.MAX_VALUE);
 
 		byte[] buf = new byte[8192];
 		buf[6789] = (byte) 0xff;
 
 		MetadataBlock block = MetadataTestUtils.block(buf);
-		try (MetadataBlockReaderMock br = new MetadataBlockReaderMock(10101, sb, 12345L, block)) {
+		try (MetadataBlockReaderMock br = new MetadataBlockReaderMock(10101, sb,
+				12345L, block)) {
 			MetadataReader mr = br.reader(meta);
 			byte result = mr.readByte();
 			assertEquals((byte) 0xff, result);
@@ -50,14 +55,17 @@ public class MetadataBlockReaderTest {
 	}
 
 	@Test
-	public void rawReaderShouldBeAbleToLocateDataFromLocationAndOffset() throws Exception {
+	public void rawReaderShouldBeAbleToLocateDataFromLocationAndOffset()
+			throws Exception
+	{
 		SuperBlock sb = new SuperBlock();
 
 		byte[] buf = new byte[8192];
 		buf[6789] = (byte) 0xff;
 
 		MetadataBlock block = MetadataTestUtils.block(buf);
-		try (MetadataBlockReaderMock br = new MetadataBlockReaderMock(10101, sb, 12345L, block)) {
+		try (MetadataBlockReaderMock br = new MetadataBlockReaderMock(10101, sb,
+				12345L, block)) {
 			MetadataReader mr = br.rawReader(10101, 12345L, (short) 6789);
 			byte result = mr.readByte();
 			assertEquals((byte) 0xff, result);
@@ -65,7 +73,9 @@ public class MetadataBlockReaderTest {
 	}
 
 	@Test
-	public void inodeReaderShouldBeAbleToLocateDataFromInodeRef() throws Exception {
+	public void inodeReaderShouldBeAbleToLocateDataFromInodeRef()
+			throws Exception
+	{
 		SuperBlock sb = new SuperBlock();
 		sb.setInodeTableStart(12345L);
 
@@ -73,15 +83,19 @@ public class MetadataBlockReaderTest {
 		buf[1234] = (byte) 0xff;
 
 		MetadataBlock block = MetadataTestUtils.block(buf);
-		try (MetadataBlockReaderMock br = new MetadataBlockReaderMock(10101, sb, 66666L, block)) {
-			MetadataReader mr = br.inodeReader(10101, new INodeRef(54321, (short) 1234).getRaw());
+		try (MetadataBlockReaderMock br = new MetadataBlockReaderMock(10101, sb,
+				66666L, block)) {
+			MetadataReader mr = br.inodeReader(10101,
+					new INodeRef(54321, (short) 1234).getRaw());
 			byte result = mr.readByte();
 			assertEquals((byte) 0xff, result);
 		}
 	}
 
 	@Test
-	public void inodeReaderShouldBeAbleToLocateDataFromDirectoryEntry() throws Exception {
+	public void inodeReaderShouldBeAbleToLocateDataFromDirectoryEntry()
+			throws Exception
+	{
 		SuperBlock sb = new SuperBlock();
 		sb.setInodeTableStart(12345L);
 
@@ -101,7 +115,8 @@ public class MetadataBlockReaderTest {
 		};
 
 		MetadataBlock block = MetadataTestUtils.block(buf);
-		try (MetadataBlockReaderMock br = new MetadataBlockReaderMock(10101, sb, 66666L, block)) {
+		try (MetadataBlockReaderMock br = new MetadataBlockReaderMock(10101, sb,
+				66666L, block)) {
 			MetadataReader mr = br.inodeReader(10101, de);
 			byte result = mr.readByte();
 			assertEquals((byte) 0xff, result);
@@ -109,7 +124,9 @@ public class MetadataBlockReaderTest {
 	}
 
 	@Test
-	public void directoryReaderShouldBeAbleToLocateDataFromINode() throws Exception {
+	public void directoryReaderShouldBeAbleToLocateDataFromINode()
+			throws Exception
+	{
 		SuperBlock sb = new SuperBlock();
 		sb.setDirectoryTableStart(12345L);
 
@@ -122,7 +139,8 @@ public class MetadataBlockReaderTest {
 		inode.setOffset((short) 1234);
 
 		MetadataBlock block = MetadataTestUtils.block(buf);
-		try (MetadataBlockReaderMock br = new MetadataBlockReaderMock(10101, sb, 66666L, block)) {
+		try (MetadataBlockReaderMock br = new MetadataBlockReaderMock(10101, sb,
+				66666L, block)) {
 			MetadataReader mr = br.directoryReader(10101, inode);
 			byte result = mr.readByte();
 			assertEquals((byte) 0xff, result);

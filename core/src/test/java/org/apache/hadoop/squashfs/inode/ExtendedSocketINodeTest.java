@@ -24,28 +24,33 @@ import static org.junit.Assert.assertSame;
 import org.junit.Before;
 import org.junit.Test;
 
-public class ExtendedSocketINodeTest {
+public class ExtendedSocketINodeTest
+{
 
 	ExtendedSocketINode inode;
 
 	@Before
-	public void setUp() {
+	public void setUp()
+	{
 		inode = new ExtendedSocketINode();
 		inode.setNlink(2);
 	}
 
 	@Test
-	public void getNameShouldReturnCorrectValue() {
+	public void getNameShouldReturnCorrectValue()
+	{
 		assertEquals("extended-socket-inode", inode.getName());
 	}
 
 	@Test
-	public void getInodeTypeShouldReturnCorrectValue() {
+	public void getInodeTypeShouldReturnCorrectValue()
+	{
 		assertSame(INodeType.EXTENDED_SOCKET, inode.getInodeType());
 	}
 
 	@Test
-	public void simplifyShouldReturnOriginalIfExtendedAttributesPresent() {
+	public void simplifyShouldReturnOriginalIfExtendedAttributesPresent()
+	{
 		SocketINode inode2 = new ExtendedSocketINode();
 		inode2.setNlink(2);
 		inode2.setXattrIndex(3);
@@ -53,7 +58,8 @@ public class ExtendedSocketINodeTest {
 	}
 
 	@Test
-	public void simplifyShouldReturnBasicIfExtendedAttributesNotPresent() {
+	public void simplifyShouldReturnBasicIfExtendedAttributesNotPresent()
+	{
 		SocketINode inode2 = new ExtendedSocketINode();
 		inode2.setNlink(2);
 		inode2.setXattrIndex(-1);
@@ -64,7 +70,8 @@ public class ExtendedSocketINodeTest {
 	}
 
 	@Test
-	public void toStringShouldNotFail() {
+	public void toStringShouldNotFail()
+	{
 		System.out.println(inode.toString());
 	}
 

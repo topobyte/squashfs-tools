@@ -23,37 +23,49 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
 
-public class INodeRefTest {
+public class INodeRefTest
+{
 
 	INodeRef ref1;
 	INodeRef ref2;
 
 	@Before
-	public void setUp() {
+	public void setUp()
+	{
 		ref1 = new INodeRef(0x0000_1234_5678_0123L);
 		ref2 = new INodeRef(0x1234_5678, (short) 0x123);
 	}
 
 	@Test
-	public void getLocationShouldReturnSameValueForBothConstructors() {
-		assertEquals("wrong location for 1-arg constructor", 0x1234_5678, ref1.getLocation());
-		assertEquals("wrong location for 2-arg constructor", 0x1234_5678, ref2.getLocation());
+	public void getLocationShouldReturnSameValueForBothConstructors()
+	{
+		assertEquals("wrong location for 1-arg constructor", 0x1234_5678,
+				ref1.getLocation());
+		assertEquals("wrong location for 2-arg constructor", 0x1234_5678,
+				ref2.getLocation());
 	}
 
 	@Test
-	public void getOffsetShouldReturnSameValueForBothConstructors() {
-		assertEquals("wrong offset for 1-arg constructor", (short) 0x123, ref1.getOffset());
-		assertEquals("wrong offset for 2-arg constructor", (short) 0x123, ref2.getOffset());
+	public void getOffsetShouldReturnSameValueForBothConstructors()
+	{
+		assertEquals("wrong offset for 1-arg constructor", (short) 0x123,
+				ref1.getOffset());
+		assertEquals("wrong offset for 2-arg constructor", (short) 0x123,
+				ref2.getOffset());
 	}
 
 	@Test
-	public void getRawShouldReturnSameValueForBothConstructors() {
-		assertEquals("wrong raw value for 1-arg constructor", 0x0000_1234_5678_0123L, ref1.getRaw());
-		assertEquals("wrong raw value for 2-arg constructor", 0x0000_1234_5678_0123L, ref2.getRaw());
+	public void getRawShouldReturnSameValueForBothConstructors()
+	{
+		assertEquals("wrong raw value for 1-arg constructor",
+				0x0000_1234_5678_0123L, ref1.getRaw());
+		assertEquals("wrong raw value for 2-arg constructor",
+				0x0000_1234_5678_0123L, ref2.getRaw());
 	}
 
 	@Test
-	public void toStringShouldNotFail() {
+	public void toStringShouldNotFail()
+	{
 		System.out.println(ref1.toString());
 		System.out.println(ref2.toString());
 	}

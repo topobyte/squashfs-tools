@@ -22,64 +22,73 @@ import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class SizeTrackingInputStream extends FilterInputStream {
-  private long byteCount = 0L;
-  private long mark = -1L;
+public class SizeTrackingInputStream extends FilterInputStream
+{
+	private long byteCount = 0L;
+	private long mark = -1L;
 
-  public SizeTrackingInputStream(InputStream in) {
-    super(in);
-  }
+	public SizeTrackingInputStream(InputStream in)
+	{
+		super(in);
+	}
 
-  public long getByteCount() {
-    return byteCount;
-  }
+	public long getByteCount()
+	{
+		return byteCount;
+	}
 
-  @Override
-  public int read() throws IOException {
-    int b = in.read();
-    if (b >= 0) {
-      byteCount++;
-    }
-    return b;
-  }
+	@Override
+	public int read() throws IOException
+	{
+		int b = in.read();
+		if (b >= 0) {
+			byteCount++;
+		}
+		return b;
+	}
 
-  @Override
-  public int read(byte[] b) throws IOException {
-    int c = in.read(b);
-    if (c > 0) {
-      byteCount += c;
-    }
-    return c;
-  }
+	@Override
+	public int read(byte[] b) throws IOException
+	{
+		int c = in.read(b);
+		if (c > 0) {
+			byteCount += c;
+		}
+		return c;
+	}
 
-  @Override
-  public int read(byte[] b, int off, int len) throws IOException {
-    int c = in.read(b, off, len);
-    if (c > 0) {
-      byteCount += c;
-    }
-    return c;
-  }
+	@Override
+	public int read(byte[] b, int off, int len) throws IOException
+	{
+		int c = in.read(b, off, len);
+		if (c > 0) {
+			byteCount += c;
+		}
+		return c;
+	}
 
-  @Override
-  public long skip(long n) throws IOException {
-    long c = skip(n);
-    byteCount += c;
-    return c;
-  }
+	@Override
+	public long skip(long n) throws IOException
+	{
+		long c = skip(n);
+		byteCount += c;
+		return c;
+	}
 
-  @Override
-  public synchronized void mark(int readlimit) {
-    in.mark(readlimit);
-    mark = byteCount;
-  }
+	@Override
+	public synchronized void mark(int readlimit)
+	{
+		in.mark(readlimit);
+		mark = byteCount;
+	}
 
-  @Override
-  public synchronized void reset() throws IOException {
-    in.reset();
-    if (mark >= 0L) {
-      byteCount = mark;
-    }
-  }
+	@Override
+	public synchronized void reset() throws IOException
+	{
+		in.reset();
+		if (mark >= 0L) {
+			byteCount = mark;
+		}
+	}
 
 }

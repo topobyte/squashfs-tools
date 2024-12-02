@@ -29,58 +29,68 @@ import org.junit.Test;
 
 import org.apache.hadoop.squashfs.test.INodeTestUtils;
 
-public class AbsBasicDeviceINodeTest {
+public class AbsBasicDeviceINodeTest
+{
 
 	AbstractBasicDeviceINode inode;
 
 	@Before
-	public void setUp() {
+	public void setUp()
+	{
 		inode = new BasicBlockDeviceINode();
 		inode.setDevice(1);
 		inode.setNlink(2);
 	}
 
 	@Test
-	public void devicePropertyShouldWorkAsExpected() {
+	public void devicePropertyShouldWorkAsExpected()
+	{
 		assertEquals(1, inode.getDevice());
 		inode.setDevice(2);
 		assertEquals(2, inode.getDevice());
 	}
 
 	@Test
-	public void nlinkPropertyShouldWorkAsExpected() {
+	public void nlinkPropertyShouldWorkAsExpected()
+	{
 		assertEquals(2, inode.getNlink());
 		inode.setNlink(3);
 		assertEquals(3, inode.getNlink());
 	}
 
 	@Test
-	public void getXattrIndexShouldReturnNotPresent() {
+	public void getXattrIndexShouldReturnNotPresent()
+	{
 		assertEquals(-1, inode.getXattrIndex());
 	}
 
 	@Test
-	public void setXattrIndexWithNotPresentValueShouldSucceed() {
+	public void setXattrIndexWithNotPresentValueShouldSucceed()
+	{
 		inode.setXattrIndex(-1);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
-	public void setXattrIndexWithInvalidValueShouldFail() {
+	public void setXattrIndexWithInvalidValueShouldFail()
+	{
 		inode.setXattrIndex(1);
 	}
 
 	@Test
-	public void isXattrPresentShouldReturnFalse() {
+	public void isXattrPresentShouldReturnFalse()
+	{
 		assertFalse(inode.isXattrPresent());
 	}
 
 	@Test
-	public void getChildSerializedSizeShouldReturnCorrectValue() {
+	public void getChildSerializedSizeShouldReturnCorrectValue()
+	{
 		assertEquals(8, inode.getChildSerializedSize());
 	}
 
 	@Test
-	public void writeDataAndReadDataShouldBeReflexive() throws IOException {
+	public void writeDataAndReadDataShouldBeReflexive() throws IOException
+	{
 		byte[] data = INodeTestUtils.serializeINode(inode);
 		INode dest = INodeTestUtils.deserializeINode(data);
 
@@ -92,7 +102,8 @@ public class AbsBasicDeviceINodeTest {
 	}
 
 	@Test
-	public void toStringShouldNotFail() {
+	public void toStringShouldNotFail()
+	{
 		System.out.println(inode.toString());
 	}
 }

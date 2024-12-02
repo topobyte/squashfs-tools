@@ -25,42 +25,49 @@ import org.apache.hadoop.squashfs.superblock.SuperBlock;
 
 import java.io.IOException;
 
-public class MappedFileMetadataBlockReader implements MetadataBlockReader {
+public class MappedFileMetadataBlockReader implements MetadataBlockReader
+{
 
-  private final int tag;
-  private final SuperBlock sb;
-  private final MappedFile mmap;
+	private final int tag;
+	private final SuperBlock sb;
+	private final MappedFile mmap;
 
-  public MappedFileMetadataBlockReader(int tag, SuperBlock sb, MappedFile mmap)
-      throws IOException, SquashFsException {
+	public MappedFileMetadataBlockReader(int tag, SuperBlock sb,
+			MappedFile mmap) throws IOException, SquashFsException
+	{
 
-    this.tag = tag;
-    this.sb = sb;
-    this.mmap = mmap;
-  }
+		this.tag = tag;
+		this.sb = sb;
+		this.mmap = mmap;
+	}
 
-  @Override
-  public SuperBlock getSuperBlock(int tag) {
-    if (this.tag != tag) {
-      throw new IllegalArgumentException(String.format("Invalid tag: %d", tag));
-    }
-    return sb;
-  }
+	@Override
+	public SuperBlock getSuperBlock(int tag)
+	{
+		if (this.tag != tag) {
+			throw new IllegalArgumentException(
+					String.format("Invalid tag: %d", tag));
+		}
+		return sb;
+	}
 
-  @Override
-  public MetadataBlock read(int tag, long fileOffset)
-      throws IOException, SquashFsException {
-    if (this.tag != tag) {
-      throw new IllegalArgumentException(String.format("Invalid tag: %d", tag));
-    }
+	@Override
+	public MetadataBlock read(int tag, long fileOffset)
+			throws IOException, SquashFsException
+	{
+		if (this.tag != tag) {
+			throw new IllegalArgumentException(
+					String.format("Invalid tag: %d", tag));
+		}
 
-    return MetadataBlock
-        .read(new ByteBufferDataInput(mmap.from(fileOffset)), sb);
-  }
+		return MetadataBlock
+				.read(new ByteBufferDataInput(mmap.from(fileOffset)), sb);
+	}
 
-  @Override
-  public void close() {
+	@Override
+	public void close()
+	{
 
-  }
+	}
 
 }

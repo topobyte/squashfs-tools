@@ -18,37 +18,42 @@
 
 package org.apache.hadoop.squashfs.inode;
 
-public class BasicFifoINode extends AbstractBasicIpcINode implements FifoINode {
+public class BasicFifoINode extends AbstractBasicIpcINode implements FifoINode
+{
 
-  static FifoINode simplify(FifoINode src) {
-    if (src instanceof BasicFifoINode) {
-      return src;
-    }
+	static FifoINode simplify(FifoINode src)
+	{
+		if (src instanceof BasicFifoINode) {
+			return src;
+		}
 
-    if (src.isXattrPresent()) {
-      return src;
-    }
+		if (src.isXattrPresent()) {
+			return src;
+		}
 
-    BasicFifoINode dest = new BasicFifoINode();
-    src.copyTo(dest);
+		BasicFifoINode dest = new BasicFifoINode();
+		src.copyTo(dest);
 
-    dest.setNlink(src.getNlink());
-    return dest;
-  }
+		dest.setNlink(src.getNlink());
+		return dest;
+	}
 
-  @Override
-  protected String getName() {
-    return "basic-fifo-inode";
-  }
+	@Override
+	protected String getName()
+	{
+		return "basic-fifo-inode";
+	}
 
-  @Override
-  public INodeType getInodeType() {
-    return INodeType.BASIC_FIFO;
-  }
+	@Override
+	public INodeType getInodeType()
+	{
+		return INodeType.BASIC_FIFO;
+	}
 
-  @Override
-  public FifoINode simplify() {
-    return this;
-  }
+	@Override
+	public FifoINode simplify()
+	{
+		return this;
+	}
 
 }

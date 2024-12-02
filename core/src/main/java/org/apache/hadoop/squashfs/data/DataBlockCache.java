@@ -22,136 +22,148 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 
-public class DataBlockCache {
+public class DataBlockCache
+{
 
-  public static final DataBlockCache NO_CACHE = new DataBlockCache(0);
+	public static final DataBlockCache NO_CACHE = new DataBlockCache(0);
 
-  private final LruBlockCache cache;
-  private final int cacheSize;
-  private volatile long cacheHits = 0L;
-  private volatile long cacheMisses = 0L;
+	private final LruBlockCache cache;
+	private final int cacheSize;
+	private volatile long cacheHits = 0L;
+	private volatile long cacheMisses = 0L;
 
-  public DataBlockCache(int cacheSize) {
-    this.cache = cacheSize < 1 ? null : new LruBlockCache(cacheSize);
-    this.cacheSize = cacheSize;
-  }
+	public DataBlockCache(int cacheSize)
+	{
+		this.cache = cacheSize < 1 ? null : new LruBlockCache(cacheSize);
+		this.cacheSize = cacheSize;
+	}
 
-  public synchronized void put(Key key, DataBlock block) {
-    if (cache != null) {
-      cache.put(key, block);
-    }
-  }
+	public synchronized void put(Key key, DataBlock block)
+	{
+		if (cache != null) {
+			cache.put(key, block);
+		}
+	}
 
-  public synchronized DataBlock get(Key key) {
-    if (cache == null) {
-      cacheMisses++;
-      return null;
-    }
+	public synchronized DataBlock get(Key key)
+	{
+		if (cache == null) {
+			cacheMisses++;
+			return null;
+		}
 
-    DataBlock block = cache.get(key);
-    if (block != null) {
-      cacheHits++;
-    } else {
-      cacheMisses++;
-    }
-    return block;
-  }
+		DataBlock block = cache.get(key);
+		if (block != null) {
+			cacheHits++;
+		} else {
+			cacheMisses++;
+		}
+		return block;
+	}
 
-  public long getCacheHits() {
-    return cacheHits;
-  }
+	public long getCacheHits()
+	{
+		return cacheHits;
+	}
 
-  public long getCacheMisses() {
-    return cacheMisses;
-  }
+	public long getCacheMisses()
+	{
+		return cacheMisses;
+	}
 
-  public synchronized int getCacheLoad() {
-    return cache == null ? 0 : cache.size();
-  }
+	public synchronized int getCacheLoad()
+	{
+		return cache == null ? 0 : cache.size();
+	}
 
-  public void resetStatistics() {
-    cacheHits = 0L;
-    cacheMisses = 0L;
-  }
+	public void resetStatistics()
+	{
+		cacheHits = 0L;
+		cacheMisses = 0L;
+	}
 
-  public synchronized void clearCache() {
-    if (cache != null) {
-      cache.clear();
-    }
-    resetStatistics();
-  }
+	public synchronized void clearCache()
+	{
+		if (cache != null) {
+			cache.clear();
+		}
+		resetStatistics();
+	}
 
-  public static final class Key {
+	public static final class Key
+	{
 
-    private final int tag;
-    private final boolean compressed;
-    private final long fileOffset;
-    private final long dataSize;
-    private final int expectedSize;
+		private final int tag;
+		private final boolean compressed;
+		private final long fileOffset;
+		private final long dataSize;
+		private final int expectedSize;
 
-    public Key(
-        int tag,
-        boolean compressed,
-        long fileOffset,
-        int dataSize,
-        int expectedSize) {
-      this.tag = tag;
-      this.compressed = compressed;
-      this.fileOffset = fileOffset;
-      this.dataSize = dataSize;
-      this.expectedSize = expectedSize;
-    }
+		public Key(int tag, boolean compressed, long fileOffset, int dataSize,
+				int expectedSize)
+		{
+			this.tag = tag;
+			this.compressed = compressed;
+			this.fileOffset = fileOffset;
+			this.dataSize = dataSize;
+			this.expectedSize = expectedSize;
+		}
 
-    @Override
-    public int hashCode() {
-      return Objects.hash(tag, compressed, fileOffset, dataSize, expectedSize);
-    }
+		@Override
+		public int hashCode()
+		{
+			return Objects.hash(tag, compressed, fileOffset, dataSize,
+					expectedSize);
+		}
 
-    @Override
-    public boolean equals(Object obj) {
-      if (!(obj instanceof Key)) {
-        return false;
-      }
-      Key o = (Key) obj;
+		@Override
+		public boolean equals(Object obj)
+		{
+			if (!(obj instanceof Key)) {
+				return false;
+			}
+			Key o = (Key) obj;
 
-      return (tag == o.tag) &&
-          (compressed == o.compressed) &&
-          (fileOffset == o.fileOffset) &&
-          (dataSize == o.dataSize) &&
-          (expectedSize == o.expectedSize);
-    }
+			return (tag == o.tag) && (compressed == o.compressed)
+					&& (fileOffset == o.fileOffset) && (dataSize == o.dataSize)
+					&& (expectedSize == o.expectedSize);
+		}
 
-    @Override
-    public String toString() {
-      return String
-          .format("%d-%s-%d-%d-%d", tag, compressed, fileOffset, dataSize,
-              expectedSize);
-    }
-  }
+		@Override
+		public String toString()
+		{
+			return String.format("%d-%s-%d-%d-%d", tag, compressed, fileOffset,
+					dataSize, expectedSize);
+		}
+	}
 
-  private static class LruBlockCache extends LinkedHashMap<Key, DataBlock> {
+	private static class LruBlockCache extends LinkedHashMap<Key, DataBlock>
+	{
 
-    private static final long serialVersionUID = -156607843124781789L;
+		private static final long serialVersionUID = -156607843124781789L;
 
-    private final int cacheSize;
+		private final int cacheSize;
 
-    public LruBlockCache(int cacheSize) {
-      super(16, 0.75f, true);
-      this.cacheSize = cacheSize;
-    }
+		public LruBlockCache(int cacheSize)
+		{
+			super(16, 0.75f, true);
+			this.cacheSize = cacheSize;
+		}
 
-    @Override
-    protected boolean removeEldestEntry(Map.Entry<Key, DataBlock> eldest) {
-      return size() > cacheSize;
-    }
+		@Override
+		protected boolean removeEldestEntry(Map.Entry<Key, DataBlock> eldest)
+		{
+			return size() > cacheSize;
+		}
 
-  }
+	}
 
-  @Override
-  public String toString() {
-    return String
-        .format("data-block-cache { capacity=%d, size=%d, hits=%d, misses=%d }",
-            cacheSize, getCacheLoad(), getCacheHits(), getCacheMisses());
-  }
+	@Override
+	public String toString()
+	{
+		return String.format(
+				"data-block-cache { capacity=%d, size=%d, hits=%d, misses=%d }",
+				cacheSize, getCacheLoad(), getCacheHits(), getCacheMisses());
+	}
 
 }

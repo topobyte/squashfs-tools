@@ -31,12 +31,14 @@ import org.junit.Test;
 import org.apache.hadoop.squashfs.SquashFsException;
 import org.apache.hadoop.squashfs.test.DirectoryTestUtils;
 
-public class DirectoryHeaderTest {
+public class DirectoryHeaderTest
+{
 
 	DirectoryHeader hdr;
 
 	@Before
-	public void setUp() {
+	public void setUp()
+	{
 		hdr = new DirectoryHeader();
 		hdr.count = 0;
 		hdr.startBlock = 1;
@@ -44,33 +46,38 @@ public class DirectoryHeaderTest {
 	}
 
 	@Test
-	public void countPropertyWorksAsExpected() {
+	public void countPropertyWorksAsExpected()
+	{
 		assertEquals(0, hdr.getCount());
 		hdr.count = 1;
 		assertEquals(1, hdr.getCount());
 	}
 
 	@Test
-	public void startBlockPropertyWorksAsExpected() {
+	public void startBlockPropertyWorksAsExpected()
+	{
 		assertEquals(1, hdr.getStartBlock());
 		hdr.startBlock = 2;
 		assertEquals(2, hdr.getStartBlock());
 	}
 
 	@Test
-	public void inodeNumberPropertyWorksAsExpected() {
+	public void inodeNumberPropertyWorksAsExpected()
+	{
 		assertEquals(2, hdr.getInodeNumber());
 		hdr.inodeNumber = 3;
 		assertEquals(3, hdr.getInodeNumber());
 	}
 
 	@Test
-	public void getStructureSizeReturnsCorrectValue() {
+	public void getStructureSizeReturnsCorrectValue()
+	{
 		assertEquals(12, hdr.getStructureSize());
 	}
 
 	@Test
-	public void readShouldSucceed() throws Exception {
+	public void readShouldSucceed() throws Exception
+	{
 		byte[] buf = new byte[12];
 		ByteBuffer bb = ByteBuffer.wrap(buf);
 		bb.putInt(0);
@@ -87,7 +94,8 @@ public class DirectoryHeaderTest {
 	}
 
 	@Test(expected = SquashFsException.class)
-	public void readShouldFailIfCountIsTooLarge() throws Exception {
+	public void readShouldFailIfCountIsTooLarge() throws Exception
+	{
 		byte[] buf = new byte[12];
 		ByteBuffer bb = ByteBuffer.wrap(buf);
 		bb.putInt(256);
@@ -101,9 +109,11 @@ public class DirectoryHeaderTest {
 	}
 
 	@Test
-	public void writeDataAndReadDataShouldBeReflexive() throws IOException {
+	public void writeDataAndReadDataShouldBeReflexive() throws IOException
+	{
 		byte[] data = DirectoryTestUtils.serializeDirectoryElement(hdr);
-		DirectoryHeader dest = DirectoryTestUtils.deserializeDirectoryHeader(data);
+		DirectoryHeader dest = DirectoryTestUtils
+				.deserializeDirectoryHeader(data);
 
 		assertEquals("wrong count", 0, dest.getCount());
 		assertEquals("wrong start block", 1, dest.getStartBlock());
@@ -111,7 +121,8 @@ public class DirectoryHeaderTest {
 	}
 
 	@Test
-	public void toStringShouldNotFail() {
+	public void toStringShouldNotFail()
+	{
 		System.out.println(hdr.toString());
 	}
 

@@ -26,30 +26,37 @@ import org.apache.hadoop.squashfs.SquashFsException;
 import org.apache.hadoop.squashfs.table.FragmentTable;
 import org.apache.hadoop.squashfs.table.FragmentTableEntry;
 
-public class InMemoryFragmentTable extends FragmentTable {
+public class InMemoryFragmentTable extends FragmentTable
+{
 
 	private final List<FragmentTableEntry> entries;
 
-	public InMemoryFragmentTable(List<FragmentTableEntry> entries) {
+	public InMemoryFragmentTable(List<FragmentTableEntry> entries)
+	{
 		this.entries = entries;
 	}
 
-	public InMemoryFragmentTable(FragmentTableEntry... entries) {
+	public InMemoryFragmentTable(FragmentTableEntry... entries)
+	{
 		this(Arrays.asList(entries));
 	}
 
 	@Override
-	public int getFragmentCount() {
+	public int getFragmentCount()
+	{
 		return entries.size();
 	}
 
 	@Override
-	public boolean isAvailable() {
+	public boolean isAvailable()
+	{
 		return !entries.isEmpty();
 	}
 
 	@Override
-	public FragmentTableEntry getEntry(int id) throws IOException, SquashFsException {
+	public FragmentTableEntry getEntry(int id)
+			throws IOException, SquashFsException
+	{
 		return entries.get(id);
 	}
 

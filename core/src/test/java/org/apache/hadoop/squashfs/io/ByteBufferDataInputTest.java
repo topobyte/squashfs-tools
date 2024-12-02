@@ -31,10 +31,12 @@ import java.util.Random;
 
 import org.junit.Test;
 
-public class ByteBufferDataInputTest {
+public class ByteBufferDataInputTest
+{
 
 	@Test
-	public void readFullyShouldWorkIfNotEof() throws Exception {
+	public void readFullyShouldWorkIfNotEof() throws Exception
+	{
 		byte[] data = new byte[1024];
 		for (int i = 0; i < data.length; i++) {
 			data[i] = (byte) (i & 0xff);
@@ -46,7 +48,8 @@ public class ByteBufferDataInputTest {
 	}
 
 	@Test(expected = EOFException.class)
-	public void readFullyShouldThrowExceptionIfTooLong() throws Exception {
+	public void readFullyShouldThrowExceptionIfTooLong() throws Exception
+	{
 		byte[] data = new byte[1024];
 		for (int i = 0; i < data.length; i++) {
 			data[i] = (byte) (i & 0xff);
@@ -57,7 +60,8 @@ public class ByteBufferDataInputTest {
 	}
 
 	@Test
-	public void readFullyShouldWorkWithPartials() throws Exception {
+	public void readFullyShouldWorkWithPartials() throws Exception
+	{
 		byte[] data = new byte[1024];
 		for (int i = 0; i < data.length; i++) {
 			data[i] = (byte) (i & 0xff);
@@ -70,7 +74,8 @@ public class ByteBufferDataInputTest {
 	}
 
 	@Test
-	public void skipBytesShouldDoSo() throws Exception {
+	public void skipBytesShouldDoSo() throws Exception
+	{
 		byte[] data = new byte[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 		ByteBufferDataInput r = input(data);
 		assertEquals("wrong bytes skipped", 5, r.skipBytes(5));
@@ -78,14 +83,16 @@ public class ByteBufferDataInputTest {
 	}
 
 	@Test
-	public void skipBytesShouldDoPartialSkipIfEof() throws Exception {
+	public void skipBytesShouldDoPartialSkipIfEof() throws Exception
+	{
 		byte[] data = new byte[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 		ByteBufferDataInput r = input(data);
 		assertEquals("wrong bytes skipped", 10, r.skipBytes(15));
 	}
 
 	@Test
-	public void readBooleanShouldWork() throws Exception {
+	public void readBooleanShouldWork() throws Exception
+	{
 		byte[] data = new byte[] { 0, 1 };
 		ByteBufferDataInput r = input(data);
 		assertFalse("first value true", r.readBoolean());
@@ -93,14 +100,16 @@ public class ByteBufferDataInputTest {
 	}
 
 	@Test
-	public void readByteShouldWork() throws Exception {
+	public void readByteShouldWork() throws Exception
+	{
 		byte[] data = new byte[] { (byte) 0xff };
 		ByteBufferDataInput r = input(data);
 		assertEquals((byte) 0xff, r.readByte());
 	}
 
 	@Test(expected = EOFException.class)
-	public void readByteShouldThrowEOFExceptionIfEndOfStream() throws Exception {
+	public void readByteShouldThrowEOFExceptionIfEndOfStream() throws Exception
+	{
 		byte[] data = new byte[] { (byte) 0xff };
 		ByteBufferDataInput r = input(data);
 		assertEquals((byte) 0xff, r.readByte());
@@ -108,14 +117,16 @@ public class ByteBufferDataInputTest {
 	}
 
 	@Test
-	public void readUnsignedByteShouldWork() throws Exception {
+	public void readUnsignedByteShouldWork() throws Exception
+	{
 		byte[] data = new byte[] { (byte) 0xff };
 		ByteBufferDataInput r = input(data);
 		assertEquals(0xff, r.readUnsignedByte());
 	}
 
 	@Test
-	public void readShortShouldWork() throws Exception {
+	public void readShortShouldWork() throws Exception
+	{
 		byte[] data = new byte[2];
 		ByteBuffer.wrap(data).asShortBuffer().put((short) 0x1234);
 		ByteBufferDataInput r = input(data);
@@ -123,7 +134,8 @@ public class ByteBufferDataInputTest {
 	}
 
 	@Test
-	public void readUnsignedShortShouldWork() throws Exception {
+	public void readUnsignedShortShouldWork() throws Exception
+	{
 		byte[] data = new byte[2];
 		ByteBuffer.wrap(data).asShortBuffer().put((short) 0xfedc);
 		ByteBufferDataInput r = input(data);
@@ -131,7 +143,8 @@ public class ByteBufferDataInputTest {
 	}
 
 	@Test
-	public void readCharShouldWork() throws Exception {
+	public void readCharShouldWork() throws Exception
+	{
 		byte[] data = new byte[2];
 		ByteBuffer.wrap(data).asCharBuffer().put((char) 0x1234);
 		ByteBufferDataInput r = input(data);
@@ -139,7 +152,8 @@ public class ByteBufferDataInputTest {
 	}
 
 	@Test
-	public void readIntShouldWork() throws Exception {
+	public void readIntShouldWork() throws Exception
+	{
 		byte[] data = new byte[4];
 		ByteBuffer.wrap(data).asIntBuffer().put(0x12345678);
 		ByteBufferDataInput r = input(data);
@@ -147,7 +161,8 @@ public class ByteBufferDataInputTest {
 	}
 
 	@Test
-	public void readFloatShouldWork() throws Exception {
+	public void readFloatShouldWork() throws Exception
+	{
 		float value = new Random(0L).nextFloat();
 
 		byte[] data = new byte[4];
@@ -157,7 +172,8 @@ public class ByteBufferDataInputTest {
 	}
 
 	@Test
-	public void readLongShouldWork() throws Exception {
+	public void readLongShouldWork() throws Exception
+	{
 		byte[] data = new byte[8];
 		ByteBuffer.wrap(data).asLongBuffer().put(0x12345678_90abcdefL);
 		ByteBufferDataInput r = input(data);
@@ -165,7 +181,8 @@ public class ByteBufferDataInputTest {
 	}
 
 	@Test
-	public void readDoubleShouldWork() throws Exception {
+	public void readDoubleShouldWork() throws Exception
+	{
 		double value = new Random(0L).nextDouble();
 
 		byte[] data = new byte[8];
@@ -175,7 +192,9 @@ public class ByteBufferDataInputTest {
 	}
 
 	@Test(expected = UnsupportedOperationException.class)
-	public void readLineShouldThrowUnsupportedOperationException() throws Exception {
+	public void readLineShouldThrowUnsupportedOperationException()
+			throws Exception
+	{
 		String value = "test\r\n";
 		byte[] data = value.getBytes(StandardCharsets.ISO_8859_1);
 		ByteBufferDataInput r = input(data);
@@ -183,13 +202,16 @@ public class ByteBufferDataInputTest {
 	}
 
 	@Test(expected = UnsupportedOperationException.class)
-	public void readUTFShouldThrowUnsupportedOperationException() throws Exception {
+	public void readUTFShouldThrowUnsupportedOperationException()
+			throws Exception
+	{
 		byte[] data = new byte[1];
 		ByteBufferDataInput r = input(data);
 		r.readUTF();
 	}
 
-	ByteBufferDataInput input(byte[] data) throws IOException {
+	ByteBufferDataInput input(byte[] data) throws IOException
+	{
 		return new ByteBufferDataInput(ByteBuffer.wrap(data));
 	}
 

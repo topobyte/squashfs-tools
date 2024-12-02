@@ -18,40 +18,41 @@
 
 package org.apache.hadoop.squashfs.inode;
 
-public interface DirectoryINode extends INode {
+public interface DirectoryINode extends INode
+{
 
-  public int getStartBlock();
+	public int getStartBlock();
 
-  public void setStartBlock(int startBlock);
+	public void setStartBlock(int startBlock);
 
-  public int getNlink();
+	public int getNlink();
 
-  public void setNlink(int nlik);
+	public void setNlink(int nlik);
 
-  public int getFileSize();
+	public int getFileSize();
 
-  public void setFileSize(int value);
+	public void setFileSize(int value);
 
-  public short getOffset();
+	public short getOffset();
 
-  public void setOffset(short offset);
+	public void setOffset(short offset);
 
-  public int getParentInodeNumber();
+	public int getParentInodeNumber();
 
-  public void setParentInodeNumber(int parentInodeNumber);
+	public void setParentInodeNumber(int parentInodeNumber);
 
-  public short getIndexCount();
+	public short getIndexCount();
 
-  public void setIndexCount(short indexCount);
+	public void setIndexCount(short indexCount);
 
-  public boolean isIndexPresent();
+	public boolean isIndexPresent();
 
-  public int getXattrIndex();
+	public int getXattrIndex();
 
-  public void setXattrIndex(int xattrIndex);
+	public void setXattrIndex(int xattrIndex);
 
-  public boolean isXattrPresent();
+	public boolean isXattrPresent();
 
-  public DirectoryINode simplify();
+	public DirectoryINode simplify();
 
 }

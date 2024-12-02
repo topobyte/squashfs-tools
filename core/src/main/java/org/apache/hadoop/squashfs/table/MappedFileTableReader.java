@@ -28,39 +28,45 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
-public class MappedFileTableReader implements TableReader {
+public class MappedFileTableReader implements TableReader
+{
 
-  private final MappedFile mmap;
-  private final SuperBlock sb;
+	private final MappedFile mmap;
+	private final SuperBlock sb;
 
-  public MappedFileTableReader(MappedFile mmap)
-      throws IOException, SquashFsException {
-    this.mmap = mmap;
-    this.sb = SuperBlock.read(new ByteBufferDataInput(mmap.from(0L)));
-  }
+	public MappedFileTableReader(MappedFile mmap)
+			throws IOException, SquashFsException
+	{
+		this.mmap = mmap;
+		this.sb = SuperBlock.read(new ByteBufferDataInput(mmap.from(0L)));
+	}
 
-  public MappedFileTableReader(MappedFile mmap, SuperBlock sb) {
+	public MappedFileTableReader(MappedFile mmap, SuperBlock sb)
+	{
 
-    this.mmap = mmap;
-    this.sb = sb;
-  }
+		this.mmap = mmap;
+		this.sb = sb;
+	}
 
-  @Override
-  public SuperBlock getSuperBlock() {
-    return sb;
-  }
+	@Override
+	public SuperBlock getSuperBlock()
+	{
+		return sb;
+	}
 
-  @Override
-  public ByteBuffer read(long fileOffset, int length) throws EOFException {
-    ByteBuffer src = mmap.from(fileOffset);
-    if (src.remaining() < length) {
-      throw new EOFException();
-    }
-    return src.order(ByteOrder.LITTLE_ENDIAN);
-  }
+	@Override
+	public ByteBuffer read(long fileOffset, int length) throws EOFException
+	{
+		ByteBuffer src = mmap.from(fileOffset);
+		if (src.remaining() < length) {
+			throw new EOFException();
+		}
+		return src.order(ByteOrder.LITTLE_ENDIAN);
+	}
 
-  @Override
-  public void close() {
-  }
+	@Override
+	public void close()
+	{
+	}
 
 }

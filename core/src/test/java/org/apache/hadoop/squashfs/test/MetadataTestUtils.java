@@ -31,15 +31,19 @@ import org.apache.hadoop.squashfs.superblock.CompressionId;
 import org.apache.hadoop.squashfs.superblock.SuperBlock;
 import org.apache.hadoop.squashfs.util.BinUtils;
 
-public class MetadataTestUtils {
+public class MetadataTestUtils
+{
 
-	public static byte[] saveMetadataBlock(byte[] data) throws IOException {
+	public static byte[] saveMetadataBlock(byte[] data) throws IOException
+	{
 		MetadataWriter writer = new MetadataWriter();
 		writer.write(data);
 		return saveMetadataBlock(writer);
 	}
 
-	public static byte[] saveMetadataBlock(MetadataWriter writer) throws IOException {
+	public static byte[] saveMetadataBlock(MetadataWriter writer)
+			throws IOException
+	{
 		byte[] data;
 		try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
 			try (DataOutputStream dos = new DataOutputStream(bos)) {
@@ -48,14 +52,16 @@ public class MetadataTestUtils {
 			data = bos.toByteArray();
 
 			StringBuilder buf = new StringBuilder();
-			BinUtils.dumpBin(buf, 15, "serialized-data", data, 0, Math.min(256, data.length), 16, 2);
+			BinUtils.dumpBin(buf, 15, "serialized-data", data, 0,
+					Math.min(256, data.length), 16, 2);
 			System.out.println(buf.toString());
 		}
 
 		return data;
 	}
 
-	public static MetadataBlock block(byte[] content) {
+	public static MetadataBlock block(byte[] content)
+	{
 		MetadataBlock block = new MetadataBlock() {
 			{
 				this.data = content;
@@ -67,15 +73,19 @@ public class MetadataTestUtils {
 		return block;
 	}
 
-	public static byte[] decodeMetadataBlock(byte[] data) throws IOException {
+	public static byte[] decodeMetadataBlock(byte[] data) throws IOException
+	{
 		return decodeMetadataBlock(data, 0);
 	}
 
-	public static byte[] decodeMetadataBlocks(byte[] data) throws IOException {
+	public static byte[] decodeMetadataBlocks(byte[] data) throws IOException
+	{
 		return decodeMetadataBlocks(data, 0);
 	}
 
-	public static byte[] decodeMetadataBlocks(byte[] data, int offset) throws IOException {
+	public static byte[] decodeMetadataBlocks(byte[] data, int offset)
+			throws IOException
+	{
 		SuperBlock sb = new SuperBlock();
 		sb.setCompressionId(CompressionId.ZLIB);
 		sb.setBlockSize(131072);
@@ -86,7 +96,8 @@ public class MetadataTestUtils {
 		int tag = 0;
 		try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
 
-			try (MetadataBlockReader mbr = new MemoryMetadataBlockReader(tag, sb, data, offset, data.length - offset)) {
+			try (MetadataBlockReader mbr = new MemoryMetadataBlockReader(tag,
+					sb, data, offset, data.length - offset)) {
 				MetadataReader reader = mbr.rawReader(tag, 0, (short) 0);
 				while (!reader.isEof()) {
 					byte[] output = new byte[reader.available()];
@@ -97,14 +108,17 @@ public class MetadataTestUtils {
 
 			byte[] output = bos.toByteArray();
 			StringBuilder buf = new StringBuilder();
-			BinUtils.dumpBin(buf, 17, "deserialized-data", output, 0, Math.min(256, output.length), 16, 2);
+			BinUtils.dumpBin(buf, 17, "deserialized-data", output, 0,
+					Math.min(256, output.length), 16, 2);
 			System.out.println(buf.toString());
 
 			return output;
 		}
 	}
 
-	public static byte[] decodeMetadataBlock(byte[] data, int offset) throws IOException {
+	public static byte[] decodeMetadataBlock(byte[] data, int offset)
+			throws IOException
+	{
 		SuperBlock sb = new SuperBlock();
 		sb.setCompressionId(CompressionId.ZLIB);
 		sb.setBlockSize(131072);
@@ -113,14 +127,16 @@ public class MetadataTestUtils {
 		sb.setVersionMinor((short) 0);
 
 		int tag = 0;
-		try (MetadataBlockReader mbr = new MemoryMetadataBlockReader(tag, sb, data, offset, data.length - offset)) {
+		try (MetadataBlockReader mbr = new MemoryMetadataBlockReader(tag, sb,
+				data, offset, data.length - offset)) {
 			MetadataReader reader = mbr.rawReader(tag, 0, (short) 0);
 			reader.isEof();
 			byte[] output = new byte[reader.available()];
 			reader.readFully(output);
 
 			StringBuilder buf = new StringBuilder();
-			BinUtils.dumpBin(buf, 17, "deserialized-data", output, 0, Math.min(256, output.length), 16, 2);
+			BinUtils.dumpBin(buf, 17, "deserialized-data", output, 0,
+					Math.min(256, output.length), 16, 2);
 			System.out.println(buf.toString());
 
 			return output;

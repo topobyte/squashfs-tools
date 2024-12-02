@@ -18,18 +18,19 @@
 
 package org.apache.hadoop.squashfs.inode;
 
-public interface IpcINode extends INode {
+public interface IpcINode extends INode
+{
 
-  public int getNlink();
+	public int getNlink();
 
-  public void setNlink(int nlink);
+	public void setNlink(int nlink);
 
-  public int getXattrIndex();
+	public int getXattrIndex();
 
-  public void setXattrIndex(int xattrIndex);
+	public void setXattrIndex(int xattrIndex);
 
-  public boolean isXattrPresent();
+	public boolean isXattrPresent();
 
-  public IpcINode simplify();
+	public IpcINode simplify();
 
 }

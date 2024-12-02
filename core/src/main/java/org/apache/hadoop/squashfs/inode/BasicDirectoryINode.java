@@ -29,185 +29,210 @@ import static org.apache.hadoop.squashfs.util.BinUtils.DumpOptions.DECIMAL;
 import static org.apache.hadoop.squashfs.util.BinUtils.DumpOptions.UNSIGNED;
 import static org.apache.hadoop.squashfs.util.BinUtils.dumpBin;
 
-public class BasicDirectoryINode extends AbstractINode
-    implements DirectoryINode {
+public class BasicDirectoryINode extends AbstractINode implements DirectoryINode
+{
 
-  int startBlock;
-  int nlink = 1;
-  short fileSize; // 3 + # of uncompressed bytes in directory table
-  short offset;
-  int parentInodeNumber;
+	int startBlock;
+	int nlink = 1;
+	short fileSize; // 3 + # of uncompressed bytes in directory table
+	short offset;
+	int parentInodeNumber;
 
-  static DirectoryINode simplify(DirectoryINode src) {
-    if (src instanceof BasicDirectoryINode) {
-      return src;
-    }
+	static DirectoryINode simplify(DirectoryINode src)
+	{
+		if (src instanceof BasicDirectoryINode) {
+			return src;
+		}
 
-    if (src.getFileSize() > 0xffff) {
-      return src;
-    }
+		if (src.getFileSize() > 0xffff) {
+			return src;
+		}
 
-    if (src.isIndexPresent()) {
-      return src;
-    }
+		if (src.isIndexPresent()) {
+			return src;
+		}
 
-    if (src.isXattrPresent()) {
-      return src;
-    }
+		if (src.isXattrPresent()) {
+			return src;
+		}
 
-    BasicDirectoryINode dest = new BasicDirectoryINode();
-    src.copyTo(dest);
+		BasicDirectoryINode dest = new BasicDirectoryINode();
+		src.copyTo(dest);
 
-    dest.setStartBlock(src.getStartBlock());
-    dest.setNlink(src.getNlink());
-    dest.setFileSize(src.getFileSize());
-    dest.setOffset(src.getOffset());
-    dest.setParentInodeNumber(src.getParentInodeNumber());
+		dest.setStartBlock(src.getStartBlock());
+		dest.setNlink(src.getNlink());
+		dest.setFileSize(src.getFileSize());
+		dest.setOffset(src.getOffset());
+		dest.setParentInodeNumber(src.getParentInodeNumber());
 
-    return dest;
-  }
+		return dest;
+	}
 
-  @Override
-  public int getStartBlock() {
-    return startBlock;
-  }
+	@Override
+	public int getStartBlock()
+	{
+		return startBlock;
+	}
 
-  @Override
-  public void setStartBlock(int startBlock) {
-    this.startBlock = startBlock;
-  }
+	@Override
+	public void setStartBlock(int startBlock)
+	{
+		this.startBlock = startBlock;
+	}
 
-  @Override
-  public int getNlink() {
-    return nlink;
-  }
+	@Override
+	public int getNlink()
+	{
+		return nlink;
+	}
 
-  @Override
-  public void setNlink(int nlink) {
-    this.nlink = nlink;
-  }
+	@Override
+	public void setNlink(int nlink)
+	{
+		this.nlink = nlink;
+	}
 
-  @Override
-  public int getFileSize() {
-    return fileSize & 0xffff;
-  }
+	@Override
+	public int getFileSize()
+	{
+		return fileSize & 0xffff;
+	}
 
-  @Override
-  public void setFileSize(int fileSize) {
-    if (fileSize >= 0xffff) {
-      throw new IllegalArgumentException(
-          "Basic directory inodes do not support filesizes > 64K");
-    }
-    this.fileSize = (short) (fileSize & 0xffff);
-  }
+	@Override
+	public void setFileSize(int fileSize)
+	{
+		if (fileSize >= 0xffff) {
+			throw new IllegalArgumentException(
+					"Basic directory inodes do not support filesizes > 64K");
+		}
+		this.fileSize = (short) (fileSize & 0xffff);
+	}
 
-  @Override
-  public short getOffset() {
-    return offset;
-  }
+	@Override
+	public short getOffset()
+	{
+		return offset;
+	}
 
-  @Override
-  public void setOffset(short offset) {
-    this.offset = offset;
-  }
+	@Override
+	public void setOffset(short offset)
+	{
+		this.offset = offset;
+	}
 
-  @Override
-  public int getParentInodeNumber() {
-    return parentInodeNumber;
-  }
+	@Override
+	public int getParentInodeNumber()
+	{
+		return parentInodeNumber;
+	}
 
-  @Override
-  public void setParentInodeNumber(int parentInodeNumber) {
-    this.parentInodeNumber = parentInodeNumber;
-  }
+	@Override
+	public void setParentInodeNumber(int parentInodeNumber)
+	{
+		this.parentInodeNumber = parentInodeNumber;
+	}
 
-  @Override
-  public short getIndexCount() {
-    return 0;
-  }
+	@Override
+	public short getIndexCount()
+	{
+		return 0;
+	}
 
-  @Override
-  public void setIndexCount(short indexCount) {
-    if (indexCount != (short) 0) {
-      throw new IllegalArgumentException(
-          "Basic directory inodes do not support indexes");
-    }
-  }
+	@Override
+	public void setIndexCount(short indexCount)
+	{
+		if (indexCount != (short) 0) {
+			throw new IllegalArgumentException(
+					"Basic directory inodes do not support indexes");
+		}
+	}
 
-  @Override
-  public boolean isIndexPresent() {
-    return false;
-  }
+	@Override
+	public boolean isIndexPresent()
+	{
+		return false;
+	}
 
-  @Override
-  public int getXattrIndex() {
-    return XATTR_NOT_PRESENT;
-  }
+	@Override
+	public int getXattrIndex()
+	{
+		return XATTR_NOT_PRESENT;
+	}
 
-  @Override
-  public void setXattrIndex(int xattrIndex) {
-    if (xattrIndex != XATTR_NOT_PRESENT) {
-      throw new IllegalArgumentException(
-          "Basic directory inodes do not support extended attributes");
-    }
-  }
+	@Override
+	public void setXattrIndex(int xattrIndex)
+	{
+		if (xattrIndex != XATTR_NOT_PRESENT) {
+			throw new IllegalArgumentException(
+					"Basic directory inodes do not support extended attributes");
+		}
+	}
 
-  @Override
-  public boolean isXattrPresent() {
-    return false;
-  }
+	@Override
+	public boolean isXattrPresent()
+	{
+		return false;
+	}
 
-  @Override
-  protected int getChildSerializedSize() {
-    return 16;
-  }
+	@Override
+	protected int getChildSerializedSize()
+	{
+		return 16;
+	}
 
-  @Override
-  protected String getName() {
-    return "basic-directory-inode";
-  }
+	@Override
+	protected String getName()
+	{
+		return "basic-directory-inode";
+	}
 
-  @Override
-  public INodeType getInodeType() {
-    return INodeType.BASIC_DIRECTORY;
-  }
+	@Override
+	public INodeType getInodeType()
+	{
+		return INodeType.BASIC_DIRECTORY;
+	}
 
-  @Override
-  protected void readExtraData(SuperBlock sb, DataInput in)
-      throws SquashFsException, IOException {
-    startBlock = in.readInt();
-    nlink = in.readInt();
-    fileSize = in.readShort();
-    offset = in.readShort();
-    parentInodeNumber = in.readInt();
-  }
+	@Override
+	protected void readExtraData(SuperBlock sb, DataInput in)
+			throws SquashFsException, IOException
+	{
+		startBlock = in.readInt();
+		nlink = in.readInt();
+		fileSize = in.readShort();
+		offset = in.readShort();
+		parentInodeNumber = in.readInt();
+	}
 
-  @Override
-  protected void writeExtraData(MetadataWriter out) throws IOException {
-    out.writeInt(startBlock);
-    out.writeInt(nlink);
-    out.writeShort(fileSize);
-    out.writeShort(offset);
-    out.writeInt(parentInodeNumber);
-  }
+	@Override
+	protected void writeExtraData(MetadataWriter out) throws IOException
+	{
+		out.writeInt(startBlock);
+		out.writeInt(nlink);
+		out.writeShort(fileSize);
+		out.writeShort(offset);
+		out.writeInt(parentInodeNumber);
+	}
 
-  @Override
-  protected int getPreferredDumpWidth() {
-    return 19;
-  }
+	@Override
+	protected int getPreferredDumpWidth()
+	{
+		return 19;
+	}
 
-  @Override
-  protected void dumpProperties(StringBuilder buf, int width) {
-    dumpBin(buf, width, "startBlock", startBlock, DECIMAL, UNSIGNED);
-    dumpBin(buf, width, "nlink", nlink, DECIMAL, UNSIGNED);
-    dumpBin(buf, width, "fileSize", fileSize, DECIMAL, UNSIGNED);
-    dumpBin(buf, width, "offset", offset, DECIMAL, UNSIGNED);
-    dumpBin(buf, width, "parentInodeNumber", parentInodeNumber, DECIMAL,
-        UNSIGNED);
-  }
+	@Override
+	protected void dumpProperties(StringBuilder buf, int width)
+	{
+		dumpBin(buf, width, "startBlock", startBlock, DECIMAL, UNSIGNED);
+		dumpBin(buf, width, "nlink", nlink, DECIMAL, UNSIGNED);
+		dumpBin(buf, width, "fileSize", fileSize, DECIMAL, UNSIGNED);
+		dumpBin(buf, width, "offset", offset, DECIMAL, UNSIGNED);
+		dumpBin(buf, width, "parentInodeNumber", parentInodeNumber, DECIMAL,
+				UNSIGNED);
+	}
 
-  @Override
-  public DirectoryINode simplify() {
-    return this;
-  }
+	@Override
+	public DirectoryINode simplify()
+	{
+		return this;
+	}
 }

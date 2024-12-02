@@ -29,50 +29,59 @@ import org.junit.Test;
 
 import org.apache.hadoop.squashfs.test.INodeTestUtils;
 
-public class AbsBasicIpcINodeTest {
+public class AbsBasicIpcINodeTest
+{
 
 	AbstractBasicIpcINode inode;
 
 	@Before
-	public void setUp() {
+	public void setUp()
+	{
 		inode = new BasicSocketINode();
 		inode.setNlink(2);
 	}
 
 	@Test
-	public void nlinkPropertyShouldWorkAsExpected() {
+	public void nlinkPropertyShouldWorkAsExpected()
+	{
 		assertEquals(2, inode.getNlink());
 		inode.setNlink(3);
 		assertEquals(3, inode.getNlink());
 	}
 
 	@Test
-	public void getXattrIndexShouldReturnNotPresent() {
+	public void getXattrIndexShouldReturnNotPresent()
+	{
 		assertEquals(-1, inode.getXattrIndex());
 	}
 
 	@Test
-	public void setXattrIndexWithNotPresentValueShouldSucceed() {
+	public void setXattrIndexWithNotPresentValueShouldSucceed()
+	{
 		inode.setXattrIndex(-1);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
-	public void setXattrIndexWithInvalidValueShouldFail() {
+	public void setXattrIndexWithInvalidValueShouldFail()
+	{
 		inode.setXattrIndex(1);
 	}
 
 	@Test
-	public void isXattrPresentShouldReturnFalse() {
+	public void isXattrPresentShouldReturnFalse()
+	{
 		assertFalse(inode.isXattrPresent());
 	}
 
 	@Test
-	public void getChildSerializedSizeShouldReturnCorrectValue() {
+	public void getChildSerializedSizeShouldReturnCorrectValue()
+	{
 		assertEquals(4, inode.getChildSerializedSize());
 	}
 
 	@Test
-	public void writeDataAndReadDataShouldBeReflexive() throws IOException {
+	public void writeDataAndReadDataShouldBeReflexive() throws IOException
+	{
 		byte[] data = INodeTestUtils.serializeINode(inode);
 		INode dest = INodeTestUtils.deserializeINode(data);
 
@@ -83,7 +92,8 @@ public class AbsBasicIpcINodeTest {
 	}
 
 	@Test
-	public void toStringShouldNotFail() {
+	public void toStringShouldNotFail()
+	{
 		System.out.println(inode.toString());
 	}
 }

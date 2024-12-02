@@ -18,52 +18,61 @@
 
 package org.apache.hadoop.squashfs.data;
 
-public class DataBlockRef {
+public class DataBlockRef
+{
 
-  private final long location;
-  private final int logicalSize;
-  private final int physicalSize;
-  private final boolean compressed;
-  private final boolean sparse;
+	private final long location;
+	private final int logicalSize;
+	private final int physicalSize;
+	private final boolean compressed;
+	private final boolean sparse;
 
-  public DataBlockRef(long location, int logicalSize, int physicalSize,
-      boolean compressed, boolean sparse) {
-    this.location = location;
-    this.logicalSize = logicalSize;
-    this.physicalSize = physicalSize;
-    this.compressed = compressed;
-    this.sparse = sparse;
-  }
+	public DataBlockRef(long location, int logicalSize, int physicalSize,
+			boolean compressed, boolean sparse)
+	{
+		this.location = location;
+		this.logicalSize = logicalSize;
+		this.physicalSize = physicalSize;
+		this.compressed = compressed;
+		this.sparse = sparse;
+	}
 
-  public long getLocation() {
-    return location;
-  }
+	public long getLocation()
+	{
+		return location;
+	}
 
-  public int getLogicalSize() {
-    return logicalSize;
-  }
+	public int getLogicalSize()
+	{
+		return logicalSize;
+	}
 
-  public int getPhysicalSize() {
-    return physicalSize;
-  }
+	public int getPhysicalSize()
+	{
+		return physicalSize;
+	}
 
-  public boolean isCompressed() {
-    return compressed;
-  }
+	public boolean isCompressed()
+	{
+		return compressed;
+	}
 
-  public boolean isSparse() {
-    return sparse;
-  }
+	public boolean isSparse()
+	{
+		return sparse;
+	}
 
-  public int getInodeSize() {
-    return (physicalSize & 0xfffff) | (compressed ? 0 : 0x1000000);
-  }
+	public int getInodeSize()
+	{
+		return (physicalSize & 0xfffff) | (compressed ? 0 : 0x1000000);
+	}
 
-  @Override
-  public String toString() {
-    return String.format(
-        "data-block-ref { location=%d, logicalSize=%d, physicalSize=%d, compressed=%s, sparse=%s }",
-        location, logicalSize, physicalSize, compressed, sparse);
-  }
+	@Override
+	public String toString()
+	{
+		return String.format(
+				"data-block-ref { location=%d, logicalSize=%d, physicalSize=%d, compressed=%s, sparse=%s }",
+				location, logicalSize, physicalSize, compressed, sparse);
+	}
 
 }

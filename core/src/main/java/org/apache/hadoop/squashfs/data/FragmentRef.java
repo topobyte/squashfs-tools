@@ -18,36 +18,42 @@
 
 package org.apache.hadoop.squashfs.data;
 
-public class FragmentRef {
+public class FragmentRef
+{
 
-  private int fragmentIndex = -1;
-  private final int offset;
+	private int fragmentIndex = -1;
+	private final int offset;
 
-  public FragmentRef(int offset) {
-    this.offset = offset;
-  }
+	public FragmentRef(int offset)
+	{
+		this.offset = offset;
+	}
 
-  public int getFragmentIndex() {
-    return fragmentIndex;
-  }
+	public int getFragmentIndex()
+	{
+		return fragmentIndex;
+	}
 
-  public int getOffset() {
-    return offset;
-  }
+	public int getOffset()
+	{
+		return offset;
+	}
 
-  public boolean isValid() {
-    return fragmentIndex >= 0;
-  }
+	public boolean isValid()
+	{
+		return fragmentIndex >= 0;
+	}
 
-  void commit(int fragmentIndex) {
-    this.fragmentIndex = fragmentIndex;
-  }
+	void commit(int fragmentIndex)
+	{
+		this.fragmentIndex = fragmentIndex;
+	}
 
-  @Override
-  public String toString() {
-    return String.format(
-        "fragment-ref { fragmentIndex=%d, offset=%d }",
-        fragmentIndex, offset);
-  }
+	@Override
+	public String toString()
+	{
+		return String.format("fragment-ref { fragmentIndex=%d, offset=%d }",
+				fragmentIndex, offset);
+	}
 
 }

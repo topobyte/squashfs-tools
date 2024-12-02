@@ -28,13 +28,15 @@ import org.junit.Test;
 
 import org.apache.hadoop.squashfs.test.INodeTestUtils;
 
-public class AbsINodeTest {
+public class AbsINodeTest
+{
 
 	AbstractINode inode;
 	int modifiedTime;
 
 	@Before
-	public void setUp() {
+	public void setUp()
+	{
 		inode = new BasicFifoINode(); // pick a simple one
 		inode.setUidIdx((short) 1);
 		inode.setGidIdx((short) 2);
@@ -45,58 +47,68 @@ public class AbsINodeTest {
 	}
 
 	@Test
-	public void copyToShouldDuplicateCommonINodeProperties() {
+	public void copyToShouldDuplicateCommonINodeProperties()
+	{
 		INode dest = new BasicSymlinkINode();
 		inode.copyTo(dest);
 		assertEquals("Wrong uidIdx", (short) 1, dest.getUidIdx());
 		assertEquals("Wrong gidIdx", (short) 2, dest.getGidIdx());
 		assertEquals("Wrong inodeNumber", 3, dest.getInodeNumber());
 		assertEquals("Wrong permissions", (short) 0755, dest.getPermissions());
-		assertEquals("Wrong modifiedTime", modifiedTime, dest.getModifiedTime());
+		assertEquals("Wrong modifiedTime", modifiedTime,
+				dest.getModifiedTime());
 	}
 
 	@Test
-	public void getSerializedSizeShouldReturnSixteenPlusWhateverChildNeeds() {
-		assertEquals(16 + inode.getChildSerializedSize(), inode.getSerializedSize());
+	public void getSerializedSizeShouldReturnSixteenPlusWhateverChildNeeds()
+	{
+		assertEquals(16 + inode.getChildSerializedSize(),
+				inode.getSerializedSize());
 	}
 
 	@Test
-	public void uidIdxPropertyShouldWorkAsExpected() {
+	public void uidIdxPropertyShouldWorkAsExpected()
+	{
 		assertEquals((short) 1, inode.getUidIdx());
 		inode.setUidIdx((short) 2);
 		assertEquals((short) 2, inode.getUidIdx());
 	}
 
 	@Test
-	public void gidIdxPropertyShouldWorkAsExpected() {
+	public void gidIdxPropertyShouldWorkAsExpected()
+	{
 		assertEquals((short) 2, inode.getGidIdx());
 		inode.setGidIdx((short) 3);
 		assertEquals((short) 3, inode.getGidIdx());
 	}
 
 	@Test
-	public void inodeNumberPropertyShouldWorkAsExpected() {
+	public void inodeNumberPropertyShouldWorkAsExpected()
+	{
 		assertEquals(3, inode.getInodeNumber());
 		inode.setInodeNumber(4);
 		assertEquals(4, inode.getInodeNumber());
 	}
 
 	@Test
-	public void permissionsPropertyShouldWorkAsExpected() {
+	public void permissionsPropertyShouldWorkAsExpected()
+	{
 		assertEquals((short) 0755, inode.getPermissions());
 		inode.setPermissions((short) 0644);
 		assertEquals((short) 0644, inode.getPermissions());
 	}
 
 	@Test
-	public void modifiedTimePropertyShouldWorkAsExpected() {
+	public void modifiedTimePropertyShouldWorkAsExpected()
+	{
 		assertEquals(modifiedTime, inode.getModifiedTime());
 		inode.setModifiedTime(modifiedTime + 1);
 		assertEquals(modifiedTime + 1, inode.getModifiedTime());
 	}
 
 	@Test
-	public void writeDataAndReadDataShouldBeReflexive() throws IOException {
+	public void writeDataAndReadDataShouldBeReflexive() throws IOException
+	{
 		byte[] data = INodeTestUtils.serializeINode(inode);
 		INode dest = INodeTestUtils.deserializeINode(data);
 
@@ -105,11 +117,13 @@ public class AbsINodeTest {
 		assertEquals("Wrong gidIdx", (short) 2, dest.getGidIdx());
 		assertEquals("Wrong inodeNumber", 3, dest.getInodeNumber());
 		assertEquals("Wrong permissions", (short) 0755, dest.getPermissions());
-		assertEquals("Wrong modifiedTime", modifiedTime, dest.getModifiedTime());
+		assertEquals("Wrong modifiedTime", modifiedTime,
+				dest.getModifiedTime());
 	}
 
 	@Test
-	public void toStringShouldNotFail() {
+	public void toStringShouldNotFail()
+	{
 		System.out.println(inode.toString());
 	}
 

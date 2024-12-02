@@ -24,38 +24,45 @@ import static org.junit.Assert.assertSame;
 import org.junit.Before;
 import org.junit.Test;
 
-public class BasicFifoINodeTest {
+public class BasicFifoINodeTest
+{
 
 	BasicFifoINode inode;
 
 	@Before
-	public void setUp() {
+	public void setUp()
+	{
 		inode = new BasicFifoINode();
 		inode.setNlink(2);
 	}
 
 	@Test
-	public void getNameShouldReturnCorrectValue() {
+	public void getNameShouldReturnCorrectValue()
+	{
 		assertEquals("basic-fifo-inode", inode.getName());
 	}
 
 	@Test
-	public void getInodeTypeShouldReturnCorrectValue() {
+	public void getInodeTypeShouldReturnCorrectValue()
+	{
 		assertSame(INodeType.BASIC_FIFO, inode.getInodeType());
 	}
 
 	@Test
-	public void simplifyShouldReturnSelf() {
+	public void simplifyShouldReturnSelf()
+	{
 		assertSame(inode, inode.simplify());
 	}
 
 	@Test
-	public void staticSimplifyMethodShouldReturnOriginalIfBasic() {
+	public void staticSimplifyMethodShouldReturnOriginalIfBasic()
+	{
 		assertSame(inode, BasicFifoINode.simplify(inode));
 	}
 
 	@Test
-	public void staticSimplifyMethodShouldReturnOriginalIfExtendedAttributesPresent() {
+	public void staticSimplifyMethodShouldReturnOriginalIfExtendedAttributesPresent()
+	{
 		FifoINode inode2 = new ExtendedFifoINode();
 		inode2.setNlink(2);
 		inode2.setXattrIndex(3);
@@ -63,7 +70,8 @@ public class BasicFifoINodeTest {
 	}
 
 	@Test
-	public void staticSimplifyMethodShouldReturnBasicIfExtendedAttributesNotPresent() {
+	public void staticSimplifyMethodShouldReturnBasicIfExtendedAttributesNotPresent()
+	{
 		FifoINode inode2 = new ExtendedFifoINode();
 		inode2.setNlink(2);
 		inode2.setXattrIndex(-1);
@@ -74,7 +82,8 @@ public class BasicFifoINodeTest {
 	}
 
 	@Test
-	public void toStringShouldNotFail() {
+	public void toStringShouldNotFail()
+	{
 		System.out.println(inode.toString());
 	}
 

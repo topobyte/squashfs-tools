@@ -20,30 +20,37 @@ package org.apache.hadoop.squashfs.util;
 
 import java.io.FilterOutputStream;
 
-public class NullOutputStream extends FilterOutputStream {
+public class NullOutputStream extends FilterOutputStream
+{
 
-  public NullOutputStream() {
-    super(null);
-  }
+	public NullOutputStream()
+	{
+		super(null);
+	}
 
-  @Override
-  public void write(int b) {
-  }
+	@Override
+	public void write(int b)
+	{
+	}
 
-  @Override
-  public void write(byte[] b) {
-  }
+	@Override
+	public void write(byte[] b)
+	{
+	}
 
-  @Override
-  public void write(byte[] b, int off, int len) {
-  }
+	@Override
+	public void write(byte[] b, int off, int len)
+	{
+	}
 
-  @Override
-  public void flush() {
-  }
+	@Override
+	public void flush()
+	{
+	}
 
-  @Override
-  public void close() {
-  }
+	@Override
+	public void close()
+	{
+	}
 
 }

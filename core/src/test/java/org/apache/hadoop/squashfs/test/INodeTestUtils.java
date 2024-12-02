@@ -31,9 +31,11 @@ import org.apache.hadoop.squashfs.superblock.CompressionId;
 import org.apache.hadoop.squashfs.superblock.SuperBlock;
 import org.apache.hadoop.squashfs.util.BinUtils;
 
-public class INodeTestUtils {
+public class INodeTestUtils
+{
 
-	public static byte[] serializeINode(INode inode) throws IOException {
+	public static byte[] serializeINode(INode inode) throws IOException
+	{
 		MetadataWriter writer = new MetadataWriter();
 		inode.writeData(writer);
 
@@ -45,14 +47,16 @@ public class INodeTestUtils {
 			data = bos.toByteArray();
 
 			StringBuilder buf = new StringBuilder();
-			BinUtils.dumpBin(buf, 15, "serialized-data", data, 0, Math.min(256, data.length), 16, 2);
+			BinUtils.dumpBin(buf, 15, "serialized-data", data, 0,
+					Math.min(256, data.length), 16, 2);
 			System.out.println(buf.toString());
 		}
 
 		return data;
 	}
 
-	public static INode deserializeINode(byte[] data) throws IOException {
+	public static INode deserializeINode(byte[] data) throws IOException
+	{
 		SuperBlock sb = new SuperBlock();
 		sb.setCompressionId(CompressionId.ZLIB);
 		sb.setBlockSize(131072);
@@ -61,7 +65,8 @@ public class INodeTestUtils {
 		sb.setVersionMinor((short) 0);
 
 		int tag = 0;
-		try (MetadataBlockReader mbr = new MemoryMetadataBlockReader(tag, sb, data)) {
+		try (MetadataBlockReader mbr = new MemoryMetadataBlockReader(tag, sb,
+				data)) {
 			MetadataReader reader = mbr.rawReader(tag, 0L, (short) 0);
 
 			return INode.read(sb, reader);

@@ -39,76 +39,91 @@ import org.apache.hadoop.squashfs.metadata.MetadataWriter;
 import org.apache.hadoop.squashfs.superblock.SuperBlock;
 import org.apache.hadoop.squashfs.superblock.SuperBlockFlag;
 
-public class ExportTableTest {
+public class ExportTableTest
+{
 
 	@Test
-	public void readShouldHandleReadingEmptyTable() throws Exception {
+	public void readShouldHandleReadingEmptyTable() throws Exception
+	{
 		verify(0, true);
 	}
 
 	@Test
-	public void readShouldHandleReadingSingleEntry() throws Exception {
+	public void readShouldHandleReadingSingleEntry() throws Exception
+	{
 		verify(1, true);
 	}
 
 	@Test
-	public void readShouldHandleExportTableBeingDisabled() throws Exception {
+	public void readShouldHandleExportTableBeingDisabled() throws Exception
+	{
 		verify(1, false);
 	}
 
 	@Test
-	public void readShouldHandleReadingSinglePage() throws Exception {
+	public void readShouldHandleReadingSinglePage() throws Exception
+	{
 		verify(1024, true);
 	}
 
 	@Test
-	public void readShouldHandleReadingMultiplePages() throws Exception {
+	public void readShouldHandleReadingMultiplePages() throws Exception
+	{
 		verify(2048, true);
 	}
 
 	@Test
-	public void toStringShouldNotFail() throws Exception {
+	public void toStringShouldNotFail() throws Exception
+	{
 		ExportTable table = verify(10, true);
 		System.out.println(table.toString());
 	}
 
 	@Test
-	public void toStringShouldNotFailOnNotAvailable() throws Exception {
+	public void toStringShouldNotFailOnNotAvailable() throws Exception
+	{
 		ExportTable table = verify(10, false);
 		System.out.println(table.toString());
 	}
 
 	@Test(expected = SquashFsException.class)
-	public void getInodeRefRawShouldFailOnTooLargeValue() throws Exception {
+	public void getInodeRefRawShouldFailOnTooLargeValue() throws Exception
+	{
 		ExportTable table = verify(100, true);
 		table.getInodeRefRaw(101);
 	}
 
 	@Test(expected = SquashFsException.class)
-	public void getInodeRefRawShouldFailOnTooSmallValue() throws Exception {
+	public void getInodeRefRawShouldFailOnTooSmallValue() throws Exception
+	{
 		ExportTable table = verify(100, true);
 		table.getInodeRefRaw(0);
 	}
 
 	@Test(expected = SquashFsException.class)
-	public void getInodeRefShouldFailOnTooLargeValue() throws Exception {
+	public void getInodeRefShouldFailOnTooLargeValue() throws Exception
+	{
 		ExportTable table = verify(100, true);
 		table.getInodeRef(101);
 	}
 
 	@Test(expected = SquashFsException.class)
-	public void getInodeRefShouldFailOnTooSmallValue() throws Exception {
+	public void getInodeRefShouldFailOnTooSmallValue() throws Exception
+	{
 		ExportTable table = verify(100, true);
 		table.getInodeRef(0);
 	}
 
 	@Test
-	public void getInodeRefShouldReturnSameValueAsRaw() throws Exception {
+	public void getInodeRefShouldReturnSameValueAsRaw() throws Exception
+	{
 		ExportTable table = verify(100, true);
-		assertEquals("wrong ref value", table.getInodeRefRaw(1), table.getInodeRef(1).getRaw());
+		assertEquals("wrong ref value", table.getInodeRefRaw(1),
+				table.getInodeRef(1).getRaw());
 	}
 
-	ExportTable verify(int count, boolean available) throws Exception {
+	ExportTable verify(int count, boolean available) throws Exception
+	{
 		byte[] tableData;
 
 		List<MetadataBlockRef> refs;
@@ -133,7 +148,8 @@ public class ExportTableTest {
 				sb.writeData(dos);
 				for (MetadataBlockRef ref : refs) {
 					byte[] buf = new byte[8];
-					ByteBuffer.wrap(buf).order(ByteOrder.LITTLE_ENDIAN).putLong(ref.getLocation());
+					ByteBuffer.wrap(buf).order(ByteOrder.LITTLE_ENDIAN)
+							.putLong(ref.getLocation());
 					dos.write(buf);
 				}
 			}
@@ -142,7 +158,8 @@ public class ExportTableTest {
 
 		int tag = 0;
 		TableReader tr = new MemoryTableReader(sb, tableData);
-		MetadataBlockReader mbr = new MemoryMetadataBlockReader(tag, sb, metadata);
+		MetadataBlockReader mbr = new MemoryMetadataBlockReader(tag, sb,
+				metadata);
 
 		ExportTable et = ExportTable.read(tag, tr, mbr);
 		assertEquals("available status", available, et.isAvailable());
@@ -158,7 +175,9 @@ public class ExportTableTest {
 		return et;
 	}
 
-	List<MetadataBlockRef> createEntries(int count, DataOutput out) throws IOException {
+	List<MetadataBlockRef> createEntries(int count, DataOutput out)
+			throws IOException
+	{
 		List<MetadataBlockRef> refs = new ArrayList<>();
 
 		MetadataWriter writer = new MetadataWriter();

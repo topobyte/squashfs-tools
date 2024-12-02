@@ -25,51 +25,53 @@ import org.apache.hadoop.squashfs.superblock.SuperBlock;
 import java.io.DataInput;
 import java.io.IOException;
 
-public interface INode {
+public interface INode
+{
 
-  public static final int XATTR_NOT_PRESENT = 0xffff_ffff;
+	public static final int XATTR_NOT_PRESENT = 0xffff_ffff;
 
-  public static INode read(SuperBlock sb, DataInput in)
-      throws SquashFsException, IOException {
-    INodeType inodeType = INodeType.fromValue(in.readShort());
-    INode inode = inodeType.create();
-    inode.readData(sb, in);
-    return inode;
-  }
+	public static INode read(SuperBlock sb, DataInput in)
+			throws SquashFsException, IOException
+	{
+		INodeType inodeType = INodeType.fromValue(in.readShort());
+		INode inode = inodeType.create();
+		inode.readData(sb, in);
+		return inode;
+	}
 
-  public INodeType getInodeType();
+	public INodeType getInodeType();
 
-  public int getSerializedSize();
+	public int getSerializedSize();
 
-  public short getPermissions();
+	public short getPermissions();
 
-  public void setPermissions(short permissions);
+	public void setPermissions(short permissions);
 
-  public short getUidIdx();
+	public short getUidIdx();
 
-  public void setUidIdx(short uidIdx);
+	public void setUidIdx(short uidIdx);
 
-  public short getGidIdx();
+	public short getGidIdx();
 
-  public void setGidIdx(short uidIdx);
+	public void setGidIdx(short uidIdx);
 
-  public int getModifiedTime();
+	public int getModifiedTime();
 
-  public void setModifiedTime(int modifiedTime);
+	public void setModifiedTime(int modifiedTime);
 
-  public int getInodeNumber();
+	public int getInodeNumber();
 
-  public void setInodeNumber(int inodeNumber);
+	public void setInodeNumber(int inodeNumber);
 
-  public int getNlink();
+	public int getNlink();
 
-  public void copyTo(INode dest);
+	public void copyTo(INode dest);
 
-  public INode simplify();
+	public INode simplify();
 
-  public void readData(SuperBlock sb, DataInput in)
-      throws SquashFsException, IOException;
+	public void readData(SuperBlock sb, DataInput in)
+			throws SquashFsException, IOException;
 
-  public void writeData(MetadataWriter out) throws IOException;
+	public void writeData(MetadataWriter out) throws IOException;
 
 }

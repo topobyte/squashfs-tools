@@ -27,153 +27,177 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicLong;
 
-public class MetadataBlockCache implements MetadataBlockReader {
+public class MetadataBlockCache implements MetadataBlockReader
+{
 
-  private static final int DEFAULT_CACHE_SIZE = 32; // 256 KB
+	private static final int DEFAULT_CACHE_SIZE = 32; // 256 KB
 
-  private final int cacheSize;
-  private final TaggedMetadataBlockReader reader;
-  private final boolean shouldClose;
-  private final LruBlockCache cache;
-  private final AtomicLong cacheHits = new AtomicLong(0L);
-  private final AtomicLong cacheMisses = new AtomicLong(0L);
+	private final int cacheSize;
+	private final TaggedMetadataBlockReader reader;
+	private final boolean shouldClose;
+	private final LruBlockCache cache;
+	private final AtomicLong cacheHits = new AtomicLong(0L);
+	private final AtomicLong cacheMisses = new AtomicLong(0L);
 
-  public MetadataBlockCache(TaggedMetadataBlockReader reader) {
-    this(reader, DEFAULT_CACHE_SIZE);
-  }
+	public MetadataBlockCache(TaggedMetadataBlockReader reader)
+	{
+		this(reader, DEFAULT_CACHE_SIZE);
+	}
 
-  public MetadataBlockCache(TaggedMetadataBlockReader reader, int cacheSize) {
-    this(reader, cacheSize, true);
-  }
+	public MetadataBlockCache(TaggedMetadataBlockReader reader, int cacheSize)
+	{
+		this(reader, cacheSize, true);
+	}
 
-  public MetadataBlockCache(TaggedMetadataBlockReader reader,
-      boolean shouldClose) {
-    this(reader, DEFAULT_CACHE_SIZE, shouldClose);
-  }
+	public MetadataBlockCache(TaggedMetadataBlockReader reader,
+			boolean shouldClose)
+	{
+		this(reader, DEFAULT_CACHE_SIZE, shouldClose);
+	}
 
-  public MetadataBlockCache(TaggedMetadataBlockReader reader, int cacheSize,
-      boolean shouldClose) {
-    this.cacheSize = cacheSize;
-    this.reader = reader;
-    this.cache = new LruBlockCache(cacheSize < 1 ? 1 : cacheSize);
-    this.shouldClose = shouldClose;
-  }
+	public MetadataBlockCache(TaggedMetadataBlockReader reader, int cacheSize,
+			boolean shouldClose)
+	{
+		this.cacheSize = cacheSize;
+		this.reader = reader;
+		this.cache = new LruBlockCache(cacheSize < 1 ? 1 : cacheSize);
+		this.shouldClose = shouldClose;
+	}
 
-  public synchronized void add(int tag, MetadataBlockReader reader) {
-    this.reader.add(tag, reader);
-  }
+	public synchronized void add(int tag, MetadataBlockReader reader)
+	{
+		this.reader.add(tag, reader);
+	}
 
-  @Override
-  public SuperBlock getSuperBlock(int tag) {
-    return reader.getSuperBlock(tag);
-  }
+	@Override
+	public SuperBlock getSuperBlock(int tag)
+	{
+		return reader.getSuperBlock(tag);
+	}
 
-  @Override
-  public MetadataBlock read(int tag, long fileOffset)
-      throws IOException, SquashFsException {
-    Key key = new Key(tag, fileOffset);
+	@Override
+	public MetadataBlock read(int tag, long fileOffset)
+			throws IOException, SquashFsException
+	{
+		Key key = new Key(tag, fileOffset);
 
-    MetadataBlock block;
+		MetadataBlock block;
 
-    synchronized (this) {
-      block = cache.get(key);
-    }
+		synchronized (this) {
+			block = cache.get(key);
+		}
 
-    if (block != null) {
-      cacheHits.incrementAndGet();
-    } else {
-      cacheMisses.incrementAndGet();
-      block = reader.read(tag, fileOffset);
-      synchronized (this) {
-        cache.put(key, block);
-      }
-    }
+		if (block != null) {
+			cacheHits.incrementAndGet();
+		} else {
+			cacheMisses.incrementAndGet();
+			block = reader.read(tag, fileOffset);
+			synchronized (this) {
+				cache.put(key, block);
+			}
+		}
 
-    return block;
-  }
+		return block;
+	}
 
-  @Override
-  public void close() throws IOException {
-    if (shouldClose) {
-      reader.close();
-    }
-  }
+	@Override
+	public void close() throws IOException
+	{
+		if (shouldClose) {
+			reader.close();
+		}
+	}
 
-  public long getCacheHits() {
-    return cacheHits.get();
-  }
+	public long getCacheHits()
+	{
+		return cacheHits.get();
+	}
 
-  public long getCacheMisses() {
-    return cacheMisses.get();
-  }
+	public long getCacheMisses()
+	{
+		return cacheMisses.get();
+	}
 
-  public synchronized int getCacheLoad() {
-    return cache.size();
-  }
+	public synchronized int getCacheLoad()
+	{
+		return cache.size();
+	}
 
-  public void resetStatistics() {
-    cacheHits.set(0L);
-    cacheMisses.set(0L);
-  }
+	public void resetStatistics()
+	{
+		cacheHits.set(0L);
+		cacheMisses.set(0L);
+	}
 
-  public synchronized void clearCache() {
-    cache.clear();
-    resetStatistics();
-  }
+	public synchronized void clearCache()
+	{
+		cache.clear();
+		resetStatistics();
+	}
 
-  @Override
-  public String toString() {
-    return String.format(
-        "metadata-block-cache { capacity=%d, size=%d, hits=%d, misses=%d }",
-        cacheSize, getCacheLoad(), getCacheHits(), getCacheMisses());
-  }
+	@Override
+	public String toString()
+	{
+		return String.format(
+				"metadata-block-cache { capacity=%d, size=%d, hits=%d, misses=%d }",
+				cacheSize, getCacheLoad(), getCacheHits(), getCacheMisses());
+	}
 
-  public static final class Key {
+	public static final class Key
+	{
 
-    private final int tag;
-    private final long fileOffset;
+		private final int tag;
+		private final long fileOffset;
 
-    public Key(int tag, long fileOffset) {
-      this.tag = tag;
-      this.fileOffset = fileOffset;
-    }
+		public Key(int tag, long fileOffset)
+		{
+			this.tag = tag;
+			this.fileOffset = fileOffset;
+		}
 
-    @Override
-    public int hashCode() {
-      return Objects.hash(tag, fileOffset);
-    }
+		@Override
+		public int hashCode()
+		{
+			return Objects.hash(tag, fileOffset);
+		}
 
-    @Override
-    public boolean equals(Object obj) {
-      if (!(obj instanceof Key)) {
-        return false;
-      }
-      Key o = (Key) obj;
+		@Override
+		public boolean equals(Object obj)
+		{
+			if (!(obj instanceof Key)) {
+				return false;
+			}
+			Key o = (Key) obj;
 
-      return (tag == o.tag) && (fileOffset == o.fileOffset);
-    }
+			return (tag == o.tag) && (fileOffset == o.fileOffset);
+		}
 
-    @Override
-    public String toString() {
-      return String.format("%d.%d", tag, fileOffset);
-    }
-  }
+		@Override
+		public String toString()
+		{
+			return String.format("%d.%d", tag, fileOffset);
+		}
+	}
 
-  private static class LruBlockCache extends LinkedHashMap<Key, MetadataBlock> {
+	private static class LruBlockCache extends LinkedHashMap<Key, MetadataBlock>
+	{
 
-    private static final long serialVersionUID = 7509410739092012261L;
+		private static final long serialVersionUID = 7509410739092012261L;
 
-    private final int cacheSize;
+		private final int cacheSize;
 
-    public LruBlockCache(int cacheSize) {
-      super(16, 0.75f, true);
-      this.cacheSize = cacheSize;
-    }
+		public LruBlockCache(int cacheSize)
+		{
+			super(16, 0.75f, true);
+			this.cacheSize = cacheSize;
+		}
 
-    @Override
-    protected boolean removeEldestEntry(Map.Entry<Key, MetadataBlock> eldest) {
-      return size() > cacheSize;
-    }
+		@Override
+		protected boolean removeEldestEntry(
+				Map.Entry<Key, MetadataBlock> eldest)
+		{
+			return size() > cacheSize;
+		}
 
-  }
+	}
 }

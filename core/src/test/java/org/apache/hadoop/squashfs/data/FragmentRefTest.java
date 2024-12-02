@@ -25,45 +25,53 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 
-public class FragmentRefTest {
+public class FragmentRefTest
+{
 
 	FragmentRef ref;
 
 	@Before
-	public void setUp() {
+	public void setUp()
+	{
 		ref = new FragmentRef(1);
 	}
 
 	@Test
-	public void getOffsetShouldReturnConstructedValue() {
+	public void getOffsetShouldReturnConstructedValue()
+	{
 		assertEquals(1, ref.getOffset());
 	}
 
 	@Test
-	public void getFragmentIndexShouldInitiallyReturnInvalidValue() {
+	public void getFragmentIndexShouldInitiallyReturnInvalidValue()
+	{
 		assertEquals(-1, ref.getFragmentIndex());
 	}
 
 	@Test
-	public void isValidShouldReturnFalseUntilCommitIsCalled() {
+	public void isValidShouldReturnFalseUntilCommitIsCalled()
+	{
 		assertFalse(ref.isValid());
 		ref.commit(2);
 		assertTrue(ref.isValid());
 	}
 
 	@Test
-	public void commitShouldUpdateFragmentIndex() {
+	public void commitShouldUpdateFragmentIndex()
+	{
 		ref.commit(2);
 		assertEquals(2, ref.getFragmentIndex());
 	}
 
 	@Test
-	public void toStringShouldNotFail() {
+	public void toStringShouldNotFail()
+	{
 		System.out.println(ref.toString());
 	}
 
 	@Test
-	public void toStringShouldNotFailAfterCommit() {
+	public void toStringShouldNotFailAfterCommit()
+	{
 		ref.commit(2);
 		System.out.println(ref.toString());
 	}

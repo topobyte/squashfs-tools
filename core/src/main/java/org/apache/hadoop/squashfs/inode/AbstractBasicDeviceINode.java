@@ -30,76 +30,89 @@ import static org.apache.hadoop.squashfs.util.BinUtils.DumpOptions.UNSIGNED;
 import static org.apache.hadoop.squashfs.util.BinUtils.dumpBin;
 
 abstract public class AbstractBasicDeviceINode extends AbstractINode
-    implements DeviceINode {
+		implements DeviceINode
+{
 
-  int nlink = 1;
-  int device;
+	int nlink = 1;
+	int device;
 
-  @Override
-  public final int getNlink() {
-    return nlink;
-  }
+	@Override
+	public final int getNlink()
+	{
+		return nlink;
+	}
 
-  @Override
-  public void setNlink(int nlink) {
-    this.nlink = nlink;
-  }
+	@Override
+	public void setNlink(int nlink)
+	{
+		this.nlink = nlink;
+	}
 
-  @Override
-  public final int getDevice() {
-    return device;
-  }
+	@Override
+	public final int getDevice()
+	{
+		return device;
+	}
 
-  @Override
-  public void setDevice(int device) {
-    this.device = device;
-  }
+	@Override
+	public void setDevice(int device)
+	{
+		this.device = device;
+	}
 
-  @Override
-  public int getXattrIndex() {
-    return XATTR_NOT_PRESENT;
-  }
+	@Override
+	public int getXattrIndex()
+	{
+		return XATTR_NOT_PRESENT;
+	}
 
-  @Override
-  public void setXattrIndex(int xattrIndex) {
-    if (xattrIndex != XATTR_NOT_PRESENT) {
-      throw new IllegalArgumentException(
-          "Basic device inodes do not support extended attributes");
-    }
-  }
+	@Override
+	public void setXattrIndex(int xattrIndex)
+	{
+		if (xattrIndex != XATTR_NOT_PRESENT) {
+			throw new IllegalArgumentException(
+					"Basic device inodes do not support extended attributes");
+		}
+	}
 
-  @Override
-  public boolean isXattrPresent() {
-    return false;
-  }
+	@Override
+	public boolean isXattrPresent()
+	{
+		return false;
+	}
 
-  @Override
-  protected final int getChildSerializedSize() {
-    return 8;
-  }
+	@Override
+	protected final int getChildSerializedSize()
+	{
+		return 8;
+	}
 
-  @Override
-  protected final void readExtraData(SuperBlock sb, DataInput in)
-      throws SquashFsException, IOException {
-    nlink = in.readInt();
-    device = in.readInt();
-  }
+	@Override
+	protected final void readExtraData(SuperBlock sb, DataInput in)
+			throws SquashFsException, IOException
+	{
+		nlink = in.readInt();
+		device = in.readInt();
+	}
 
-  @Override
-  protected void writeExtraData(MetadataWriter out) throws IOException {
-    out.writeInt(nlink);
-    out.writeInt(device);
-  }
+	@Override
+	protected void writeExtraData(MetadataWriter out) throws IOException
+	{
+		out.writeInt(nlink);
+		out.writeInt(device);
+	}
 
-  @Override
-  protected final int getPreferredDumpWidth() {
-    return 8;
-  }
+	@Override
+	protected final int getPreferredDumpWidth()
+	{
+		return 8;
+	}
 
-  @Override
-  protected final void dumpProperties(StringBuilder buf, int width) {
-    dumpBin(buf, width, "nlink", nlink, DECIMAL, UNSIGNED);
-    dumpBin(buf, width, "device", device, DECIMAL, UNSIGNED);
-  }
+	@Override
+	protected final void dumpProperties(StringBuilder buf, int width)
+	{
+		dumpBin(buf, width, "nlink", nlink, DECIMAL, UNSIGNED);
+		dumpBin(buf, width, "device", device, DECIMAL, UNSIGNED);
+	}
 
 }

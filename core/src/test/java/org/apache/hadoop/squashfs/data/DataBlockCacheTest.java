@@ -26,7 +26,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-public class DataBlockCacheTest {
+public class DataBlockCacheTest
+{
 
 	DataBlockCache cache;
 	DataBlockCache.Key[] keys;
@@ -35,7 +36,8 @@ public class DataBlockCacheTest {
 	DataBlock extraBlock;
 
 	@Before
-	public void setUp() throws Exception {
+	public void setUp() throws Exception
+	{
 		int size = 64;
 		keys = new DataBlockCache.Key[size];
 		blocks = new DataBlock[size];
@@ -51,7 +53,8 @@ public class DataBlockCacheTest {
 	}
 
 	@After
-	public void tearDown() {
+	public void tearDown()
+	{
 		cache = null;
 		keys = null;
 		blocks = null;
@@ -60,7 +63,8 @@ public class DataBlockCacheTest {
 	}
 
 	@Test
-	public void nullCacheShouldAlwaysMiss() throws Exception {
+	public void nullCacheShouldAlwaysMiss() throws Exception
+	{
 		cache = DataBlockCache.NO_CACHE;
 		cache.clearCache();
 
@@ -70,22 +74,27 @@ public class DataBlockCacheTest {
 			assertNull("not null block", cache.get(keys[i]));
 		}
 		assertEquals("wrong hit count", 0L, cache.getCacheHits());
-		assertEquals("wrong miss count", (long) keys.length * 2L, cache.getCacheMisses());
+		assertEquals("wrong miss count", (long) keys.length * 2L,
+				cache.getCacheMisses());
 		assertEquals("wrong cache load", 0, cache.getCacheLoad());
 	}
 
 	@Test
-	public void readingAllBlocksShouldResultInAllCacheHits() throws Exception {
+	public void readingAllBlocksShouldResultInAllCacheHits() throws Exception
+	{
 		for (int i = 0; i < keys.length; i++) {
 			assertSame("wrong block", blocks[i], cache.get(keys[i]));
 		}
-		assertEquals("wrong hit count", (long) keys.length, cache.getCacheHits());
+		assertEquals("wrong hit count", (long) keys.length,
+				cache.getCacheHits());
 		assertEquals("wrong miss count", 0L, cache.getCacheMisses());
 		assertEquals("wrong cache load", keys.length, cache.getCacheLoad());
 	}
 
 	@Test
-	public void readingMoreThanCapacityShouldResultInOneCacheMiss() throws Exception {
+	public void readingMoreThanCapacityShouldResultInOneCacheMiss()
+			throws Exception
+	{
 		cache.put(extraKey, extraBlock);
 		for (int i = 0; i < keys.length; i++) {
 			if (i == 0) {
@@ -95,13 +104,16 @@ public class DataBlockCacheTest {
 
 			}
 		}
-		assertEquals("wrong hit count", (long) (keys.length - 1), cache.getCacheHits());
+		assertEquals("wrong hit count", (long) (keys.length - 1),
+				cache.getCacheHits());
 		assertEquals("wrong miss count", 1L, cache.getCacheMisses());
 		assertEquals("wrong cache load", keys.length, cache.getCacheLoad());
 	}
 
 	@Test
-	public void readingAndWritingAllBlocksShouldResultInHalfCacheMisses() throws Exception {
+	public void readingAndWritingAllBlocksShouldResultInHalfCacheMisses()
+			throws Exception
+	{
 		cache.clearCache();
 
 		for (int i = 0; i < keys.length; i++) {
@@ -109,8 +121,10 @@ public class DataBlockCacheTest {
 			cache.put(keys[i], blocks[i]);
 			assertSame("wrong block", blocks[i], cache.get(keys[i]));
 		}
-		assertEquals("wrong hit count", (long) keys.length, cache.getCacheHits());
-		assertEquals("wrong miss count", (long) keys.length, cache.getCacheMisses());
+		assertEquals("wrong hit count", (long) keys.length,
+				cache.getCacheHits());
+		assertEquals("wrong miss count", (long) keys.length,
+				cache.getCacheMisses());
 		assertEquals("wrong cache load", keys.length, cache.getCacheLoad());
 	}
 

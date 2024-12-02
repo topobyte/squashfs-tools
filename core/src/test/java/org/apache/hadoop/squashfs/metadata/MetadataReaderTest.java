@@ -37,75 +37,91 @@ import org.apache.hadoop.squashfs.superblock.SuperBlock;
 import org.apache.hadoop.squashfs.test.MetadataBlockReaderMock;
 import org.apache.hadoop.squashfs.test.MetadataTestUtils;
 
-public class MetadataReaderTest {
+public class MetadataReaderTest
+{
 
 	@Test
-	public void isEofShouldReturnTrueOnEmptyStream() throws Exception {
+	public void isEofShouldReturnTrueOnEmptyStream() throws Exception
+	{
 		MetadataReader r = reader(new byte[0], ref(10101, 0L, (short) 0));
 		assertTrue(r.isEof());
 	}
 
 	@Test
-	public void isEofShouldReturnFalseOnSingleByteStream() throws Exception {
+	public void isEofShouldReturnFalseOnSingleByteStream() throws Exception
+	{
 		MetadataReader r = reader(new byte[1], ref(10101, 0L, (short) 0));
 		assertFalse(r.isEof());
 	}
 
 	@Test
-	public void isEofShouldReturnTrueIfReadPastMaxLength() throws Exception {
+	public void isEofShouldReturnTrueIfReadPastMaxLength() throws Exception
+	{
 		MetadataReader r = reader(new byte[1], ref(10101, 0L, (short) 0, 1));
 		r.skipBytes(1);
 		assertTrue(r.isEof());
 	}
 
 	@Test
-	public void isEofShouldReturnFalseIfPartwayThroughBlock() throws Exception {
+	public void isEofShouldReturnFalseIfPartwayThroughBlock() throws Exception
+	{
 		MetadataReader r = reader(new byte[10], ref(10101, 0L, (short) 0, 10));
 		r.skipBytes(5);
 		assertFalse(r.isEof());
 	}
 
 	@Test
-	public void positionShouldReturnZeroOnEmptyStream() throws Exception {
+	public void positionShouldReturnZeroOnEmptyStream() throws Exception
+	{
 		MetadataReader r = reader(new byte[0], ref(10101, 0L, (short) 0));
 		assertEquals(0, r.position());
 	}
 
 	@Test
-	public void availableShouldReturnZeroOnEmptyStream() throws Exception {
+	public void availableShouldReturnZeroOnEmptyStream() throws Exception
+	{
 		MetadataReader r = reader(new byte[0], ref(10101, 0L, (short) 0));
 		assertEquals(0, r.available());
 	}
 
 	@Test
-	public void availableShouldInitiallyReturnZeroOnSingleByteStream() throws Exception {
+	public void availableShouldInitiallyReturnZeroOnSingleByteStream()
+			throws Exception
+	{
 		MetadataReader r = reader(new byte[1], ref(10101, 0L, (short) 0));
 		assertEquals(0, r.available());
 	}
 
 	@Test
-	public void availableShouldReturnOneOnSingleByteStreamAfterCheckingEof() throws Exception {
+	public void availableShouldReturnOneOnSingleByteStreamAfterCheckingEof()
+			throws Exception
+	{
 		MetadataReader r = reader(new byte[1], ref(10101, 0L, (short) 0));
 		r.isEof();
 		assertEquals(1, r.available());
 	}
 
 	@Test
-	public void availableShouldReturneZeroOnSingleByteStreamAfterConsumingByte() throws Exception {
+	public void availableShouldReturneZeroOnSingleByteStreamAfterConsumingByte()
+			throws Exception
+	{
 		MetadataReader r = reader(new byte[1], ref(10101, 0L, (short) 0));
 		r.readByte();
 		assertEquals(0, r.available());
 	}
 
 	@Test
-	public void isEofShouldReturnTrueAfterConsumingSingleByteStream() throws Exception {
+	public void isEofShouldReturnTrueAfterConsumingSingleByteStream()
+			throws Exception
+	{
 		MetadataReader r = reader(new byte[1], ref(10101, 0L, (short) 0));
 		r.readByte();
 		assertTrue(r.isEof());
 	}
 
 	@Test
-	public void readFullyShouldWorkIfNotEof() throws Exception {
+	public void readFullyShouldWorkIfNotEof() throws Exception
+	{
 		byte[] data = new byte[1024];
 		for (int i = 0; i < data.length; i++) {
 			data[i] = (byte) (i & 0xff);
@@ -117,7 +133,8 @@ public class MetadataReaderTest {
 	}
 
 	@Test(expected = EOFException.class)
-	public void readFullyShouldThrowExceptionIfTooLong() throws Exception {
+	public void readFullyShouldThrowExceptionIfTooLong() throws Exception
+	{
 		byte[] data = new byte[1024];
 		for (int i = 0; i < data.length; i++) {
 			data[i] = (byte) (i & 0xff);
@@ -128,7 +145,8 @@ public class MetadataReaderTest {
 	}
 
 	@Test
-	public void readFullyShouldWorkWithPartials() throws Exception {
+	public void readFullyShouldWorkWithPartials() throws Exception
+	{
 		byte[] data = new byte[1024];
 		for (int i = 0; i < data.length; i++) {
 			data[i] = (byte) (i & 0xff);
@@ -141,7 +159,8 @@ public class MetadataReaderTest {
 	}
 
 	@Test
-	public void skipBytesShouldDoSo() throws Exception {
+	public void skipBytesShouldDoSo() throws Exception
+	{
 		byte[] data = new byte[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 		MetadataReader r = reader(data, ref(10101, 0L, (short) 0));
 		assertEquals("wrong bytes skipped", 5, r.skipBytes(5));
@@ -149,14 +168,16 @@ public class MetadataReaderTest {
 	}
 
 	@Test
-	public void skipBytesShouldDoPartialSkipIfEof() throws Exception {
+	public void skipBytesShouldDoPartialSkipIfEof() throws Exception
+	{
 		byte[] data = new byte[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 		MetadataReader r = reader(data, ref(10101, 0L, (short) 0, 10));
 		assertEquals("wrong bytes skipped", 10, r.skipBytes(15));
 	}
 
 	@Test
-	public void readBooleanShouldWork() throws Exception {
+	public void readBooleanShouldWork() throws Exception
+	{
 		byte[] data = new byte[] { 0, 1 };
 		MetadataReader r = reader(data, ref(10101, 0L, (short) 0, 2));
 		assertFalse("first value true", r.readBoolean());
@@ -164,14 +185,16 @@ public class MetadataReaderTest {
 	}
 
 	@Test
-	public void readByteShouldWork() throws Exception {
+	public void readByteShouldWork() throws Exception
+	{
 		byte[] data = new byte[] { (byte) 0xff };
 		MetadataReader r = reader(data, ref(10101, 0L, (short) 0, 1));
 		assertEquals((byte) 0xff, r.readByte());
 	}
 
 	@Test(expected = EOFException.class)
-	public void readByteShouldThrowEOFExceptionIfEndOfStream() throws Exception {
+	public void readByteShouldThrowEOFExceptionIfEndOfStream() throws Exception
+	{
 		byte[] data = new byte[] { (byte) 0xff };
 		MetadataReader r = reader(data, ref(10101, 0L, (short) 0, 1));
 		assertEquals((byte) 0xff, r.readByte());
@@ -179,74 +202,90 @@ public class MetadataReaderTest {
 	}
 
 	@Test
-	public void readUnsignedByteShouldWork() throws Exception {
+	public void readUnsignedByteShouldWork() throws Exception
+	{
 		byte[] data = new byte[] { (byte) 0xff };
 		MetadataReader r = reader(data, ref(10101, 0L, (short) 0, 1));
 		assertEquals(0xff, r.readUnsignedByte());
 	}
 
 	@Test
-	public void readShortShouldSwapBytes() throws Exception {
+	public void readShortShouldSwapBytes() throws Exception
+	{
 		byte[] data = new byte[2];
-		ByteBuffer.wrap(data).order(ByteOrder.LITTLE_ENDIAN).asShortBuffer().put((short) 0x1234);
+		ByteBuffer.wrap(data).order(ByteOrder.LITTLE_ENDIAN).asShortBuffer()
+				.put((short) 0x1234);
 		MetadataReader r = reader(data, ref(10101, 0L, (short) 0, 2));
 		assertEquals((short) 0x1234, r.readShort());
 	}
 
 	@Test
-	public void readUnsignedShortShouldSwapBytes() throws Exception {
+	public void readUnsignedShortShouldSwapBytes() throws Exception
+	{
 		byte[] data = new byte[2];
-		ByteBuffer.wrap(data).order(ByteOrder.LITTLE_ENDIAN).asShortBuffer().put((short) 0xfedc);
+		ByteBuffer.wrap(data).order(ByteOrder.LITTLE_ENDIAN).asShortBuffer()
+				.put((short) 0xfedc);
 		MetadataReader r = reader(data, ref(10101, 0L, (short) 0, 2));
 		assertEquals(0xfedc, r.readUnsignedShort());
 	}
 
 	@Test
-	public void readCharShouldSwapBytes() throws Exception {
+	public void readCharShouldSwapBytes() throws Exception
+	{
 		byte[] data = new byte[2];
-		ByteBuffer.wrap(data).order(ByteOrder.LITTLE_ENDIAN).asCharBuffer().put((char) 0x1234);
+		ByteBuffer.wrap(data).order(ByteOrder.LITTLE_ENDIAN).asCharBuffer()
+				.put((char) 0x1234);
 		MetadataReader r = reader(data, ref(10101, 0L, (short) 0, 2));
 		assertEquals((char) 0x1234, r.readChar());
 	}
 
 	@Test
-	public void readIntShouldSwapBytes() throws Exception {
+	public void readIntShouldSwapBytes() throws Exception
+	{
 		byte[] data = new byte[4];
-		ByteBuffer.wrap(data).order(ByteOrder.LITTLE_ENDIAN).asIntBuffer().put(0x12345678);
+		ByteBuffer.wrap(data).order(ByteOrder.LITTLE_ENDIAN).asIntBuffer()
+				.put(0x12345678);
 		MetadataReader r = reader(data, ref(10101, 0L, (short) 0, 4));
 		assertEquals(0x12345678, r.readInt());
 	}
 
 	@Test
-	public void readFloatShouldSwapBytes() throws Exception {
+	public void readFloatShouldSwapBytes() throws Exception
+	{
 		float value = new Random(0L).nextFloat();
 
 		byte[] data = new byte[4];
-		ByteBuffer.wrap(data).order(ByteOrder.LITTLE_ENDIAN).asFloatBuffer().put(value);
+		ByteBuffer.wrap(data).order(ByteOrder.LITTLE_ENDIAN).asFloatBuffer()
+				.put(value);
 		MetadataReader r = reader(data, ref(10101, 0L, (short) 0, 4));
 		assertEquals(value, r.readFloat(), 0.0000001f);
 	}
 
 	@Test
-	public void readLongShouldSwapBytes() throws Exception {
+	public void readLongShouldSwapBytes() throws Exception
+	{
 		byte[] data = new byte[8];
-		ByteBuffer.wrap(data).order(ByteOrder.LITTLE_ENDIAN).asLongBuffer().put(0x12345678_90abcdefL);
+		ByteBuffer.wrap(data).order(ByteOrder.LITTLE_ENDIAN).asLongBuffer()
+				.put(0x12345678_90abcdefL);
 		MetadataReader r = reader(data, ref(10101, 0L, (short) 0, 8));
 		assertEquals(0x12345678_90abcdefL, r.readLong());
 	}
 
 	@Test
-	public void readDoubleShouldSwapBytes() throws Exception {
+	public void readDoubleShouldSwapBytes() throws Exception
+	{
 		double value = new Random(0L).nextDouble();
 
 		byte[] data = new byte[8];
-		ByteBuffer.wrap(data).order(ByteOrder.LITTLE_ENDIAN).asDoubleBuffer().put(value);
+		ByteBuffer.wrap(data).order(ByteOrder.LITTLE_ENDIAN).asDoubleBuffer()
+				.put(value);
 		MetadataReader r = reader(data, ref(10101, 0L, (short) 0, 8));
 		assertEquals(value, r.readDouble(), 0.0000001d);
 	}
 
 	@Test
-	public void readLineShouldReturnNullOnEof() throws Exception {
+	public void readLineShouldReturnNullOnEof() throws Exception
+	{
 		String value = "";
 		byte[] data = value.getBytes(StandardCharsets.ISO_8859_1);
 		MetadataReader r = reader(data, ref(10101, 0L, (short) 0, data.length));
@@ -254,7 +293,8 @@ public class MetadataReaderTest {
 	}
 
 	@Test
-	public void readLineShouldWorkWhenStringHitsEof() throws Exception {
+	public void readLineShouldWorkWhenStringHitsEof() throws Exception
+	{
 		String value = "test";
 		byte[] data = value.getBytes(StandardCharsets.ISO_8859_1);
 		MetadataReader r = reader(data, ref(10101, 0L, (short) 0, data.length));
@@ -262,7 +302,8 @@ public class MetadataReaderTest {
 	}
 
 	@Test
-	public void readLineShouldWorkWhenStringEndsWithLF() throws Exception {
+	public void readLineShouldWorkWhenStringEndsWithLF() throws Exception
+	{
 		String value = "test\ntest2";
 		byte[] data = value.getBytes(StandardCharsets.ISO_8859_1);
 		MetadataReader r = reader(data, ref(10101, 0L, (short) 0, data.length));
@@ -270,7 +311,8 @@ public class MetadataReaderTest {
 	}
 
 	@Test
-	public void readLineShouldWorkWhenStringEndsWithLFAndEof() throws Exception {
+	public void readLineShouldWorkWhenStringEndsWithLFAndEof() throws Exception
+	{
 		String value = "test\n";
 		byte[] data = value.getBytes(StandardCharsets.ISO_8859_1);
 		MetadataReader r = reader(data, ref(10101, 0L, (short) 0, data.length));
@@ -278,7 +320,8 @@ public class MetadataReaderTest {
 	}
 
 	@Test
-	public void readLineShouldWorkWhenStringEndsWithCR() throws Exception {
+	public void readLineShouldWorkWhenStringEndsWithCR() throws Exception
+	{
 		String value = "test\rtest2";
 		byte[] data = value.getBytes(StandardCharsets.ISO_8859_1);
 		MetadataReader r = reader(data, ref(10101, 0L, (short) 0, data.length));
@@ -286,7 +329,8 @@ public class MetadataReaderTest {
 	}
 
 	@Test
-	public void readLineShouldWorkWhenStringEndsWithCRAndEof() throws Exception {
+	public void readLineShouldWorkWhenStringEndsWithCRAndEof() throws Exception
+	{
 		String value = "test\r";
 		byte[] data = value.getBytes(StandardCharsets.ISO_8859_1);
 		MetadataReader r = reader(data, ref(10101, 0L, (short) 0, data.length));
@@ -294,7 +338,8 @@ public class MetadataReaderTest {
 	}
 
 	@Test
-	public void readLineShouldWorkWhenStringEndsWithCRLF() throws Exception {
+	public void readLineShouldWorkWhenStringEndsWithCRLF() throws Exception
+	{
 		String value = "test\r\ntest2";
 		byte[] data = value.getBytes(StandardCharsets.ISO_8859_1);
 		MetadataReader r = reader(data, ref(10101, 0L, (short) 0, data.length));
@@ -302,7 +347,9 @@ public class MetadataReaderTest {
 	}
 
 	@Test
-	public void readLineShouldWorkWhenStringEndsWithCRLFAndEof() throws Exception {
+	public void readLineShouldWorkWhenStringEndsWithCRLFAndEof()
+			throws Exception
+	{
 		String value = "test\r\n";
 		byte[] data = value.getBytes(StandardCharsets.ISO_8859_1);
 		MetadataReader r = reader(data, ref(10101, 0L, (short) 0, data.length));
@@ -310,27 +357,36 @@ public class MetadataReaderTest {
 	}
 
 	@Test(expected = UnsupportedOperationException.class)
-	public void readUTFShouldThrowUnsupportedOperationException() throws Exception {
+	public void readUTFShouldThrowUnsupportedOperationException()
+			throws Exception
+	{
 		byte[] data = new byte[1];
 		MetadataReader r = reader(data, ref(10101, 0L, (short) 0, data.length));
 		r.readUTF();
 	}
 
-	MetadataReference ref(int tag, long blockLocation, short offset) {
+	MetadataReference ref(int tag, long blockLocation, short offset)
+	{
 		return ref(tag, blockLocation, offset, Integer.MAX_VALUE);
 	}
 
-	MetadataReference ref(int tag, long blockLocation, short offset, int maxLength) {
+	MetadataReference ref(int tag, long blockLocation, short offset,
+			int maxLength)
+	{
 		return new MetadataReference(tag, blockLocation, offset, maxLength);
 	}
 
-	MetadataReader reader(byte[] data, MetadataReference ref) throws IOException {
+	MetadataReader reader(byte[] data, MetadataReference ref) throws IOException
+	{
 		return reader(new SuperBlock(), data, ref);
 	}
 
-	MetadataReader reader(SuperBlock sb, byte[] data, MetadataReference ref) throws IOException {
+	MetadataReader reader(SuperBlock sb, byte[] data, MetadataReference ref)
+			throws IOException
+	{
 		MetadataBlock block = MetadataTestUtils.block(data);
-		MetadataBlockReaderMock mbr = new MetadataBlockReaderMock(ref.getTag(), sb, ref.getBlockLocation(), block);
+		MetadataBlockReaderMock mbr = new MetadataBlockReaderMock(ref.getTag(),
+				sb, ref.getBlockLocation(), block);
 		return new MetadataReader(mbr, ref);
 	}
 

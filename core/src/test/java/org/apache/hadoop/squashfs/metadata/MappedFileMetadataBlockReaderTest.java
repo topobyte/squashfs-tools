@@ -35,7 +35,8 @@ import org.apache.hadoop.squashfs.io.MappedFile;
 import org.apache.hadoop.squashfs.superblock.SuperBlock;
 import org.apache.hadoop.squashfs.test.MetadataTestUtils;
 
-public class MappedFileMetadataBlockReaderTest {
+public class MappedFileMetadataBlockReaderTest
+{
 
 	@Rule
 	public TemporaryFolder temp = new TemporaryFolder();
@@ -48,7 +49,8 @@ public class MappedFileMetadataBlockReaderTest {
 	byte[] encoded;
 
 	@Before
-	public void setUp() throws Exception {
+	public void setUp() throws Exception
+	{
 		tag = 1;
 		tempFile = temp.newFile();
 		sb = new SuperBlock();
@@ -74,7 +76,8 @@ public class MappedFileMetadataBlockReaderTest {
 	}
 
 	@After
-	public void tearDown() throws Exception {
+	public void tearDown() throws Exception
+	{
 		reader.close();
 		reader = null;
 		encoded = null;
@@ -83,29 +86,35 @@ public class MappedFileMetadataBlockReaderTest {
 	}
 
 	@Test
-	public void getSuperBlockShouldReturnVersionReadFromFile() {
-		assertEquals(sb.getModificationTime(), reader.getSuperBlock(tag).getModificationTime());
+	public void getSuperBlockShouldReturnVersionReadFromFile()
+	{
+		assertEquals(sb.getModificationTime(),
+				reader.getSuperBlock(tag).getModificationTime());
 	}
 
 	@Test(expected = IllegalArgumentException.class)
-	public void getSuperBlockShouldFailWhenTagIsInvalid() {
+	public void getSuperBlockShouldFailWhenTagIsInvalid()
+	{
 		reader.getSuperBlock(tag + 1);
 	}
 
 	@Test
-	public void getSuperBlockShouldReturnConstructedVersion() throws Exception {
+	public void getSuperBlockShouldReturnConstructedVersion() throws Exception
+	{
 		assertSame(sb, reader.getSuperBlock(tag));
 	}
 
 	@Test
-	public void readFromFileOffsetShouldSucceed() throws Exception {
+	public void readFromFileOffsetShouldSucceed() throws Exception
+	{
 		MetadataBlock mb = reader.read(tag, SuperBlock.SIZE);
 		assertEquals(1024, mb.data.length);
 		assertArrayEquals(block, mb.data);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
-	public void readFromFileOffsetShouldFailWhenTagIsInvalid() throws Exception {
+	public void readFromFileOffsetShouldFailWhenTagIsInvalid() throws Exception
+	{
 		reader.read(tag + 1, SuperBlock.SIZE);
 	}
 

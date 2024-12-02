@@ -28,65 +28,74 @@ import static org.apache.hadoop.squashfs.util.BinUtils.DumpOptions.DECIMAL;
 import static org.apache.hadoop.squashfs.util.BinUtils.DumpOptions.UNSIGNED;
 import static org.apache.hadoop.squashfs.util.BinUtils.dumpBin;
 
-public class DirectoryHeader implements DirectoryElement {
+public class DirectoryHeader implements DirectoryElement
+{
 
-  public static final short MAX_DIR_ENTRIES = 256;
+	public static final short MAX_DIR_ENTRIES = 256;
 
-  protected int count; // number of entries (1 less than actual length)
-  protected int startBlock; // starting inode block
-  protected int inodeNumber; // starting inode number
+	protected int count; // number of entries (1 less than actual length)
+	protected int startBlock; // starting inode block
+	protected int inodeNumber; // starting inode number
 
-  public int getCount() {
-    return count;
-  }
+	public int getCount()
+	{
+		return count;
+	}
 
-  public int getStartBlock() {
-    return startBlock;
-  }
+	public int getStartBlock()
+	{
+		return startBlock;
+	}
 
-  public int getInodeNumber() {
-    return inodeNumber;
-  }
+	public int getInodeNumber()
+	{
+		return inodeNumber;
+	}
 
-  public int getStructureSize() {
-    return 12;
-  }
+	public int getStructureSize()
+	{
+		return 12;
+	}
 
-  public static DirectoryHeader read(DataInput in)
-      throws SquashFsException, IOException {
-    DirectoryHeader entry = new DirectoryHeader();
-    entry.readData(in);
-    return entry;
-  }
+	public static DirectoryHeader read(DataInput in)
+			throws SquashFsException, IOException
+	{
+		DirectoryHeader entry = new DirectoryHeader();
+		entry.readData(in);
+		return entry;
+	}
 
-  public void readData(DataInput in) throws SquashFsException, IOException {
-    count = in.readInt();
-    startBlock = in.readInt();
-    inodeNumber = in.readInt();
-    if (count + 1 > MAX_DIR_ENTRIES) {
-      throw new SquashFsException(String
-          .format("Invalid directory header: found %d entries (max = %d)%n%s",
-              count + 1, MAX_DIR_ENTRIES, this));
-    }
-  }
+	public void readData(DataInput in) throws SquashFsException, IOException
+	{
+		count = in.readInt();
+		startBlock = in.readInt();
+		inodeNumber = in.readInt();
+		if (count + 1 > MAX_DIR_ENTRIES) {
+			throw new SquashFsException(String.format(
+					"Invalid directory header: found %d entries (max = %d)%n%s",
+					count + 1, MAX_DIR_ENTRIES, this));
+		}
+	}
 
-  @Override
-  public void writeData(DataOutput out) throws IOException {
-    out.writeInt(count);
-    out.writeInt(startBlock);
-    out.writeInt(inodeNumber);
-  }
+	@Override
+	public void writeData(DataOutput out) throws IOException
+	{
+		out.writeInt(count);
+		out.writeInt(startBlock);
+		out.writeInt(inodeNumber);
+	}
 
-  @Override
-  public String toString() {
-    StringBuilder buf = new StringBuilder();
-    buf.append(String.format("directory-header {%n"));
-    int width = 13;
-    dumpBin(buf, width, "count", count, DECIMAL, UNSIGNED);
-    dumpBin(buf, width, "startBlock", startBlock, DECIMAL, UNSIGNED);
-    dumpBin(buf, width, "inodeNumber", inodeNumber, DECIMAL, UNSIGNED);
-    buf.append("}");
-    return buf.toString();
-  }
+	@Override
+	public String toString()
+	{
+		StringBuilder buf = new StringBuilder();
+		buf.append(String.format("directory-header {%n"));
+		int width = 13;
+		dumpBin(buf, width, "count", count, DECIMAL, UNSIGNED);
+		dumpBin(buf, width, "startBlock", startBlock, DECIMAL, UNSIGNED);
+		dumpBin(buf, width, "inodeNumber", inodeNumber, DECIMAL, UNSIGNED);
+		buf.append("}");
+		return buf.toString();
+	}
 
 }

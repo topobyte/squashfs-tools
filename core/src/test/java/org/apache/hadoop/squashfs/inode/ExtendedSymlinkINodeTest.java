@@ -31,12 +31,14 @@ import org.junit.Test;
 
 import org.apache.hadoop.squashfs.test.INodeTestUtils;
 
-public class ExtendedSymlinkINodeTest {
+public class ExtendedSymlinkINodeTest
+{
 
 	ExtendedSymlinkINode inode;
 
 	@Before
-	public void setUp() {
+	public void setUp()
+	{
 		inode = new ExtendedSymlinkINode();
 		inode.setNlink(2);
 		inode.setTargetPath("/test".getBytes(StandardCharsets.ISO_8859_1));
@@ -44,58 +46,70 @@ public class ExtendedSymlinkINodeTest {
 	}
 
 	@Test
-	public void getNameShouldReturnCorrectValue() {
+	public void getNameShouldReturnCorrectValue()
+	{
 		assertEquals("extended-symlink-inode", inode.getName());
 	}
 
 	@Test
-	public void getInodeTypeShouldReturnCorrectValue() {
+	public void getInodeTypeShouldReturnCorrectValue()
+	{
 		assertSame(INodeType.EXTENDED_SYMLINK, inode.getInodeType());
 	}
 
 	@Test
-	public void nlinkPropertyShouldWorkAsExpected() {
+	public void nlinkPropertyShouldWorkAsExpected()
+	{
 		assertEquals(2, inode.getNlink());
 		inode.setNlink(3);
 		assertEquals(3, inode.getNlink());
 	}
 
 	@Test
-	public void targetPathPropertyShouldWorkAsExpected() {
-		assertEquals("/test", new String(inode.getTargetPath(), StandardCharsets.ISO_8859_1));
+	public void targetPathPropertyShouldWorkAsExpected()
+	{
+		assertEquals("/test",
+				new String(inode.getTargetPath(), StandardCharsets.ISO_8859_1));
 		inode.setTargetPath("/test2".getBytes(StandardCharsets.ISO_8859_1));
-		assertEquals("/test2", new String(inode.getTargetPath(), StandardCharsets.ISO_8859_1));
+		assertEquals("/test2",
+				new String(inode.getTargetPath(), StandardCharsets.ISO_8859_1));
 	}
 
 	@Test
-	public void targetPathPropertyShouldConvertNullToEmptyString() {
+	public void targetPathPropertyShouldConvertNullToEmptyString()
+	{
 		inode.setTargetPath(null);
-		assertEquals("", new String(inode.getTargetPath(), StandardCharsets.ISO_8859_1));
+		assertEquals("",
+				new String(inode.getTargetPath(), StandardCharsets.ISO_8859_1));
 	}
 
 	@Test
-	public void xattrIndexPropertyShouldWorkAsExpected() {
+	public void xattrIndexPropertyShouldWorkAsExpected()
+	{
 		assertEquals(3, inode.getXattrIndex());
 		inode.setXattrIndex(4);
 		assertEquals(4, inode.getXattrIndex());
 	}
 
 	@Test
-	public void isXattrPresentShouldReturnTrueIfPresent() {
+	public void isXattrPresentShouldReturnTrueIfPresent()
+	{
 		assertTrue(inode.isXattrPresent());
 		inode.setXattrIndex(-1);
 		assertFalse(inode.isXattrPresent());
 	}
 
 	@Test
-	public void getChildSerializedSizeShouldReturnCorrectValue() {
+	public void getChildSerializedSizeShouldReturnCorrectValue()
+	{
 		assertEquals(17, inode.getChildSerializedSize());
 		inode.setTargetPath("/test2".getBytes(StandardCharsets.ISO_8859_1));
 		assertEquals(18, inode.getChildSerializedSize());
 	}
 
 	@Test
-	public void writeDataAndReadDataShouldBeReflexive() throws IOException {
+	public void writeDataAndReadDataShouldBeReflexive() throws IOException
+	{
 		byte[] data = INodeTestUtils.serializeINode(inode);
 		INode dest = INodeTestUtils.deserializeINode(data);
 
@@ -110,7 +124,8 @@ public class ExtendedSymlinkINodeTest {
 	}
 
 	@Test
-	public void simplifyMethodShouldReturnOriginalIfExtendedAttributesPresent() {
+	public void simplifyMethodShouldReturnOriginalIfExtendedAttributesPresent()
+	{
 		SymlinkINode inode2 = new ExtendedSymlinkINode();
 		inode2.setNlink(2);
 		inode2.setXattrIndex(3);
@@ -118,7 +133,8 @@ public class ExtendedSymlinkINodeTest {
 	}
 
 	@Test
-	public void simplifyMethodShouldReturnBasicIfExtendedAttributesNotPresent() {
+	public void simplifyMethodShouldReturnBasicIfExtendedAttributesNotPresent()
+	{
 		SymlinkINode inode2 = new ExtendedSymlinkINode();
 		inode2.setNlink(2);
 		inode2.setXattrIndex(-1);
@@ -129,7 +145,8 @@ public class ExtendedSymlinkINodeTest {
 	}
 
 	@Test
-	public void toStringShouldNotFail() {
+	public void toStringShouldNotFail()
+	{
 		System.out.println(inode.toString());
 	}
 

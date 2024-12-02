@@ -19,21 +19,25 @@
 package org.apache.hadoop.squashfs.inode;
 
 public class ExtendedFifoINode extends AbstractExtendedIpcINode
-    implements FifoINode {
+		implements FifoINode
+{
 
-  @Override
-  protected String getName() {
-    return "extended-fifo-inode";
-  }
+	@Override
+	protected String getName()
+	{
+		return "extended-fifo-inode";
+	}
 
-  @Override
-  public INodeType getInodeType() {
-    return INodeType.EXTENDED_FIFO;
-  }
+	@Override
+	public INodeType getInodeType()
+	{
+		return INodeType.EXTENDED_FIFO;
+	}
 
-  @Override
-  public FifoINode simplify() {
-    return BasicFifoINode.simplify(this);
-  }
+	@Override
+	public FifoINode simplify()
+	{
+		return BasicFifoINode.simplify(this);
+	}
 
 }

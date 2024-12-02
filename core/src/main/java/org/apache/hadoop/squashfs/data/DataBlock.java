@@ -18,32 +18,38 @@
 
 package org.apache.hadoop.squashfs.data;
 
-public class DataBlock {
+public class DataBlock
+{
 
-  byte[] data;
-  int logicalSize;
-  int physicalSize;
+	byte[] data;
+	int logicalSize;
+	int physicalSize;
 
-  public byte[] getData() {
-    return data;
-  }
+	public byte[] getData()
+	{
+		return data;
+	}
 
-  public int getLogicalSize() {
-    return logicalSize;
-  }
+	public int getLogicalSize()
+	{
+		return logicalSize;
+	}
 
-  public int getPhysicalSize() {
-    return physicalSize;
-  }
+	public int getPhysicalSize()
+	{
+		return physicalSize;
+	}
 
-  public boolean isSparse() {
-    return logicalSize > 0 && physicalSize == 0;
-  }
+	public boolean isSparse()
+	{
+		return logicalSize > 0 && physicalSize == 0;
+	}
 
-  public DataBlock(byte[] data, int logicalSize, int physicalSize) {
-    this.data = data;
-    this.logicalSize = logicalSize;
-    this.physicalSize = physicalSize;
-  }
+	public DataBlock(byte[] data, int logicalSize, int physicalSize)
+	{
+		this.data = data;
+		this.logicalSize = logicalSize;
+		this.physicalSize = physicalSize;
+	}
 
 }

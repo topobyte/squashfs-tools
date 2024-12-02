@@ -25,51 +25,60 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 
-public class DataBlockRefTest {
+public class DataBlockRefTest
+{
 
 	DataBlockRef ref;
 
 	@Before
-	public void setUp() {
+	public void setUp()
+	{
 		ref = new DataBlockRef(1L, 2, 3, false, false);
 	}
 
 	@Test
-	public void locationPropertyShouldWorkAsExpected() {
+	public void locationPropertyShouldWorkAsExpected()
+	{
 		assertEquals(1L, ref.getLocation());
 	}
 
 	@Test
-	public void logicalSizePropertyShouldWorkAsExpected() {
+	public void logicalSizePropertyShouldWorkAsExpected()
+	{
 		assertEquals(2, ref.getLogicalSize());
 	}
 
 	@Test
-	public void physicalSizePropertyShouldWorkAsExpected() {
+	public void physicalSizePropertyShouldWorkAsExpected()
+	{
 		assertEquals(3, ref.getPhysicalSize());
 	}
 
 	@Test
-	public void compressedPropertyShouldWorkAsExpected() {
+	public void compressedPropertyShouldWorkAsExpected()
+	{
 		assertFalse(ref.isCompressed());
 		assertTrue(new DataBlockRef(1L, 2, 3, true, false).isCompressed());
 	}
 
 	@Test
-	public void getInodeSizeShouldReturnSizeAndCompressedValues() {
+	public void getInodeSizeShouldReturnSizeAndCompressedValues()
+	{
 		assertEquals(0x1_000_003, ref.getInodeSize());
 		ref = new DataBlockRef(1L, 2, 3, true, false);
 		assertEquals(3, ref.getInodeSize());
 	}
-	
+
 	@Test
-	public void sparsePropertyShouldWorkAsExpected() {
+	public void sparsePropertyShouldWorkAsExpected()
+	{
 		assertFalse(ref.isSparse());
 		assertTrue(new DataBlockRef(1L, 2, 3, false, true).isSparse());
 	}
 
 	@Test
-	public void toStringShouldNotFail() {
+	public void toStringShouldNotFail()
+	{
 		System.out.println(ref.toString());
 	}
 

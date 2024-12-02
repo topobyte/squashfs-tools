@@ -36,7 +36,8 @@ import org.junit.rules.TemporaryFolder;
 import org.apache.hadoop.squashfs.superblock.SuperBlock;
 import org.apache.hadoop.squashfs.test.DataTestUtils;
 
-public class DataBlockWriterTest {
+public class DataBlockWriterTest
+{
 
 	@Rule
 	public TemporaryFolder temp = new TemporaryFolder();
@@ -46,21 +47,24 @@ public class DataBlockWriterTest {
 	DataBlockWriter writer;
 
 	@Before
-	public void setUp() throws Exception {
+	public void setUp() throws Exception
+	{
 		tempFile = temp.newFile();
 		raf = new RandomAccessFile(tempFile, "rw");
 		writer = new DataBlockWriter(raf, SuperBlock.DEFAULT_BLOCK_SIZE);
 	}
 
 	@After
-	public void tearDown() throws Exception {
+	public void tearDown() throws Exception
+	{
 		writer = null;
 		raf.close();
 		raf = null;
 	}
 
 	@Test
-	public void writerMustSaveCompressibleBlockProperly() throws Exception {
+	public void writerMustSaveCompressibleBlockProperly() throws Exception
+	{
 		byte[] buf = new byte[SuperBlock.DEFAULT_BLOCK_SIZE];
 		for (int i = 0; i < buf.length; i++) {
 			buf[i] = (byte) 0xff; // all ones
@@ -69,7 +73,8 @@ public class DataBlockWriterTest {
 		DataBlockRef ref = writer.write(buf, 0, buf.length);
 		System.out.println(ref);
 		assertEquals("wrong location", 0L, ref.getLocation());
-		assertEquals("wrong logical size", SuperBlock.DEFAULT_BLOCK_SIZE, ref.getLogicalSize());
+		assertEquals("wrong logical size", SuperBlock.DEFAULT_BLOCK_SIZE,
+				ref.getLogicalSize());
 		assertTrue("not compressed", ref.isCompressed());
 		assertFalse("sparse", ref.isSparse());
 
@@ -83,7 +88,8 @@ public class DataBlockWriterTest {
 	}
 
 	@Test
-	public void writerMustSaveUncompressibleBlockProperly() throws Exception {
+	public void writerMustSaveUncompressibleBlockProperly() throws Exception
+	{
 		Random random = new Random(0L);
 
 		byte[] buf = new byte[SuperBlock.DEFAULT_BLOCK_SIZE];
@@ -92,7 +98,8 @@ public class DataBlockWriterTest {
 		DataBlockRef ref = writer.write(buf, 0, buf.length);
 		System.out.println(ref);
 		assertEquals("wrong location", 0L, ref.getLocation());
-		assertEquals("wrong logical size", SuperBlock.DEFAULT_BLOCK_SIZE, ref.getLogicalSize());
+		assertEquals("wrong logical size", SuperBlock.DEFAULT_BLOCK_SIZE,
+				ref.getLogicalSize());
 		assertFalse("compressed", ref.isCompressed());
 		assertFalse("sparse", ref.isSparse());
 
@@ -105,25 +112,30 @@ public class DataBlockWriterTest {
 	}
 
 	@Test
-	public void writerMustSaveSparseBlockProperly() throws Exception {
+	public void writerMustSaveSparseBlockProperly() throws Exception
+	{
 		byte[] buf = new byte[SuperBlock.DEFAULT_BLOCK_SIZE];
 
 		DataBlockRef ref = writer.write(buf, 0, buf.length);
 		System.out.println(ref);
 		assertEquals("wrong location", 0L, ref.getLocation());
-		assertEquals("wrong logical size", SuperBlock.DEFAULT_BLOCK_SIZE, ref.getLogicalSize());
+		assertEquals("wrong logical size", SuperBlock.DEFAULT_BLOCK_SIZE,
+				ref.getLogicalSize());
 		assertEquals("wrong physical size", 0L, ref.getPhysicalSize());
 		assertFalse("compressed", ref.isCompressed());
 		assertTrue("sparse", ref.isSparse());
 	}
 
 	@Test(expected = IllegalArgumentException.class)
-	public void writeOfShortBlockMustFail() throws Exception {
-		writer.write(new byte[SuperBlock.DEFAULT_BLOCK_SIZE - 1], 0, SuperBlock.DEFAULT_BLOCK_SIZE - 1);
+	public void writeOfShortBlockMustFail() throws Exception
+	{
+		writer.write(new byte[SuperBlock.DEFAULT_BLOCK_SIZE - 1], 0,
+				SuperBlock.DEFAULT_BLOCK_SIZE - 1);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
-	public void writeOfEmptyBlockMustFail() throws Exception {
+	public void writeOfEmptyBlockMustFail() throws Exception
+	{
 		writer.write(new byte[SuperBlock.DEFAULT_BLOCK_SIZE], 0, 0);
 	}
 

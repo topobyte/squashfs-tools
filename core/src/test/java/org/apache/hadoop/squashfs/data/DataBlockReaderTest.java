@@ -40,7 +40,8 @@ import org.apache.hadoop.squashfs.table.FragmentTable;
 import org.apache.hadoop.squashfs.table.FragmentTableEntry;
 import org.apache.hadoop.squashfs.test.InMemoryFragmentTable;
 
-public class DataBlockReaderTest {
+public class DataBlockReaderTest
+{
 
 	@Rule
 	public TemporaryFolder temp = new TemporaryFolder();
@@ -51,7 +52,8 @@ public class DataBlockReaderTest {
 	int tag;
 
 	@Before
-	public void setUp() throws Exception {
+	public void setUp() throws Exception
+	{
 		tempFile = temp.newFile();
 		tag = 10101;
 		raf = new RandomAccessFile(tempFile, "rw");
@@ -59,24 +61,31 @@ public class DataBlockReaderTest {
 		sb.writeData(raf);
 	}
 
-	DataBlockRef writeBlock(byte[] data, int offset, int length) throws IOException {
-		DataBlockWriter writer = new DataBlockWriter(raf, SuperBlock.DEFAULT_BLOCK_SIZE);
+	DataBlockRef writeBlock(byte[] data, int offset, int length)
+			throws IOException
+	{
+		DataBlockWriter writer = new DataBlockWriter(raf,
+				SuperBlock.DEFAULT_BLOCK_SIZE);
 		return writer.write(data, offset, length);
 	}
 
-	FragmentRef writeFragment(FragmentWriter writer, byte[] data, int offset, int length) throws IOException {
+	FragmentRef writeFragment(FragmentWriter writer, byte[] data, int offset,
+			int length) throws IOException
+	{
 		FragmentRef ref = writer.write(data, offset, length);
 		return ref;
 	}
 
 	@Test
-	public void readOfSingleFragmentShouldSucceed() throws Exception {
+	public void readOfSingleFragmentShouldSucceed() throws Exception
+	{
 		byte[] data = new byte[SuperBlock.DEFAULT_BLOCK_SIZE - 1];
 		for (int i = 0; i < data.length; i++) {
 			data[i] = (byte) 0xff;
 		}
 
-		FragmentWriter fw = new FragmentWriter(raf, SuperBlock.DEFAULT_BLOCK_SIZE);
+		FragmentWriter fw = new FragmentWriter(raf,
+				SuperBlock.DEFAULT_BLOCK_SIZE);
 		FragmentRef ref = writeFragment(fw, data, 0, data.length);
 		fw.flush();
 		System.out.println(ref);
@@ -90,20 +99,25 @@ public class DataBlockReaderTest {
 
 		FragmentTable ft = new InMemoryFragmentTable(entry);
 
-		DataBlock block = DataBlockReader.readFragment(tag, raf, sb, inode, ft, data.length);
+		DataBlock block = DataBlockReader.readFragment(tag, raf, sb, inode, ft,
+				data.length);
 		assertEquals("wrong logical size", data.length, block.getLogicalSize());
-		assertEquals("wrong physical size", data.length, block.getPhysicalSize());
+		assertEquals("wrong physical size", data.length,
+				block.getPhysicalSize());
 		assertArrayEquals("wrong data", data, block.getData());
 	}
 
 	@Test(expected = SquashFsException.class)
-	public void readOfSingleFragmentShouldFailIfReadTooManyBytes() throws Exception {
+	public void readOfSingleFragmentShouldFailIfReadTooManyBytes()
+			throws Exception
+	{
 		byte[] data = new byte[SuperBlock.DEFAULT_BLOCK_SIZE - 2];
 		for (int i = 0; i < data.length; i++) {
 			data[i] = (byte) 0xff;
 		}
 
-		FragmentWriter fw = new FragmentWriter(raf, SuperBlock.DEFAULT_BLOCK_SIZE);
+		FragmentWriter fw = new FragmentWriter(raf,
+				SuperBlock.DEFAULT_BLOCK_SIZE);
 		FragmentRef ref = writeFragment(fw, data, 0, data.length);
 		fw.flush();
 		System.out.println(ref);
@@ -117,14 +131,17 @@ public class DataBlockReaderTest {
 
 		FragmentTable ft = new InMemoryFragmentTable(entry);
 
-		DataBlock block = DataBlockReader.readFragment(tag, raf, sb, inode, ft, data.length + 1);
+		DataBlock block = DataBlockReader.readFragment(tag, raf, sb, inode, ft,
+				data.length + 1);
 		assertEquals("wrong logical size", data.length, block.getLogicalSize());
-		assertEquals("wrong physical size", data.length, block.getPhysicalSize());
+		assertEquals("wrong physical size", data.length,
+				block.getPhysicalSize());
 		assertArrayEquals("wrong data", data, block.getData());
 	}
 
 	@Test
-	public void readOfSingleCompressedBlockShouldSucceed() throws Exception {
+	public void readOfSingleCompressedBlockShouldSucceed() throws Exception
+	{
 		byte[] data = new byte[SuperBlock.DEFAULT_BLOCK_SIZE];
 		for (int i = 0; i < data.length; i++) {
 			data[i] = (byte) 0xff;
@@ -138,12 +155,15 @@ public class DataBlockReaderTest {
 		inode.setBlockSizes(new int[] { ref.getInodeSize() });
 		DataBlock block = DataBlockReader.readBlock(tag, raf, sb, inode, 0);
 		assertEquals("wrong logical size", data.length, block.getLogicalSize());
-		assertEquals("wrong physical size", data.length, block.getPhysicalSize());
+		assertEquals("wrong physical size", data.length,
+				block.getPhysicalSize());
 		assertArrayEquals("wrong data", data, block.getData());
 	}
 
 	@Test(expected = SquashFsException.class)
-	public void readOfCompressedBlockShouldFailIfCompressionIdIsNotSet() throws Exception {
+	public void readOfCompressedBlockShouldFailIfCompressionIdIsNotSet()
+			throws Exception
+	{
 		sb.setCompressionId(CompressionId.NONE);
 		byte[] data = new byte[SuperBlock.DEFAULT_BLOCK_SIZE];
 		for (int i = 0; i < data.length; i++) {
@@ -161,8 +181,11 @@ public class DataBlockReaderTest {
 	}
 
 	@Test(expected = UnsupportedOperationException.class)
-	public void readOfCompressedBlockShouldFailIfCompressionOptionsSet() throws Exception {
-		sb.setFlags((short) (sb.getFlags() | SuperBlockFlag.COMPRESSOR_OPTIONS.mask()));
+	public void readOfCompressedBlockShouldFailIfCompressionOptionsSet()
+			throws Exception
+	{
+		sb.setFlags((short) (sb.getFlags()
+				| SuperBlockFlag.COMPRESSOR_OPTIONS.mask()));
 		byte[] data = new byte[SuperBlock.DEFAULT_BLOCK_SIZE];
 		for (int i = 0; i < data.length; i++) {
 			data[i] = (byte) 0xff;
@@ -179,7 +202,9 @@ public class DataBlockReaderTest {
 	}
 
 	@Test(expected = SquashFsException.class)
-	public void readOfCompressedBlockShouldFailIfDecompressedTooLarge() throws Exception {
+	public void readOfCompressedBlockShouldFailIfDecompressedTooLarge()
+			throws Exception
+	{
 		byte[] data = new byte[SuperBlock.DEFAULT_BLOCK_SIZE];
 		for (int i = 0; i < data.length; i++) {
 			data[i] = (byte) 0xff;
@@ -197,7 +222,9 @@ public class DataBlockReaderTest {
 	}
 
 	@Test(expected = UnsupportedOperationException.class)
-	public void readOfCompressedBlockShouldFailIfCompressionIdIsSetToAnUnsupportedAlgorithm() throws Exception {
+	public void readOfCompressedBlockShouldFailIfCompressionIdIsSetToAnUnsupportedAlgorithm()
+			throws Exception
+	{
 		sb.setCompressionId(CompressionId.XZ);
 		byte[] data = new byte[SuperBlock.DEFAULT_BLOCK_SIZE];
 		for (int i = 0; i < data.length; i++) {
@@ -215,7 +242,8 @@ public class DataBlockReaderTest {
 	}
 
 	@Test
-	public void readOfMlutipleBlocksShouldSucceed() throws Exception {
+	public void readOfMlutipleBlocksShouldSucceed() throws Exception
+	{
 		byte[] data = new byte[SuperBlock.DEFAULT_BLOCK_SIZE];
 		for (int i = 0; i < data.length; i++) {
 			data[i] = (byte) 0xff;
@@ -228,20 +256,25 @@ public class DataBlockReaderTest {
 		BasicFileINode inode = new BasicFileINode();
 		inode.setFileSize(data.length * 2);
 		inode.setBlocksStart(ref.getLocation());
-		inode.setBlockSizes(new int[] { ref.getInodeSize(), ref2.getInodeSize() });
+		inode.setBlockSizes(
+				new int[] { ref.getInodeSize(), ref2.getInodeSize() });
 		DataBlock block = DataBlockReader.readBlock(tag, raf, sb, inode, 0);
 		assertEquals("wrong logical size", data.length, block.getLogicalSize());
-		assertEquals("wrong physical size", data.length, block.getPhysicalSize());
+		assertEquals("wrong physical size", data.length,
+				block.getPhysicalSize());
 		assertArrayEquals("wrong data", data, block.getData());
 
 		block = DataBlockReader.readBlock(tag, raf, sb, inode, 1);
 		assertEquals("wrong logical size", data.length, block.getLogicalSize());
-		assertEquals("wrong physical size", data.length, block.getPhysicalSize());
+		assertEquals("wrong physical size", data.length,
+				block.getPhysicalSize());
 		assertArrayEquals("wrong data", data, block.getData());
 	}
 
 	@Test
-	public void readOfSingleCompressedBlockShouldSucceedWhenFragmentPresent() throws Exception {
+	public void readOfSingleCompressedBlockShouldSucceedWhenFragmentPresent()
+			throws Exception
+	{
 		byte[] data = new byte[SuperBlock.DEFAULT_BLOCK_SIZE];
 		for (int i = 0; i < data.length; i++) {
 			data[i] = (byte) 0xff;
@@ -257,12 +290,14 @@ public class DataBlockReaderTest {
 		inode.setBlockSizes(new int[] { ref.getInodeSize() });
 		DataBlock block = DataBlockReader.readBlock(tag, raf, sb, inode, 0);
 		assertEquals("wrong logical size", data.length, block.getLogicalSize());
-		assertEquals("wrong physical size", data.length, block.getPhysicalSize());
+		assertEquals("wrong physical size", data.length,
+				block.getPhysicalSize());
 		assertArrayEquals("wrong data", data, block.getData());
 	}
 
 	@Test
-	public void readOfPartialBlockShouldSucceed() throws Exception {
+	public void readOfPartialBlockShouldSucceed() throws Exception
+	{
 		byte[] data = new byte[SuperBlock.DEFAULT_BLOCK_SIZE];
 		for (int i = 0; i < data.length; i++) {
 			data[i] = (byte) 0xff;
@@ -276,13 +311,16 @@ public class DataBlockReaderTest {
 		inode.setBlockSizes(new int[] { ref.getInodeSize() });
 
 		DataBlock block = DataBlockReader.readBlock(tag, raf, sb, inode, 0);
-		assertEquals("wrong logical size", data.length - 1, block.getLogicalSize());
-		assertEquals("wrong physical size", data.length, block.getPhysicalSize());
+		assertEquals("wrong logical size", data.length - 1,
+				block.getLogicalSize());
+		assertEquals("wrong physical size", data.length,
+				block.getPhysicalSize());
 		assertArrayEquals("wrong data", data, block.getData());
 	}
 
 	@Test
-	public void readOfSparseBlockShouldSucceed() throws Exception {
+	public void readOfSparseBlockShouldSucceed() throws Exception
+	{
 		byte[] data = new byte[SuperBlock.DEFAULT_BLOCK_SIZE];
 		DataBlockRef ref = writeBlock(data, 0, data.length);
 		System.out.println(ref);
@@ -298,7 +336,8 @@ public class DataBlockReaderTest {
 	}
 
 	@Test
-	public void readOfSingleUncompressedBlockShouldSucceed() throws Exception {
+	public void readOfSingleUncompressedBlockShouldSucceed() throws Exception
+	{
 		Random r = new Random(0L);
 
 		byte[] data = new byte[SuperBlock.DEFAULT_BLOCK_SIZE];
@@ -314,12 +353,14 @@ public class DataBlockReaderTest {
 
 		DataBlock block = DataBlockReader.readBlock(tag, raf, sb, inode, 0);
 		assertEquals("wrong logical size", data.length, block.getLogicalSize());
-		assertEquals("wrong physical size", data.length, block.getPhysicalSize());
+		assertEquals("wrong physical size", data.length,
+				block.getPhysicalSize());
 		assertArrayEquals("wrong data", data, block.getData());
 	}
 
 	@Test(expected = SquashFsException.class)
-	public void readOfOutOfBoundsBlockShouldFail() throws Exception {
+	public void readOfOutOfBoundsBlockShouldFail() throws Exception
+	{
 		Random r = new Random(0L);
 
 		byte[] data = new byte[SuperBlock.DEFAULT_BLOCK_SIZE];
@@ -335,7 +376,8 @@ public class DataBlockReaderTest {
 
 		DataBlock block = DataBlockReader.readBlock(tag, raf, sb, inode, 0);
 		assertEquals("wrong logical size", data.length, block.getLogicalSize());
-		assertEquals("wrong physical size", data.length, block.getPhysicalSize());
+		assertEquals("wrong physical size", data.length,
+				block.getPhysicalSize());
 		assertArrayEquals("wrong data", data, block.getData());
 	}
 }

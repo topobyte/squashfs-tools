@@ -19,39 +19,44 @@
 package org.apache.hadoop.squashfs.inode;
 
 public class BasicCharDeviceINode extends AbstractBasicDeviceINode
-    implements CharDeviceINode {
+		implements CharDeviceINode
+{
 
-  static CharDeviceINode simplify(CharDeviceINode src) {
-    if (src instanceof BasicCharDeviceINode) {
-      return src;
-    }
+	static CharDeviceINode simplify(CharDeviceINode src)
+	{
+		if (src instanceof BasicCharDeviceINode) {
+			return src;
+		}
 
-    if (src.isXattrPresent()) {
-      return src;
-    }
+		if (src.isXattrPresent()) {
+			return src;
+		}
 
-    BasicCharDeviceINode dest = new BasicCharDeviceINode();
-    src.copyTo(dest);
+		BasicCharDeviceINode dest = new BasicCharDeviceINode();
+		src.copyTo(dest);
 
-    dest.setNlink(src.getNlink());
-    dest.setDevice(src.getDevice());
+		dest.setNlink(src.getNlink());
+		dest.setDevice(src.getDevice());
 
-    return dest;
-  }
+		return dest;
+	}
 
-  @Override
-  protected String getName() {
-    return "basic-char-dev-inode";
-  }
+	@Override
+	protected String getName()
+	{
+		return "basic-char-dev-inode";
+	}
 
-  @Override
-  public INodeType getInodeType() {
-    return INodeType.BASIC_CHAR_DEVICE;
-  }
+	@Override
+	public INodeType getInodeType()
+	{
+		return INodeType.BASIC_CHAR_DEVICE;
+	}
 
-  @Override
-  public CharDeviceINode simplify() {
-    return this;
-  }
+	@Override
+	public CharDeviceINode simplify()
+	{
+		return this;
+	}
 
 }

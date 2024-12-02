@@ -32,107 +32,116 @@ import static org.apache.hadoop.squashfs.util.BinUtils.DumpOptions.DECIMAL;
 import static org.apache.hadoop.squashfs.util.BinUtils.DumpOptions.UNSIGNED;
 import static org.apache.hadoop.squashfs.util.BinUtils.dumpBin;
 
-public class FragmentTable {
+public class FragmentTable
+{
 
-  public static final int FRAGMENT_TABLE_RECORD_LENGTH = 8;
-  public static final int BYTES_PER_TABLE_ENTRY = 16;
-  public static final int ENTRIES_PER_BLOCK =
-      MetadataBlock.MAX_SIZE / BYTES_PER_TABLE_ENTRY;
+	public static final int FRAGMENT_TABLE_RECORD_LENGTH = 8;
+	public static final int BYTES_PER_TABLE_ENTRY = 16;
+	public static final int ENTRIES_PER_BLOCK = MetadataBlock.MAX_SIZE
+			/ BYTES_PER_TABLE_ENTRY;
 
-  private static final long[] EMPTY = new long[0];
+	private static final long[] EMPTY = new long[0];
 
-  MetadataBlockReader metaBlockReader;
+	MetadataBlockReader metaBlockReader;
 
-  boolean available = false;
-  int tag = -1;
-  int fragmentCount = 0;
-  long[] tableRef = EMPTY;
+	boolean available = false;
+	int tag = -1;
+	int fragmentCount = 0;
+	long[] tableRef = EMPTY;
 
-  private static int numTables(int inodeCount) {
-    return (inodeCount / ENTRIES_PER_BLOCK) + (
-        ((inodeCount % ENTRIES_PER_BLOCK) == 0) ? 0 : 1);
-  }
+	private static int numTables(int inodeCount)
+	{
+		return (inodeCount / ENTRIES_PER_BLOCK)
+				+ (((inodeCount % ENTRIES_PER_BLOCK) == 0) ? 0 : 1);
+	}
 
-  ;
+	;
 
-  public static FragmentTable read(int tag, TableReader tableReader,
-      MetadataBlockReader metaBlockReader)
-      throws IOException, SquashFsException {
+	public static FragmentTable read(int tag, TableReader tableReader,
+			MetadataBlockReader metaBlockReader)
+			throws IOException, SquashFsException
+	{
 
-    FragmentTable table = new FragmentTable();
-    table.readData(tag, tableReader, metaBlockReader);
-    return table;
-  }
+		FragmentTable table = new FragmentTable();
+		table.readData(tag, tableReader, metaBlockReader);
+		return table;
+	}
 
-  public int getFragmentCount() {
-    return fragmentCount;
-  }
+	public int getFragmentCount()
+	{
+		return fragmentCount;
+	}
 
-  public boolean isAvailable() {
-    return available;
-  }
+	public boolean isAvailable()
+	{
+		return available;
+	}
 
-  public FragmentTableEntry getEntry(int id)
-      throws IOException, SquashFsException {
-    if (id < 0 || id >= fragmentCount) {
-      throw new SquashFsException(String.format("No such fragment %d", id));
-    }
+	public FragmentTableEntry getEntry(int id)
+			throws IOException, SquashFsException
+	{
+		if (id < 0 || id >= fragmentCount) {
+			throw new SquashFsException(
+					String.format("No such fragment %d", id));
+		}
 
-    int blockNum = id / ENTRIES_PER_BLOCK;
-    short offset =
-        (short) (BYTES_PER_TABLE_ENTRY * (id - (blockNum * ENTRIES_PER_BLOCK)));
+		int blockNum = id / ENTRIES_PER_BLOCK;
+		short offset = (short) (BYTES_PER_TABLE_ENTRY
+				* (id - (blockNum * ENTRIES_PER_BLOCK)));
 
-    MetadataReader reader =
-        metaBlockReader.rawReader(tag, tableRef[blockNum], offset);
+		MetadataReader reader = metaBlockReader.rawReader(tag,
+				tableRef[blockNum], offset);
 
-    long start = reader.readLong();
-    int size = reader.readInt();
-    reader.readInt(); // unused
+		long start = reader.readLong();
+		int size = reader.readInt();
+		reader.readInt(); // unused
 
-    return new FragmentTableEntry(start, size);
-  }
+		return new FragmentTableEntry(start, size);
+	}
 
-  public void readData(int tag, TableReader tableReader,
-      MetadataBlockReader metaBlockReader)
-      throws IOException, SquashFsException {
+	public void readData(int tag, TableReader tableReader,
+			MetadataBlockReader metaBlockReader)
+			throws IOException, SquashFsException
+	{
 
-    this.tag = tag;
-    SuperBlock sb = tableReader.getSuperBlock();
-    if (sb.hasFlag(SuperBlockFlag.NO_FRAGMENTS)) {
-      available = false;
-      fragmentCount = 0;
-      tableRef = EMPTY;
-      this.metaBlockReader = null;
-      return;
-    }
+		this.tag = tag;
+		SuperBlock sb = tableReader.getSuperBlock();
+		if (sb.hasFlag(SuperBlockFlag.NO_FRAGMENTS)) {
+			available = false;
+			fragmentCount = 0;
+			tableRef = EMPTY;
+			this.metaBlockReader = null;
+			return;
+		}
 
-    fragmentCount = sb.getFragmentEntryCount();
-    int tableCount = numTables(fragmentCount);
-    tableRef = new long[tableCount];
+		fragmentCount = sb.getFragmentEntryCount();
+		int tableCount = numTables(fragmentCount);
+		tableRef = new long[tableCount];
 
-    ByteBuffer tableData = tableReader.read(sb.getFragmentTableStart(),
-        tableCount * FRAGMENT_TABLE_RECORD_LENGTH);
-    for (int i = 0; i < tableCount; i++) {
-      tableRef[i] = tableData.getLong();
-    }
-    this.metaBlockReader = metaBlockReader;
-    available = true;
-  }
+		ByteBuffer tableData = tableReader.read(sb.getFragmentTableStart(),
+				tableCount * FRAGMENT_TABLE_RECORD_LENGTH);
+		for (int i = 0; i < tableCount; i++) {
+			tableRef[i] = tableData.getLong();
+		}
+		this.metaBlockReader = metaBlockReader;
+		available = true;
+	}
 
-  @Override
-  public String toString() {
-    StringBuilder buf = new StringBuilder();
-    buf.append(String.format("fragment-table: {%n"));
-    int width = 18;
-    dumpBin(buf, width, "tag", tag, DECIMAL, UNSIGNED);
-    dumpBin(buf, width, "available", available ? "true" : "false");
-    dumpBin(buf, width, "fragmentCount", fragmentCount, DECIMAL, UNSIGNED);
-    dumpBin(buf, width, "tableRefs", tableRef.length, DECIMAL);
-    for (int i = 0; i < tableRef.length; i++) {
-      dumpBin(buf, width, String.format("tableRef[%d]", i), tableRef[i],
-          DECIMAL, UNSIGNED);
-    }
-    buf.append("}");
-    return buf.toString();
-  }
+	@Override
+	public String toString()
+	{
+		StringBuilder buf = new StringBuilder();
+		buf.append(String.format("fragment-table: {%n"));
+		int width = 18;
+		dumpBin(buf, width, "tag", tag, DECIMAL, UNSIGNED);
+		dumpBin(buf, width, "available", available ? "true" : "false");
+		dumpBin(buf, width, "fragmentCount", fragmentCount, DECIMAL, UNSIGNED);
+		dumpBin(buf, width, "tableRefs", tableRef.length, DECIMAL);
+		for (int i = 0; i < tableRef.length; i++) {
+			dumpBin(buf, width, String.format("tableRef[%d]", i), tableRef[i],
+					DECIMAL, UNSIGNED);
+		}
+		buf.append("}");
+		return buf.toString();
+	}
 }

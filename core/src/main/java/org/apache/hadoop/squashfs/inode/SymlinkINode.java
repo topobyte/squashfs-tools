@@ -18,22 +18,23 @@
 
 package org.apache.hadoop.squashfs.inode;
 
-public interface SymlinkINode extends INode {
+public interface SymlinkINode extends INode
+{
 
-  public int getNlink();
+	public int getNlink();
 
-  public void setNlink(int nlink);
+	public void setNlink(int nlink);
 
-  public byte[] getTargetPath();
+	public byte[] getTargetPath();
 
-  public void setTargetPath(byte[] targetPath);
+	public void setTargetPath(byte[] targetPath);
 
-  public int getXattrIndex();
+	public int getXattrIndex();
 
-  public void setXattrIndex(int xattrIndex);
+	public void setXattrIndex(int xattrIndex);
 
-  public boolean isXattrPresent();
+	public boolean isXattrPresent();
 
-  public SymlinkINode simplify();
+	public SymlinkINode simplify();
 
 }

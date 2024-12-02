@@ -24,39 +24,46 @@ import static org.junit.Assert.assertSame;
 import org.junit.Before;
 import org.junit.Test;
 
-public class BasicBlockDeviceINodeTest {
+public class BasicBlockDeviceINodeTest
+{
 
 	BasicBlockDeviceINode inode;
 
 	@Before
-	public void setUp() {
+	public void setUp()
+	{
 		inode = new BasicBlockDeviceINode();
 		inode.setDevice(1);
 		inode.setNlink(2);
 	}
 
 	@Test
-	public void getNameShouldReturnCorrectValue() {
+	public void getNameShouldReturnCorrectValue()
+	{
 		assertEquals("basic-block-dev-inode", inode.getName());
 	}
 
 	@Test
-	public void getInodeTypeShouldReturnCorrectValue() {
+	public void getInodeTypeShouldReturnCorrectValue()
+	{
 		assertSame(INodeType.BASIC_BLOCK_DEVICE, inode.getInodeType());
 	}
 
 	@Test
-	public void simplifyShouldReturnSelf() {
+	public void simplifyShouldReturnSelf()
+	{
 		assertSame(inode, inode.simplify());
 	}
 
 	@Test
-	public void staticSimplifyMethodShouldReturnOriginalIfBasic() {
+	public void staticSimplifyMethodShouldReturnOriginalIfBasic()
+	{
 		assertSame(inode, BasicBlockDeviceINode.simplify(inode));
 	}
 
 	@Test
-	public void staticSimplifyMethodShouldReturnOriginalIfExtendedAttributesPresent() {
+	public void staticSimplifyMethodShouldReturnOriginalIfExtendedAttributesPresent()
+	{
 		BlockDeviceINode inode2 = new ExtendedBlockDeviceINode();
 		inode2.setDevice(1);
 		inode2.setNlink(2);
@@ -65,20 +72,23 @@ public class BasicBlockDeviceINodeTest {
 	}
 
 	@Test
-	public void staticSimplifyMethodShouldReturnBasicIfExtendedAttributesNotPresent() {
+	public void staticSimplifyMethodShouldReturnBasicIfExtendedAttributesNotPresent()
+	{
 		BlockDeviceINode inode2 = new ExtendedBlockDeviceINode();
 		inode2.setDevice(1);
 		inode2.setNlink(2);
 		inode2.setXattrIndex(-1);
 
 		BlockDeviceINode result = BasicBlockDeviceINode.simplify(inode2);
-		assertSame("wrong class", BasicBlockDeviceINode.class, result.getClass());
+		assertSame("wrong class", BasicBlockDeviceINode.class,
+				result.getClass());
 		assertSame("wrong device", 1, result.getDevice());
 		assertSame("wrong nlink count", 2, result.getNlink());
 	}
 
 	@Test
-	public void toStringShouldNotFail() {
+	public void toStringShouldNotFail()
+	{
 		System.out.println(inode.toString());
 	}
 

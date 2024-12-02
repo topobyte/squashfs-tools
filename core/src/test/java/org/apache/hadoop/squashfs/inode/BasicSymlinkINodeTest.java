@@ -30,86 +30,104 @@ import org.junit.Test;
 
 import org.apache.hadoop.squashfs.test.INodeTestUtils;
 
-public class BasicSymlinkINodeTest {
+public class BasicSymlinkINodeTest
+{
 
 	BasicSymlinkINode inode;
 
 	@Before
-	public void setUp() {
+	public void setUp()
+	{
 		inode = new BasicSymlinkINode();
 		inode.setNlink(2);
 		inode.setTargetPath("/test".getBytes(StandardCharsets.ISO_8859_1));
 	}
 
 	@Test
-	public void getNameShouldReturnCorrectValue() {
+	public void getNameShouldReturnCorrectValue()
+	{
 		assertEquals("basic-symlink-inode", inode.getName());
 	}
 
 	@Test
-	public void getInodeTypeShouldReturnCorrectValue() {
+	public void getInodeTypeShouldReturnCorrectValue()
+	{
 		assertSame(INodeType.BASIC_SYMLINK, inode.getInodeType());
 	}
 
 	@Test
-	public void nlinkPropertyShouldWorkAsExpected() {
+	public void nlinkPropertyShouldWorkAsExpected()
+	{
 		assertEquals(2, inode.getNlink());
 		inode.setNlink(3);
 		assertEquals(3, inode.getNlink());
 	}
 
 	@Test
-	public void targetPathPropertyShouldWorkAsExpected() {
-		assertEquals("/test", new String(inode.getTargetPath(), StandardCharsets.ISO_8859_1));
+	public void targetPathPropertyShouldWorkAsExpected()
+	{
+		assertEquals("/test",
+				new String(inode.getTargetPath(), StandardCharsets.ISO_8859_1));
 		inode.setTargetPath("/test2".getBytes(StandardCharsets.ISO_8859_1));
-		assertEquals("/test2", new String(inode.getTargetPath(), StandardCharsets.ISO_8859_1));
+		assertEquals("/test2",
+				new String(inode.getTargetPath(), StandardCharsets.ISO_8859_1));
 	}
 
 	@Test
-	public void targetPathPropertyShouldConvertNullToEmptyString() {
+	public void targetPathPropertyShouldConvertNullToEmptyString()
+	{
 		inode.setTargetPath(null);
-		assertEquals("", new String(inode.getTargetPath(), StandardCharsets.ISO_8859_1));
+		assertEquals("",
+				new String(inode.getTargetPath(), StandardCharsets.ISO_8859_1));
 	}
 
 	@Test
-	public void getXattrIndexShouldReturnNotPresent() {
+	public void getXattrIndexShouldReturnNotPresent()
+	{
 		assertEquals(-1, inode.getXattrIndex());
 	}
 
 	@Test
-	public void setXattrIndexWithNotPresentValueShouldSucceed() {
+	public void setXattrIndexWithNotPresentValueShouldSucceed()
+	{
 		inode.setXattrIndex(-1);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
-	public void setXattrIndexWithInvalidValueShouldFail() {
+	public void setXattrIndexWithInvalidValueShouldFail()
+	{
 		inode.setXattrIndex(1);
 	}
 
 	@Test
-	public void isXattrPresentShouldReturnFalse() {
+	public void isXattrPresentShouldReturnFalse()
+	{
 		assertFalse(inode.isXattrPresent());
 	}
 
 	@Test
-	public void simplifyShouldReturnSelf() {
+	public void simplifyShouldReturnSelf()
+	{
 		assertSame(inode, inode.simplify());
 	}
 
 	@Test
-	public void staticSimplifyMethodShouldReturnOriginalIfBasic() {
+	public void staticSimplifyMethodShouldReturnOriginalIfBasic()
+	{
 		assertSame(inode, BasicSymlinkINode.simplify(inode));
 	}
 
 	@Test
-	public void getChildSerializedSizeShouldReturnCorrectValue() {
+	public void getChildSerializedSizeShouldReturnCorrectValue()
+	{
 		assertEquals(13, inode.getChildSerializedSize());
 		inode.setTargetPath("/test2".getBytes(StandardCharsets.ISO_8859_1));
 		assertEquals(14, inode.getChildSerializedSize());
 	}
 
 	@Test
-	public void writeDataAndReadDataShouldBeReflexive() throws IOException {
+	public void writeDataAndReadDataShouldBeReflexive() throws IOException
+	{
 		byte[] data = INodeTestUtils.serializeINode(inode);
 		INode dest = INodeTestUtils.deserializeINode(data);
 
@@ -123,7 +141,8 @@ public class BasicSymlinkINodeTest {
 	}
 
 	@Test
-	public void staticSimplifyMethodShouldReturnOriginalIfExtendedAttributesPresent() {
+	public void staticSimplifyMethodShouldReturnOriginalIfExtendedAttributesPresent()
+	{
 		SymlinkINode inode2 = new ExtendedSymlinkINode();
 		inode2.setNlink(2);
 		inode2.setXattrIndex(3);
@@ -131,7 +150,8 @@ public class BasicSymlinkINodeTest {
 	}
 
 	@Test
-	public void staticSimplifyMethodShouldReturnBasicIfExtendedAttributesNotPresent() {
+	public void staticSimplifyMethodShouldReturnBasicIfExtendedAttributesNotPresent()
+	{
 		SymlinkINode inode2 = new ExtendedSymlinkINode();
 		inode2.setNlink(2);
 		inode2.setXattrIndex(-1);
@@ -142,7 +162,8 @@ public class BasicSymlinkINodeTest {
 	}
 
 	@Test
-	public void toStringShouldNotFail() {
+	public void toStringShouldNotFail()
+	{
 		System.out.println(inode.toString());
 	}
 

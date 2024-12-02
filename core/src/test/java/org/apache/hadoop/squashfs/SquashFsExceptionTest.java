@@ -26,10 +26,12 @@ import java.io.IOException;
 
 import org.junit.Test;
 
-public class SquashFsExceptionTest {
+public class SquashFsExceptionTest
+{
 
 	@Test
-	public void noArgConstructorShouldHaveNullMessageAndCause() {
+	public void noArgConstructorShouldHaveNullMessageAndCause()
+	{
 		try {
 			throw new SquashFsException();
 		} catch (SquashFsException e) {
@@ -39,7 +41,8 @@ public class SquashFsExceptionTest {
 	}
 
 	@Test
-	public void stringConstructorShouldHaveSameMessageAndNullCause() {
+	public void stringConstructorShouldHaveSameMessageAndNullCause()
+	{
 		try {
 			throw new SquashFsException("test");
 		} catch (SquashFsException e) {
@@ -49,7 +52,8 @@ public class SquashFsExceptionTest {
 	}
 
 	@Test
-	public void throwableConstructorShouldHaveGeneratedMessageAndSameCause() {
+	public void throwableConstructorShouldHaveGeneratedMessageAndSameCause()
+	{
 		Exception cause = null;
 		try {
 			try {
@@ -59,13 +63,15 @@ public class SquashFsExceptionTest {
 			}
 			throw new SquashFsException(cause);
 		} catch (SquashFsException e) {
-			assertEquals(IOException.class.getName() + ": cause", e.getMessage());
+			assertEquals(IOException.class.getName() + ": cause",
+					e.getMessage());
 			assertSame(cause, e.getCause());
 		}
 	}
 
 	@Test
-	public void twoArgConstructorShouldHaveSameMessageAndCause() {
+	public void twoArgConstructorShouldHaveSameMessageAndCause()
+	{
 		Exception cause = null;
 		try {
 			try {
