@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+  <name>SquashFS Tools</name>
+  <description>Utilities for reading and writing SquashFS images.</description>
+  <url>https://github.com/topobyte/squashfs-tools</url>
+</project>

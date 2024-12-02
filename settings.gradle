@@ -1,1 +1,3 @@
-rootProject.name = pName
+include 'core', 'cli'
+project(':core').name = 'squashfs-tools'
+project(':cli').name = 'squashfs-tools-cli'

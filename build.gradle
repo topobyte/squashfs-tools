@@ -2,46 +2,41 @@ wrapper {
     gradleVersion = '7.6.1'
 }
 
-apply plugin: 'java-library'
-apply plugin: 'eclipse'
-apply plugin: 'maven-publish'
-
-group = pGroup
-version = pVersion
-
-if (project.hasProperty("topobyte")) {
-    apply from: 'file:///' + System.getProperty("user.home") \
-        + '/.gradle/topobyte.gradle'
+allprojects {
+    group = pGroup
+    version = pVersion
 }
 
-repositories {
-    maven {
-        url 'https://mvn.topobyte.de'
+ext.libraries = [
+    project(':squashfs-tools'),
+]
+
+configure(libraries) {
+    apply plugin: 'java-library'
+    apply plugin: 'maven-publish'
+
+    java {
+        withSourcesJar()
     }
-    maven {
-        url 'https://mvn.slimjars.com'
-    }
-    mavenCentral()
 }
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
-
-dependencies {
-    api 'org.apache.commons:commons-compress:1.18'
-    api 'org.slf4j:slf4j-api:1.7.25'
-    testRuntimeOnly 'org.slf4j:slf4j-log4j12:1.7.25'
-    testRuntimeOnly 'junit:junit:4.12'
+configure(subprojects.findAll {it !in libraries}) {
+    apply plugin: 'java'
 }
 
-java {
-    withSourcesJar()
-}
+subprojects {
+    apply plugin: 'eclipse'
 
-publishing {
-    publications {
-        maven(MavenPublication) {
-            from components.java
+    repositories {
+        maven {
+            url 'https://mvn.topobyte.de'
         }
+        maven {
+            url 'https://mvn.slimjars.com'
+        }
+        mavenCentral()
     }
+
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
 }
