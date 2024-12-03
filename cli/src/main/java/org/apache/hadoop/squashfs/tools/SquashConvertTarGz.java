@@ -32,7 +32,7 @@ import org.apache.hadoop.squashfs.SquashFsWriter;
 import org.apache.hadoop.squashfs.superblock.CompressionId;
 import org.apache.hadoop.squashfs.util.SizeTrackingInputStream;
 
-public class SquashConvert
+public class SquashConvertTarGz
 {
 
 	public static void convertToSquashFs(File inputFile, File outputFile)
@@ -132,7 +132,7 @@ public class SquashConvert
 	public static void usage()
 	{
 		System.err.printf("Usage: %s <tar-gz-file> <squashfs-file>%n",
-				SquashConvert.class.getSimpleName());
+				SquashConvertTarGz.class.getSimpleName());
 		System.err.println();
 		System.exit(1);
 	}
