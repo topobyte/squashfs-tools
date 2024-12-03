@@ -34,6 +34,7 @@ import org.apache.hadoop.squashfs.metadata.MemoryMetadataBlockReader;
 import org.apache.hadoop.squashfs.metadata.MetadataBlockReader;
 import org.apache.hadoop.squashfs.metadata.MetadataBlockRef;
 import org.apache.hadoop.squashfs.metadata.MetadataWriter;
+import org.apache.hadoop.squashfs.superblock.CompressionId;
 import org.apache.hadoop.squashfs.superblock.SuperBlock;
 import org.apache.hadoop.squashfs.superblock.SuperBlockFlag;
 import org.junit.Test;
@@ -166,7 +167,7 @@ public class ExportTableTest
 			assertEquals("wrong inode count", count, et.getInodeCount());
 			for (int i = 0; i < count; i++) {
 				assertEquals(String.format("wrong value of id %d", i + 1),
-						(long) (100000 + i), et.getInodeRefRaw(i + 1));
+						100000 + i, et.getInodeRefRaw(i + 1));
 			}
 		} else {
 			assertEquals("wrong count", 0, et.getInodeCount());
@@ -179,7 +180,7 @@ public class ExportTableTest
 	{
 		List<MetadataBlockRef> refs = new ArrayList<>();
 
-		MetadataWriter writer = new MetadataWriter();
+		MetadataWriter writer = new MetadataWriter(CompressionId.ZLIB);
 		for (int i = 0; i < count; i++) {
 			if (i % 1024 == 0) {
 				refs.add(writer.getCurrentReference());

@@ -42,7 +42,7 @@ public class DirectoryTestUtils
 	public static byte[] serializeDirectoryBuilder(DirectoryBuilder db)
 			throws IOException
 	{
-		MetadataWriter writer = new MetadataWriter();
+		MetadataWriter writer = new MetadataWriter(CompressionId.ZLIB);
 		db.write(writer);
 
 		byte[] data;
@@ -64,7 +64,7 @@ public class DirectoryTestUtils
 	public static byte[] serializeDirectoryElement(DirectoryElement entry)
 			throws IOException
 	{
-		MetadataWriter writer = new MetadataWriter();
+		MetadataWriter writer = new MetadataWriter(CompressionId.ZLIB);
 		entry.writeData(writer);
 
 		byte[] data;

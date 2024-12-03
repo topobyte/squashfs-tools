@@ -37,6 +37,7 @@ import org.apache.hadoop.squashfs.metadata.MemoryMetadataBlockReader;
 import org.apache.hadoop.squashfs.metadata.MetadataBlockReader;
 import org.apache.hadoop.squashfs.metadata.MetadataBlockRef;
 import org.apache.hadoop.squashfs.metadata.MetadataWriter;
+import org.apache.hadoop.squashfs.superblock.CompressionId;
 import org.apache.hadoop.squashfs.superblock.SuperBlock;
 import org.apache.hadoop.squashfs.superblock.SuperBlockFlag;
 import org.junit.Test;
@@ -149,7 +150,7 @@ public class FragmentTableTest
 				FragmentTableEntry entry = ft.getEntry(i);
 				assertNotNull(String.format("entry %d is null", i), entry);
 				assertEquals(String.format("wrong start for entry %d", i),
-						(long) (100_000 + i), entry.getStart());
+						100_000 + i, entry.getStart());
 				assertEquals(String.format("wrong size for entry %d", i),
 						10_000 + i, entry.getSize());
 			}
@@ -165,7 +166,7 @@ public class FragmentTableTest
 	{
 		List<MetadataBlockRef> refs = new ArrayList<>();
 
-		MetadataWriter writer = new MetadataWriter();
+		MetadataWriter writer = new MetadataWriter(CompressionId.ZLIB);
 		for (int i = 0; i < count; i++) {
 			if (i % 512 == 0) {
 				writer.flush();

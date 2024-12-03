@@ -28,23 +28,29 @@ import java.util.zip.DeflaterOutputStream;
 
 import org.apache.hadoop.squashfs.metadata.MetadataBlockRef;
 import org.apache.hadoop.squashfs.metadata.MetadataWriter;
+import org.apache.hadoop.squashfs.superblock.CompressionId;
 import org.apache.hadoop.squashfs.table.FragmentTable;
 import org.apache.hadoop.squashfs.table.FragmentTableEntry;
+
+import io.airlift.compress.zstd.ZstdOutputStream;
 
 public class FragmentWriter
 {
 
 	private final RandomAccessFile raf;
 	private final int blockSize;
+	private final CompressionId compression;
 	private final byte[] currentBlock;
 	private final List<FragmentRef> currentFragments = new ArrayList<>();
 	private int currentOffset = 0;
 	private final List<FragmentTableEntry> fragmentEntries = new ArrayList<>();
 
-	public FragmentWriter(RandomAccessFile raf, int blockSize)
+	public FragmentWriter(RandomAccessFile raf, int blockSize,
+			CompressionId compression)
 	{
 		this.raf = raf;
 		this.blockSize = blockSize;
+		this.compression = compression;
 		this.currentBlock = new byte[blockSize];
 	}
 
@@ -139,11 +145,45 @@ public class FragmentWriter
 
 	private byte[] compressData() throws IOException
 	{
+		switch (compression) {
+		case ZLIB:
+			return compressDataZlib();
+		case ZSTD:
+			return compressDataZstd();
+		case LZ4:
+		case LZMA:
+		case LZO:
+		case NONE:
+		case XZ:
+		default:
+			return null;
+		}
+	}
+
+	private byte[] compressDataZlib() throws IOException
+	{
 		Deflater def = new Deflater(Deflater.BEST_COMPRESSION);
 		try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
 			try (DeflaterOutputStream dos = new DeflaterOutputStream(bos, def,
 					4096)) {
 				dos.write(currentBlock, 0, currentOffset);
+			}
+			byte[] result = bos.toByteArray();
+			if (result.length > currentOffset) {
+				return null;
+			}
+			return result;
+		} finally {
+			def.end();
+		}
+	}
+
+	private byte[] compressDataZstd() throws IOException
+	{
+		Deflater def = new Deflater(Deflater.BEST_COMPRESSION);
+		try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
+			try (ZstdOutputStream zos = new ZstdOutputStream(bos)) {
+				zos.write(currentBlock, 0, currentOffset);
 			}
 			byte[] result = bos.toByteArray();
 			if (result.length > currentOffset) {

@@ -42,6 +42,7 @@ public class SquashFsWriter implements Closeable
 	private static final Logger LOG = LoggerFactory
 			.getLogger(SquashFsWriter.class);
 
+	private final CompressionId compression;
 	private final int offset;
 	private final RandomAccessFile raf;
 	private final IdTableGenerator idGenerator;
@@ -61,6 +62,7 @@ public class SquashFsWriter implements Closeable
 	public SquashFsWriter(File outputFile, CompressionId compression,
 			int offset) throws SquashFsException, IOException
 	{
+		this.compression = compression;
 		this.offset = offset;
 		raf = new RandomAccessFile(outputFile, "rw");
 		writeDummySuperblock(raf);
@@ -100,9 +102,9 @@ public class SquashFsWriter implements Closeable
 		return idGenerator;
 	}
 
-	static SquashFsTree createSquashFsTree()
+	SquashFsTree createSquashFsTree()
 	{
-		return new SquashFsTree();
+		return new SquashFsTree(compression);
 	}
 
 	static DataBlockWriter createDataWriter(SuperBlock sb, RandomAccessFile raf,
@@ -111,10 +113,9 @@ public class SquashFsWriter implements Closeable
 		return new DataBlockWriter(raf, sb.getBlockSize(), compression);
 	}
 
-	static FragmentWriter createFragmentWriter(SuperBlock sb,
-			RandomAccessFile raf)
+	FragmentWriter createFragmentWriter(SuperBlock sb, RandomAccessFile raf)
 	{
-		return new FragmentWriter(raf, sb.getBlockSize());
+		return new FragmentWriter(raf, sb.getBlockSize(), compression);
 	}
 
 	SuperBlock getSuperBlock()
@@ -172,7 +173,7 @@ public class SquashFsWriter implements Closeable
 
 		// build fragment table
 		long fragMetaStart = raf.getFilePointer();
-		MetadataWriter fragMetaWriter = new MetadataWriter();
+		MetadataWriter fragMetaWriter = new MetadataWriter(compression);
 		List<MetadataBlockRef> fragRefs = fragmentWriter.save(fragMetaWriter);
 		fragMetaWriter.save(raf);
 
@@ -189,7 +190,7 @@ public class SquashFsWriter implements Closeable
 
 		// build export table
 		long exportMetaStart = raf.getFilePointer();
-		MetadataWriter exportMetaWriter = new MetadataWriter();
+		MetadataWriter exportMetaWriter = new MetadataWriter(compression);
 		List<MetadataBlockRef> exportRefs = fsTree
 				.saveExportTable(exportMetaWriter);
 		exportMetaWriter.save(raf);
@@ -207,7 +208,7 @@ public class SquashFsWriter implements Closeable
 
 		// build ID table
 		long idMetaStart = raf.getFilePointer();
-		MetadataWriter idMetaWriter = new MetadataWriter();
+		MetadataWriter idMetaWriter = new MetadataWriter(compression);
 		List<MetadataBlockRef> idRefs = idGenerator.save(idMetaWriter);
 		idMetaWriter.save(raf);
 

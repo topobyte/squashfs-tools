@@ -84,7 +84,7 @@ public class DataTestUtils
 	public static byte[] saveFragmentMetadata(FragmentWriter fw)
 			throws IOException
 	{
-		MetadataWriter writer = new MetadataWriter();
+		MetadataWriter writer = new MetadataWriter(CompressionId.ZLIB);
 		fw.save(writer);
 
 		byte[] data;

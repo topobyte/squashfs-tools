@@ -29,6 +29,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.Random;
 
+import org.apache.hadoop.squashfs.superblock.CompressionId;
 import org.apache.hadoop.squashfs.superblock.SuperBlock;
 import org.apache.hadoop.squashfs.table.FragmentTableEntry;
 import org.apache.hadoop.squashfs.test.DataTestUtils;
@@ -53,7 +54,8 @@ public class FragmentWriterTest
 	{
 		tempFile = temp.newFile();
 		raf = new RandomAccessFile(tempFile, "rw");
-		writer = new FragmentWriter(raf, SuperBlock.DEFAULT_BLOCK_SIZE);
+		writer = new FragmentWriter(raf, SuperBlock.DEFAULT_BLOCK_SIZE,
+				CompressionId.ZLIB);
 	}
 
 	@After

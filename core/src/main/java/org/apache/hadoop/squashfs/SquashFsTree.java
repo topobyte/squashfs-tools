@@ -31,6 +31,7 @@ import java.util.stream.Collectors;
 import org.apache.hadoop.squashfs.inode.INodeType;
 import org.apache.hadoop.squashfs.metadata.MetadataBlockRef;
 import org.apache.hadoop.squashfs.metadata.MetadataWriter;
+import org.apache.hadoop.squashfs.superblock.CompressionId;
 import org.apache.hadoop.squashfs.table.ExportTable;
 
 public class SquashFsTree
@@ -40,16 +41,17 @@ public class SquashFsTree
 
 	private final AtomicInteger inodeAssignments = new AtomicInteger(0);
 	private final SortedMap<Integer, Set<SquashFsEntry>> inodeToEntry = new TreeMap<>();
-	private final MetadataWriter inodeWriter = new MetadataWriter();
-	private final MetadataWriter dirWriter = new MetadataWriter();
+	private final MetadataWriter inodeWriter;
+	private final MetadataWriter dirWriter;
 	private final SortedMap<Integer, MetadataBlockRef> visitedInodes = new TreeMap<>();
 
 	private final SquashFsEntry root = new SquashFsEntry();
 	private MetadataBlockRef rootInodeRef;
 
-	SquashFsTree()
+	SquashFsTree(CompressionId compression)
 	{
-
+		inodeWriter = new MetadataWriter(compression);
+		dirWriter = new MetadataWriter(compression);
 	}
 
 	void add(SquashFsEntry squashFsEntry)
@@ -156,9 +158,8 @@ public class SquashFsTree
 			}
 			MetadataBlockRef metaRef = entry.getValue();
 
-			long inodeRef = (((long) (metaRef.getLocation()
-					& 0xffffffffL)) << 16)
-					| (((long) metaRef.getOffset()) & 0xffffL);
+			long inodeRef = ((metaRef.getLocation() & 0xffffffffL) << 16)
+					| ((metaRef.getOffset()) & 0xffffL);
 
 			writer.writeLong(inodeRef);
 			index++;

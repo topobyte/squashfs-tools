@@ -27,6 +27,7 @@ import java.util.List;
 
 import org.apache.hadoop.squashfs.metadata.MetadataBlockRef;
 import org.apache.hadoop.squashfs.metadata.MetadataWriter;
+import org.apache.hadoop.squashfs.superblock.CompressionId;
 import org.apache.hadoop.squashfs.test.MetadataTestUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -53,7 +54,7 @@ public class IdTableGeneratorTest
 	@Test
 	public void saveEmptyEntryWritesNoData() throws Exception
 	{
-		MetadataWriter writer = new MetadataWriter();
+		MetadataWriter writer = new MetadataWriter(CompressionId.ZLIB);
 
 		List<MetadataBlockRef> refs = gen.save(writer);
 		assertEquals("wrong refs size", 0, refs.size());
@@ -67,7 +68,7 @@ public class IdTableGeneratorTest
 	{
 		gen.addUidGid(1000);
 
-		MetadataWriter writer = new MetadataWriter();
+		MetadataWriter writer = new MetadataWriter(CompressionId.ZLIB);
 
 		List<MetadataBlockRef> refs = gen.save(writer);
 		assertEquals("wrong refs size", 1, refs.size());
@@ -89,7 +90,7 @@ public class IdTableGeneratorTest
 			gen.addUidGid(100_000 + i);
 		}
 
-		MetadataWriter writer = new MetadataWriter();
+		MetadataWriter writer = new MetadataWriter(CompressionId.ZLIB);
 
 		List<MetadataBlockRef> refs = gen.save(writer);
 		System.out.println(refs);

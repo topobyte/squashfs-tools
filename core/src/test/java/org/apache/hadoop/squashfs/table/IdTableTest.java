@@ -34,6 +34,7 @@ import org.apache.hadoop.squashfs.metadata.MemoryMetadataBlockReader;
 import org.apache.hadoop.squashfs.metadata.MetadataBlockReader;
 import org.apache.hadoop.squashfs.metadata.MetadataBlockRef;
 import org.apache.hadoop.squashfs.metadata.MetadataWriter;
+import org.apache.hadoop.squashfs.superblock.CompressionId;
 import org.apache.hadoop.squashfs.superblock.SuperBlock;
 import org.junit.Test;
 
@@ -137,7 +138,7 @@ public class IdTableTest
 	{
 		List<MetadataBlockRef> refs = new ArrayList<>();
 
-		MetadataWriter writer = new MetadataWriter();
+		MetadataWriter writer = new MetadataWriter(CompressionId.ZLIB);
 		for (int i = 0; i < count; i++) {
 			if (i % 2048 == 0) {
 				refs.add(writer.getCurrentReference());

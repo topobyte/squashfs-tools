@@ -35,6 +35,7 @@ import java.nio.ShortBuffer;
 import java.util.Arrays;
 import java.util.Random;
 
+import org.apache.hadoop.squashfs.superblock.CompressionId;
 import org.apache.hadoop.squashfs.test.MetadataTestUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -47,7 +48,7 @@ public class MetadataWriterTest
 	@Before
 	public void setUp()
 	{
-		writer = new MetadataWriter();
+		writer = new MetadataWriter(CompressionId.ZLIB);
 	}
 
 	@Test

@@ -36,7 +36,7 @@ public class MetadataTestUtils
 
 	public static byte[] saveMetadataBlock(byte[] data) throws IOException
 	{
-		MetadataWriter writer = new MetadataWriter();
+		MetadataWriter writer = new MetadataWriter(CompressionId.ZLIB);
 		writer.write(data);
 		return saveMetadataBlock(writer);
 	}

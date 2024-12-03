@@ -84,7 +84,7 @@ public class DataBlockReaderTest
 		}
 
 		FragmentWriter fw = new FragmentWriter(raf,
-				SuperBlock.DEFAULT_BLOCK_SIZE);
+				SuperBlock.DEFAULT_BLOCK_SIZE, CompressionId.ZLIB);
 		FragmentRef ref = writeFragment(fw, data, 0, data.length);
 		fw.flush();
 		System.out.println(ref);
@@ -116,7 +116,7 @@ public class DataBlockReaderTest
 		}
 
 		FragmentWriter fw = new FragmentWriter(raf,
-				SuperBlock.DEFAULT_BLOCK_SIZE);
+				SuperBlock.DEFAULT_BLOCK_SIZE, CompressionId.ZLIB);
 		FragmentRef ref = writeFragment(fw, data, 0, data.length);
 		fw.flush();
 		System.out.println(ref);

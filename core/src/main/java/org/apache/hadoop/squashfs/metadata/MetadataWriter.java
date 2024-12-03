@@ -26,14 +26,25 @@ import java.util.List;
 import java.util.zip.Deflater;
 import java.util.zip.DeflaterOutputStream;
 
+import org.apache.hadoop.squashfs.superblock.CompressionId;
+
+import io.airlift.compress.zstd.ZstdOutputStream;
+
 public class MetadataWriter implements DataOutput
 {
+
+	private final CompressionId compression;
 
 	private final byte[] xfer = new byte[1];
 	private final byte[] currentBlock = new byte[8192];
 	private final List<byte[]> blocks = new ArrayList<>();
 	private long location = 0L;
 	private int offset = 0;
+
+	public MetadataWriter(CompressionId compression)
+	{
+		this.compression = compression;
+	}
 
 	public void save(DataOutput out) throws IOException
 	{
@@ -89,11 +100,47 @@ public class MetadataWriter implements DataOutput
 	private byte[] compress(byte[] data, int offset, int length)
 			throws IOException
 	{
+		switch (compression) {
+		case ZLIB:
+			return compressZlib(data, offset, length);
+		case ZSTD:
+			return compressZstd(data, offset, length);
+		case LZ4:
+		case LZMA:
+		case LZO:
+		case NONE:
+		case XZ:
+		default:
+			return null;
+		}
+	}
+
+	private byte[] compressZlib(byte[] data, int offset, int length)
+			throws IOException
+	{
 		Deflater def = new Deflater(Deflater.BEST_COMPRESSION);
 		try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
 			try (DeflaterOutputStream dos = new DeflaterOutputStream(bos, def,
 					4096)) {
 				dos.write(data, offset, length);
+			}
+			byte[] result = bos.toByteArray();
+			if (result.length > length) {
+				return null;
+			}
+			return result;
+		} finally {
+			def.end();
+		}
+	}
+
+	private byte[] compressZstd(byte[] data, int offset, int length)
+			throws IOException
+	{
+		Deflater def = new Deflater(Deflater.BEST_COMPRESSION);
+		try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
+			try (ZstdOutputStream zos = new ZstdOutputStream(bos)) {
+				zos.write(data, offset, length);
 			}
 			byte[] result = bos.toByteArray();
 			if (result.length > length) {

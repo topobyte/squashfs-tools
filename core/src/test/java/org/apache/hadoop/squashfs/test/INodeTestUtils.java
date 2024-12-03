@@ -36,7 +36,7 @@ public class INodeTestUtils
 
 	public static byte[] serializeINode(INode inode) throws IOException
 	{
-		MetadataWriter writer = new MetadataWriter();
+		MetadataWriter writer = new MetadataWriter(CompressionId.ZLIB);
 		inode.writeData(writer);
 
 		byte[] data;
