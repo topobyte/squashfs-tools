@@ -52,6 +52,7 @@ public class SquashFsTree
 	{
 		inodeWriter = new MetadataWriter(compression);
 		dirWriter = new MetadataWriter(compression);
+		root.permissions = 0777;
 	}
 
 	void add(SquashFsEntry squashFsEntry)

@@ -83,6 +83,8 @@ public class SquashConvert
 
 		int userId = (int) entry.getLongUserId();
 		int groupId = (int) entry.getLongGroupId();
+		userId = 0;
+		groupId = 0;
 
 		String name = entry.getName().replaceAll("/+", "/").replaceAll("^/", "")
 				.replaceAll("/$", "").replaceAll("^", "/");
@@ -90,6 +92,8 @@ public class SquashConvert
 		System.err.println(name);
 
 		short permissions = (short) (entry.getMode() & 07777);
+		System.out.println(userId + " " + groupId + " "
+				+ Integer.toOctalString(permissions) + " " + name);
 
 		Date lastModified = entry.getLastModifiedDate();
 		if (lastModified.after(modDate.get())) {
