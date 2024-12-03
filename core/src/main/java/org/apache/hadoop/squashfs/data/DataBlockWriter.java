@@ -24,16 +24,23 @@ import java.io.RandomAccessFile;
 import java.util.zip.Deflater;
 import java.util.zip.DeflaterOutputStream;
 
+import org.apache.hadoop.squashfs.superblock.CompressionId;
+
+import io.airlift.compress.zstd.ZstdOutputStream;
+
 public class DataBlockWriter
 {
 
 	private final RandomAccessFile raf;
 	private final int blockSize;
+	private final CompressionId compression;
 
-	public DataBlockWriter(RandomAccessFile raf, int blockSize)
+	public DataBlockWriter(RandomAccessFile raf, int blockSize,
+			CompressionId compression)
 	{
 		this.raf = raf;
 		this.blockSize = blockSize;
+		this.compression = compression;
 	}
 
 	public DataBlockRef write(byte[] data, int offset, int length)
@@ -51,7 +58,21 @@ public class DataBlockWriter
 			return new DataBlockRef(fileOffset, length, 0, false, true);
 		}
 
-		byte[] compressed = compress(data, offset, length);
+		byte[] compressed = null;
+		switch (compression) {
+		case NONE:
+		case LZ4:
+		case LZMA:
+		case LZO:
+		case XZ:
+			break;
+		case ZLIB:
+			compressed = compressZlib(data, offset, length);
+			break;
+		case ZSTD:
+			compressed = compressZstd(data, offset, length);
+			break;
+		}
 		if (compressed != null) {
 			raf.write(compressed);
 			return new DataBlockRef(fileOffset, length, compressed.length, true,
@@ -73,7 +94,7 @@ public class DataBlockWriter
 		return true;
 	}
 
-	private byte[] compress(byte[] data, int offset, int length)
+	private byte[] compressZlib(byte[] data, int offset, int length)
 			throws IOException
 	{
 		Deflater def = new Deflater(Deflater.BEST_COMPRESSION);
@@ -89,6 +110,21 @@ public class DataBlockWriter
 			return result;
 		} finally {
 			def.end();
+		}
+	}
+
+	private byte[] compressZstd(byte[] data, int offset, int length)
+			throws IOException
+	{
+		try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
+			try (ZstdOutputStream zos = new ZstdOutputStream(bos)) {
+				zos.write(data, offset, length);
+			}
+			byte[] result = bos.toByteArray();
+			if (result.length > blockSize) {
+				return null;
+			}
+			return result;
 		}
 	}
 

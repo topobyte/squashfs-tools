@@ -30,6 +30,7 @@ import org.apache.hadoop.squashfs.data.DataBlockWriter;
 import org.apache.hadoop.squashfs.data.FragmentWriter;
 import org.apache.hadoop.squashfs.metadata.MetadataBlockRef;
 import org.apache.hadoop.squashfs.metadata.MetadataWriter;
+import org.apache.hadoop.squashfs.superblock.CompressionId;
 import org.apache.hadoop.squashfs.superblock.SuperBlock;
 import org.apache.hadoop.squashfs.table.IdTableGenerator;
 import org.slf4j.Logger;
@@ -53,13 +54,19 @@ public class SquashFsWriter implements Closeable
 
 	public SquashFsWriter(File outputFile) throws SquashFsException, IOException
 	{
+		this(outputFile, CompressionId.ZLIB);
+	}
+
+	public SquashFsWriter(File outputFile, CompressionId compression)
+			throws SquashFsException, IOException
+	{
 		raf = new RandomAccessFile(outputFile, "rw");
 		writeDummySuperblock(raf);
-		superBlock = createSuperBlock();
+		superBlock = createSuperBlock(compression);
 		blockBuffer = createBlockBuffer(superBlock);
 		idGenerator = createIdTableGenerator();
 		fsTree = createSquashFsTree();
-		dataWriter = createDataWriter(superBlock, raf);
+		dataWriter = createDataWriter(superBlock, raf, compression);
 		fragmentWriter = createFragmentWriter(superBlock, raf);
 	}
 
@@ -74,9 +81,9 @@ public class SquashFsWriter implements Closeable
 		raf.write(new byte[SuperBlock.SIZE]);
 	}
 
-	static SuperBlock createSuperBlock()
+	static SuperBlock createSuperBlock(CompressionId compression)
 	{
-		return new SuperBlock();
+		return new SuperBlock(compression);
 	}
 
 	static byte[] createBlockBuffer(SuperBlock sb)
@@ -96,9 +103,10 @@ public class SquashFsWriter implements Closeable
 		return new SquashFsTree();
 	}
 
-	static DataBlockWriter createDataWriter(SuperBlock sb, RandomAccessFile raf)
+	static DataBlockWriter createDataWriter(SuperBlock sb, RandomAccessFile raf,
+			CompressionId compression)
 	{
-		return new DataBlockWriter(raf, sb.getBlockSize());
+		return new DataBlockWriter(raf, sb.getBlockSize(), compression);
 	}
 
 	static FragmentWriter createFragmentWriter(SuperBlock sb,

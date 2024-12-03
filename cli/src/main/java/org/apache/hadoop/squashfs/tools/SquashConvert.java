@@ -29,15 +29,21 @@ import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.hadoop.squashfs.SquashFsEntryBuilder;
 import org.apache.hadoop.squashfs.SquashFsWriter;
+import org.apache.hadoop.squashfs.superblock.CompressionId;
 import org.apache.hadoop.squashfs.util.SizeTrackingInputStream;
 
 public class SquashConvert
 {
 
-	private static void convertToSquashFs(File inputFile, File outputFile)
+	public static void convertToSquashFs(File inputFile, File outputFile)
 			throws IOException
 	{
+		convertToSquashFs(inputFile, outputFile, CompressionId.ZLIB);
+	}
 
+	public static void convertToSquashFs(File inputFile, File outputFile,
+			CompressionId compression) throws IOException
+	{
 		long size = inputFile.length();
 
 		System.err.printf("Converting %s -> %s...%n",
@@ -49,7 +55,8 @@ public class SquashConvert
 				TarArchiveInputStream tis = new TarArchiveInputStream(gis)) {
 
 			long fileCount = 0L;
-			try (SquashFsWriter writer = new SquashFsWriter(outputFile)) {
+			try (SquashFsWriter writer = new SquashFsWriter(outputFile,
+					compression)) {
 				TarArchiveEntry entry;
 				AtomicReference<Date> modDate = new AtomicReference<>(
 						new Date(0));

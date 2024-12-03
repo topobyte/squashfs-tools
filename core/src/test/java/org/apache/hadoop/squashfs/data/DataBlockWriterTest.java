@@ -27,6 +27,7 @@ import java.io.File;
 import java.io.RandomAccessFile;
 import java.util.Random;
 
+import org.apache.hadoop.squashfs.superblock.CompressionId;
 import org.apache.hadoop.squashfs.superblock.SuperBlock;
 import org.apache.hadoop.squashfs.test.DataTestUtils;
 import org.junit.After;
@@ -50,7 +51,8 @@ public class DataBlockWriterTest
 	{
 		tempFile = temp.newFile();
 		raf = new RandomAccessFile(tempFile, "rw");
-		writer = new DataBlockWriter(raf, SuperBlock.DEFAULT_BLOCK_SIZE);
+		writer = new DataBlockWriter(raf, SuperBlock.DEFAULT_BLOCK_SIZE,
+				CompressionId.ZLIB);
 	}
 
 	@After

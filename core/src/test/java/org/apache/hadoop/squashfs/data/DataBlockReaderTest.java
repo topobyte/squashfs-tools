@@ -64,7 +64,7 @@ public class DataBlockReaderTest
 			throws IOException
 	{
 		DataBlockWriter writer = new DataBlockWriter(raf,
-				SuperBlock.DEFAULT_BLOCK_SIZE);
+				SuperBlock.DEFAULT_BLOCK_SIZE, CompressionId.ZLIB);
 		return writer.write(data, offset, length);
 	}
 

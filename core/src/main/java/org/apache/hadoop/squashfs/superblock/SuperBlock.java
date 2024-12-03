@@ -54,7 +54,7 @@ public class SuperBlock
 	int modificationTime = (int) (System.currentTimeMillis() / 1000);
 	int blockSize = DEFAULT_BLOCK_SIZE;
 	int fragmentEntryCount;
-	CompressionId compressionId = CompressionId.ZLIB;
+	CompressionId compressionId = CompressionId.ZSTD;
 	short blockLog = DEFAULT_BLOCK_LOG;
 	short flags = DEFAULT_FLAGS;
 	short idCount;
@@ -69,10 +69,20 @@ public class SuperBlock
 	long fragmentTableStart;
 	long exportTableStart;
 
+	public SuperBlock()
+	{
+		this(CompressionId.ZLIB);
+	}
+
+	public SuperBlock(CompressionId compression)
+	{
+		this.compressionId = compression;
+	}
+
 	public static SuperBlock read(DataInput in)
 			throws IOException, SquashFsException
 	{
-		SuperBlock block = new SuperBlock();
+		SuperBlock block = new SuperBlock(CompressionId.ZLIB);
 		block.readData(in);
 		return block;
 	}
@@ -350,8 +360,8 @@ public class SuperBlock
 		dumpBin(buf, width, "compressionId (decoded)",
 				compressionId.toString());
 		dumpBin(buf, width, "blockLog", blockLog, DECIMAL, UNSIGNED);
-		dumpBin(buf, width, "blockSize (calculated)", (int) 1 << blockLog,
-				DECIMAL, UNSIGNED);
+		dumpBin(buf, width, "blockSize (calculated)", 1 << blockLog, DECIMAL,
+				UNSIGNED);
 		dumpBin(buf, width, "flags", flags, BINARY, UNSIGNED);
 		dumpBin(buf, width, "flags (decoded)",
 				SuperBlockFlag.flagsPresent(flags).toString());
