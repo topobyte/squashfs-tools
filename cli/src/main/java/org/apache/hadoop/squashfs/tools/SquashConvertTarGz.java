@@ -78,7 +78,6 @@ public class SquashConvertTarGz
 			SquashFsWriter writer, AtomicReference<Date> modDate)
 			throws IOException
 	{
-
 		int userId = (int) entry.getLongUserId();
 		int groupId = (int) entry.getLongGroupId();
 
