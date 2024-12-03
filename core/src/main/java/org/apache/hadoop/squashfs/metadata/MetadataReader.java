@@ -48,11 +48,11 @@ public class MetadataReader implements DataInput
 		this.blockReader = blockReader;
 		this.tag = metaRef.getTag();
 		this.nextBlockLocation = metaRef.getBlockLocation();
-		this.startPosition = (int) metaRef.getOffset();
+		this.startPosition = metaRef.getOffset();
 		this.maxLength = metaRef.getMaxLength() == Integer.MAX_VALUE
 				? Integer.MAX_VALUE
-				: metaRef.getMaxLength() + ((int) metaRef.getOffset());
-		skipBytes((int) metaRef.getOffset());
+				: metaRef.getMaxLength() + (metaRef.getOffset());
+		skipBytes(metaRef.getOffset());
 		LOG.trace("Reader initialized for reference: \n{}", metaRef);
 	}
 
@@ -78,7 +78,7 @@ public class MetadataReader implements DataInput
 		return bytesRead - startPosition;
 	}
 
-	public int available() throws IOException
+	public int available()
 	{
 		if (block == null || bytesRead >= maxLength) {
 			return 0;
@@ -242,7 +242,7 @@ public class MetadataReader implements DataInput
 				| ((long) (buf[3] & 0xff) << 32)
 				| ((long) (buf[4] & 0xff) << 24)
 				| ((long) (buf[5] & 0xff) << 16) | ((long) (buf[6] & 0xff) << 8)
-				| ((long) (buf[7] & 0xff)));
+				| (buf[7] & 0xff));
 		return Long.reverseBytes(value);
 	}
 

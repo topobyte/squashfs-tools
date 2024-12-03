@@ -43,7 +43,7 @@ public class FileTableReader implements TableReader
 	}
 
 	public FileTableReader(IRandomAccess raf, SuperBlock sb,
-			boolean shouldClose) throws SquashFsException, IOException
+			boolean shouldClose)
 	{
 		this.raf = raf;
 		this.sb = sb;

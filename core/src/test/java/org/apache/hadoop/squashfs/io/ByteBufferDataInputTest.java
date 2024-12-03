@@ -24,7 +24,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.EOFException;
-import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.Random;
@@ -210,7 +209,7 @@ public class ByteBufferDataInputTest
 		r.readUTF();
 	}
 
-	ByteBufferDataInput input(byte[] data) throws IOException
+	ByteBufferDataInput input(byte[] data)
 	{
 		return new ByteBufferDataInput(ByteBuffer.wrap(data));
 	}

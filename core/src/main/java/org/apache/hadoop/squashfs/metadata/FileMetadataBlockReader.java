@@ -44,7 +44,7 @@ public class FileMetadataBlockReader implements MetadataBlockReader
 	}
 
 	public FileMetadataBlockReader(int tag, IRandomAccess raf, SuperBlock sb,
-			boolean shouldClose) throws SquashFsException, IOException
+			boolean shouldClose)
 	{
 		this.tag = tag;
 		this.raf = raf;

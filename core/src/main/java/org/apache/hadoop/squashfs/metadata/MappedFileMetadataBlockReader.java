@@ -33,9 +33,8 @@ public class MappedFileMetadataBlockReader implements MetadataBlockReader
 	private final MappedFile mmap;
 
 	public MappedFileMetadataBlockReader(int tag, SuperBlock sb,
-			MappedFile mmap) throws IOException, SquashFsException
+			MappedFile mmap)
 	{
-
 		this.tag = tag;
 		this.sb = sb;
 		this.mmap = mmap;

@@ -44,8 +44,6 @@ public class SquashConvert
 	public static void convertToSquashFs(File inputFile, File outputFile,
 			CompressionId compression, int offset) throws IOException
 	{
-		long size = inputFile.length();
-
 		System.err.printf("Converting %s -> %s...%n",
 				inputFile.getAbsolutePath(), outputFile.getAbsolutePath());
 
