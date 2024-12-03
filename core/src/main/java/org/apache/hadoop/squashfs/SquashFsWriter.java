@@ -30,6 +30,7 @@ import org.apache.hadoop.squashfs.data.FragmentWriter;
 import org.apache.hadoop.squashfs.metadata.MetadataBlockRef;
 import org.apache.hadoop.squashfs.metadata.MetadataWriter;
 import org.apache.hadoop.squashfs.ra.IRandomAccess;
+import org.apache.hadoop.squashfs.ra.OffsetRandomAccess;
 import org.apache.hadoop.squashfs.ra.SimpleRandomAccess;
 import org.apache.hadoop.squashfs.superblock.CompressionId;
 import org.apache.hadoop.squashfs.superblock.SuperBlock;
@@ -44,7 +45,6 @@ public class SquashFsWriter implements Closeable
 			.getLogger(SquashFsWriter.class);
 
 	private final CompressionId compression;
-	private final int offset;
 	private final IRandomAccess raf;
 	private final IdTableGenerator idGenerator;
 	private final SuperBlock superBlock;
@@ -64,8 +64,11 @@ public class SquashFsWriter implements Closeable
 			int offset) throws SquashFsException, IOException
 	{
 		this.compression = compression;
-		this.offset = offset;
-		raf = new SimpleRandomAccess(outputFile, "rw");
+		if (offset == 0) {
+			raf = new SimpleRandomAccess(outputFile, "rw");
+		} else {
+			raf = new OffsetRandomAccess(outputFile, "rw", offset);
+		}
 		writeDummySuperblock(raf);
 		superBlock = createSuperBlock(compression);
 		blockBuffer = createBlockBuffer(superBlock);
@@ -82,7 +85,7 @@ public class SquashFsWriter implements Closeable
 
 	void writeDummySuperblock(IRandomAccess raf) throws IOException
 	{
-		raf.seek(offset);
+		raf.seek(0);
 		raf.write(new byte[SuperBlock.SIZE]);
 	}
 
@@ -261,7 +264,7 @@ public class SquashFsWriter implements Closeable
 		LOG.debug("Superblock: {}", superBlock);
 
 		// write superblock
-		raf.seek(offset);
+		raf.seek(0);
 		superBlock.writeData(raf);
 		raf.seek(fileSize);
 	}
