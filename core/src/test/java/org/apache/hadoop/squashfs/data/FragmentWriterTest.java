@@ -24,11 +24,12 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
-import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.Random;
 
+import org.apache.hadoop.squashfs.ra.IRandomAccess;
+import org.apache.hadoop.squashfs.ra.SimpleRandomAccess;
 import org.apache.hadoop.squashfs.superblock.CompressionId;
 import org.apache.hadoop.squashfs.superblock.SuperBlock;
 import org.apache.hadoop.squashfs.table.FragmentTableEntry;
@@ -46,14 +47,14 @@ public class FragmentWriterTest
 	public TemporaryFolder temp = new TemporaryFolder();
 
 	File tempFile;
-	RandomAccessFile raf;
+	IRandomAccess raf;
 	FragmentWriter writer;
 
 	@Before
 	public void setUp() throws Exception
 	{
 		tempFile = temp.newFile();
-		raf = new RandomAccessFile(tempFile, "rw");
+		raf = new SimpleRandomAccess(tempFile, "rw");
 		writer = new FragmentWriter(raf, SuperBlock.DEFAULT_BLOCK_SIZE,
 				CompressionId.ZLIB);
 	}

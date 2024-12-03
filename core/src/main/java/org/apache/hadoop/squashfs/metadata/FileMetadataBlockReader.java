@@ -20,16 +20,17 @@ package org.apache.hadoop.squashfs.metadata;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.RandomAccessFile;
 
 import org.apache.hadoop.squashfs.SquashFsException;
+import org.apache.hadoop.squashfs.ra.IRandomAccess;
+import org.apache.hadoop.squashfs.ra.SimpleRandomAccess;
 import org.apache.hadoop.squashfs.superblock.SuperBlock;
 
 public class FileMetadataBlockReader implements MetadataBlockReader
 {
 
 	private final int tag;
-	private final RandomAccessFile raf;
+	private final IRandomAccess raf;
 	private final SuperBlock sb;
 	private final boolean shouldClose;
 
@@ -37,12 +38,12 @@ public class FileMetadataBlockReader implements MetadataBlockReader
 			throws IOException, SquashFsException
 	{
 		this.tag = tag;
-		this.raf = new RandomAccessFile(file, "r");
+		this.raf = new SimpleRandomAccess(file, "r");
 		this.sb = SuperBlock.read(raf);
 		this.shouldClose = true;
 	}
 
-	public FileMetadataBlockReader(int tag, RandomAccessFile raf, SuperBlock sb,
+	public FileMetadataBlockReader(int tag, IRandomAccess raf, SuperBlock sb,
 			boolean shouldClose) throws SquashFsException, IOException
 	{
 		this.tag = tag;

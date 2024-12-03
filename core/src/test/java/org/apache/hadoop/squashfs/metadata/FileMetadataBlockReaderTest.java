@@ -25,8 +25,9 @@ import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.RandomAccessFile;
 
+import org.apache.hadoop.squashfs.ra.IRandomAccess;
+import org.apache.hadoop.squashfs.ra.SimpleRandomAccess;
 import org.apache.hadoop.squashfs.superblock.SuperBlock;
 import org.apache.hadoop.squashfs.test.MetadataTestUtils;
 import org.junit.After;
@@ -54,7 +55,7 @@ public class FileMetadataBlockReaderTest
 		tag = 1;
 		tempFile = temp.newFile();
 		sb = new SuperBlock();
-		try (RandomAccessFile raf = new RandomAccessFile(tempFile, "rw")) {
+		try (IRandomAccess raf = new SimpleRandomAccess(tempFile, "rw")) {
 			sb.writeData(raf);
 
 			// write a block
@@ -90,7 +91,7 @@ public class FileMetadataBlockReaderTest
 	public void getSuperBlockShouldReturnConstructedVersionIfApplicable()
 			throws Exception
 	{
-		try (RandomAccessFile raf = new RandomAccessFile(tempFile, "r")) {
+		try (IRandomAccess raf = new SimpleRandomAccess(tempFile, "r")) {
 			reader = new FileMetadataBlockReader(tag, raf, sb, true);
 		}
 		assertSame(sb, reader.getSuperBlock(tag));
@@ -108,7 +109,7 @@ public class FileMetadataBlockReaderTest
 	public void readFromFileOffsetOnRandomAccessFileBackedReaderShouldSucceed()
 			throws Exception
 	{
-		try (RandomAccessFile raf = new RandomAccessFile(tempFile, "r")) {
+		try (IRandomAccess raf = new SimpleRandomAccess(tempFile, "r")) {
 			reader = new FileMetadataBlockReader(tag, raf, sb, true);
 			MetadataBlock mb = reader.read(tag, SuperBlock.SIZE);
 			assertEquals(1024, mb.data.length);
@@ -119,7 +120,7 @@ public class FileMetadataBlockReaderTest
 	@Test
 	public void closeShouldCloseUnderlyingReaderIfRequested() throws Exception
 	{
-		try (RandomAccessFile raf = new RandomAccessFile(tempFile, "r")) {
+		try (IRandomAccess raf = new SimpleRandomAccess(tempFile, "r")) {
 			reader = new FileMetadataBlockReader(tag, raf, sb, true);
 			reader.close();
 
@@ -136,7 +137,7 @@ public class FileMetadataBlockReaderTest
 	public void closeShouldNotCloseUnderlyingReaderIfNotRequested()
 			throws Exception
 	{
-		try (RandomAccessFile raf = new RandomAccessFile(tempFile, "r")) {
+		try (IRandomAccess raf = new SimpleRandomAccess(tempFile, "r")) {
 			reader = new FileMetadataBlockReader(tag, raf, sb, false);
 			reader.close();
 			raf.seek(0L);

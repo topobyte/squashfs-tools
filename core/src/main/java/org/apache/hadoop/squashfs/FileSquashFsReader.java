@@ -21,7 +21,6 @@ package org.apache.hadoop.squashfs;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.RandomAccessFile;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -40,6 +39,8 @@ import org.apache.hadoop.squashfs.metadata.MetadataBlockCache;
 import org.apache.hadoop.squashfs.metadata.MetadataBlockReader;
 import org.apache.hadoop.squashfs.metadata.MetadataReader;
 import org.apache.hadoop.squashfs.metadata.TaggedMetadataBlockReader;
+import org.apache.hadoop.squashfs.ra.IRandomAccess;
+import org.apache.hadoop.squashfs.ra.SimpleRandomAccess;
 import org.apache.hadoop.squashfs.superblock.SuperBlock;
 import org.apache.hadoop.squashfs.table.ExportTable;
 import org.apache.hadoop.squashfs.table.FileTableReader;
@@ -51,7 +52,7 @@ public class FileSquashFsReader extends AbstractSquashFsReader
 {
 
 	private final int tag;
-	private final RandomAccessFile raf;
+	private final IRandomAccess raf;
 	private final SuperBlock superBlock;
 	private final MetadataBlockCache metaReader;
 	private final DataBlockCache dataCache;
@@ -76,7 +77,7 @@ public class FileSquashFsReader extends AbstractSquashFsReader
 		this.tag = tag;
 		this.dataCache = dataCache;
 		this.fragmentCache = fragmentCache;
-		raf = new RandomAccessFile(inputFile, "r");
+		raf = new SimpleRandomAccess(inputFile, "r");
 		superBlock = readSuperBlock(raf);
 		sparseBlock = createSparseBlock(superBlock);
 
@@ -88,14 +89,14 @@ public class FileSquashFsReader extends AbstractSquashFsReader
 		exportTable = readExportTable(tag, raf, metaReader);
 	}
 
-	static SuperBlock readSuperBlock(RandomAccessFile raf)
+	static SuperBlock readSuperBlock(IRandomAccess raf)
 			throws IOException, SquashFsException
 	{
 		raf.seek(0L);
 		return SuperBlock.read(raf);
 	}
 
-	static IdTable readIdTable(int tag, RandomAccessFile raf,
+	static IdTable readIdTable(int tag, IRandomAccess raf,
 			MetadataBlockReader metaReader)
 			throws IOException, SquashFsException
 	{
@@ -105,7 +106,7 @@ public class FileSquashFsReader extends AbstractSquashFsReader
 		return IdTable.read(tag, tr, metaReader);
 	}
 
-	static FragmentTable readFragmentTable(int tag, RandomAccessFile raf,
+	static FragmentTable readFragmentTable(int tag, IRandomAccess raf,
 			MetadataBlockReader metaReader)
 			throws IOException, SquashFsException
 	{
@@ -115,7 +116,7 @@ public class FileSquashFsReader extends AbstractSquashFsReader
 		return FragmentTable.read(tag, tr, metaReader);
 	}
 
-	static ExportTable readExportTable(int tag, RandomAccessFile raf,
+	static ExportTable readExportTable(int tag, IRandomAccess raf,
 			MetadataBlockReader metaReader)
 			throws IOException, SquashFsException
 	{
@@ -291,6 +292,7 @@ public class FileSquashFsReader extends AbstractSquashFsReader
 		return dirEntries;
 	}
 
+	@Override
 	protected DataBlock readBlock(FileINode fileInode, int blockNumber,
 			boolean cache) throws IOException, SquashFsException
 	{
@@ -299,6 +301,7 @@ public class FileSquashFsReader extends AbstractSquashFsReader
 				blockNumber, cache ? dataCache : DataBlockCache.NO_CACHE);
 	}
 
+	@Override
 	protected DataBlock readFragment(FileINode fileInode, int fragmentSize,
 			boolean cache) throws IOException, SquashFsException
 	{

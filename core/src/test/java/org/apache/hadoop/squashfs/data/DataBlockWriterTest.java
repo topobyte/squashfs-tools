@@ -24,9 +24,10 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
-import java.io.RandomAccessFile;
 import java.util.Random;
 
+import org.apache.hadoop.squashfs.ra.IRandomAccess;
+import org.apache.hadoop.squashfs.ra.SimpleRandomAccess;
 import org.apache.hadoop.squashfs.superblock.CompressionId;
 import org.apache.hadoop.squashfs.superblock.SuperBlock;
 import org.apache.hadoop.squashfs.test.DataTestUtils;
@@ -43,14 +44,14 @@ public class DataBlockWriterTest
 	public TemporaryFolder temp = new TemporaryFolder();
 
 	File tempFile;
-	RandomAccessFile raf;
+	IRandomAccess raf;
 	DataBlockWriter writer;
 
 	@Before
 	public void setUp() throws Exception
 	{
 		tempFile = temp.newFile();
-		raf = new RandomAccessFile(tempFile, "rw");
+		raf = new SimpleRandomAccess(tempFile, "rw");
 		writer = new DataBlockWriter(raf, SuperBlock.DEFAULT_BLOCK_SIZE,
 				CompressionId.ZLIB);
 	}

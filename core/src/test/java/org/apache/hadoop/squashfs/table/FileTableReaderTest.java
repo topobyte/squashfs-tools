@@ -27,6 +27,8 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 
+import org.apache.hadoop.squashfs.ra.IRandomAccess;
+import org.apache.hadoop.squashfs.ra.SimpleRandomAccess;
 import org.apache.hadoop.squashfs.superblock.SuperBlock;
 import org.junit.Before;
 import org.junit.Rule;
@@ -98,7 +100,7 @@ public class FileTableReaderTest
 	@Test
 	public void closeShouldCloseUnderlyingReaderIfRequested() throws Exception
 	{
-		try (RandomAccessFile raf = new RandomAccessFile(tempFile, "r")) {
+		try (IRandomAccess raf = new SimpleRandomAccess(tempFile, "r")) {
 			reader = new FileTableReader(raf, sb, true);
 			reader.close();
 
@@ -115,7 +117,7 @@ public class FileTableReaderTest
 	public void closeShouldNotCloseUnderlyingReaderIfNotRequested()
 			throws Exception
 	{
-		try (RandomAccessFile raf = new RandomAccessFile(tempFile, "r")) {
+		try (IRandomAccess raf = new SimpleRandomAccess(tempFile, "r")) {
 			reader = new FileTableReader(raf, sb, false);
 			reader.close();
 			raf.seek(0L);

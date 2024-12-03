@@ -21,13 +21,13 @@ package org.apache.hadoop.squashfs.data;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.RandomAccessFile;
 import java.util.zip.Inflater;
 import java.util.zip.InflaterInputStream;
 
 import org.apache.hadoop.squashfs.SquashFsException;
 import org.apache.hadoop.squashfs.data.DataBlockCache.Key;
 import org.apache.hadoop.squashfs.inode.FileINode;
+import org.apache.hadoop.squashfs.ra.IRandomAccess;
 import org.apache.hadoop.squashfs.superblock.SuperBlock;
 import org.apache.hadoop.squashfs.superblock.SuperBlockFlag;
 import org.apache.hadoop.squashfs.table.FragmentTable;
@@ -38,17 +38,16 @@ public class DataBlockReader
 
 	private static final byte[] EMPTY = new byte[0];
 
-	public static DataBlock readBlock(int tag, RandomAccessFile raf,
-			SuperBlock sb, FileINode inode, int blockNum)
-			throws IOException, SquashFsException
+	public static DataBlock readBlock(int tag, IRandomAccess raf, SuperBlock sb,
+			FileINode inode, int blockNum) throws IOException, SquashFsException
 	{
 
 		return readBlock(tag, raf, sb, inode, blockNum,
 				DataBlockCache.NO_CACHE);
 	}
 
-	public static DataBlock readBlock(int tag, RandomAccessFile raf,
-			SuperBlock sb, FileINode inode, int blockNum, DataBlockCache cache)
+	public static DataBlock readBlock(int tag, IRandomAccess raf, SuperBlock sb,
+			FileINode inode, int blockNum, DataBlockCache cache)
 			throws IOException, SquashFsException
 	{
 
@@ -92,7 +91,7 @@ public class DataBlockReader
 		return block;
 	}
 
-	public static DataBlock readFragment(int tag, RandomAccessFile raf,
+	public static DataBlock readFragment(int tag, IRandomAccess raf,
 			SuperBlock sb, FileINode inode, FragmentTable fragTable, int length)
 			throws IOException, SquashFsException
 	{
@@ -101,7 +100,7 @@ public class DataBlockReader
 				DataBlockCache.NO_CACHE);
 	}
 
-	public static DataBlock readFragment(int tag, RandomAccessFile raf,
+	public static DataBlock readFragment(int tag, IRandomAccess raf,
 			SuperBlock sb, FileINode inode, FragmentTable fragTable, int length,
 			DataBlockCache cache) throws IOException, SquashFsException
 	{
@@ -135,7 +134,7 @@ public class DataBlockReader
 		return new DataBlock(data, data.length, data.length);
 	}
 
-	private static DataBlock readData(SuperBlock sb, RandomAccessFile raf,
+	private static DataBlock readData(SuperBlock sb, IRandomAccess raf,
 			boolean compressed, long fileOffset, int dataSize, int expectedSize)
 			throws IOException, SquashFsException
 	{
@@ -149,8 +148,8 @@ public class DataBlockReader
 		return data;
 	}
 
-	private static DataBlock readUncompressed(SuperBlock sb,
-			RandomAccessFile raf, int dataSize, int expectedSize)
+	private static DataBlock readUncompressed(SuperBlock sb, IRandomAccess raf,
+			int dataSize, int expectedSize)
 			throws IOException, SquashFsException
 	{
 		byte[] data = new byte[dataSize];
@@ -158,7 +157,7 @@ public class DataBlockReader
 		return new DataBlock(data, expectedSize, data.length);
 	}
 
-	private static DataBlock readCompressed(SuperBlock sb, RandomAccessFile raf,
+	private static DataBlock readCompressed(SuperBlock sb, IRandomAccess raf,
 			int dataSize, int expectedSize)
 			throws IOException, SquashFsException
 	{
@@ -176,7 +175,7 @@ public class DataBlockReader
 	}
 
 	private static DataBlock readCompressedZlib(SuperBlock sb,
-			RandomAccessFile raf, int dataSize, int expectedSize)
+			IRandomAccess raf, int dataSize, int expectedSize)
 			throws IOException, SquashFsException
 	{
 		// see if there are compression flags

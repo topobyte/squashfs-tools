@@ -20,10 +20,10 @@ package org.apache.hadoop.squashfs.data;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.RandomAccessFile;
 import java.util.zip.Deflater;
 import java.util.zip.DeflaterOutputStream;
 
+import org.apache.hadoop.squashfs.ra.IRandomAccess;
 import org.apache.hadoop.squashfs.superblock.CompressionId;
 
 import io.airlift.compress.zstd.ZstdOutputStream;
@@ -31,11 +31,11 @@ import io.airlift.compress.zstd.ZstdOutputStream;
 public class DataBlockWriter
 {
 
-	private final RandomAccessFile raf;
+	private final IRandomAccess raf;
 	private final int blockSize;
 	private final CompressionId compression;
 
-	public DataBlockWriter(RandomAccessFile raf, int blockSize,
+	public DataBlockWriter(IRandomAccess raf, int blockSize,
 			CompressionId compression)
 	{
 		this.raf = raf;

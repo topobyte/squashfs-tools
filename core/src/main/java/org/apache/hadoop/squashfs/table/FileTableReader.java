@@ -20,28 +20,29 @@ package org.apache.hadoop.squashfs.table;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
 import org.apache.hadoop.squashfs.SquashFsException;
+import org.apache.hadoop.squashfs.ra.IRandomAccess;
+import org.apache.hadoop.squashfs.ra.SimpleRandomAccess;
 import org.apache.hadoop.squashfs.superblock.SuperBlock;
 
 public class FileTableReader implements TableReader
 {
 
-	private final RandomAccessFile raf;
+	private final IRandomAccess raf;
 	private final SuperBlock sb;
 	private final boolean shouldClose;
 
 	public FileTableReader(File file) throws IOException, SquashFsException
 	{
-		this.raf = new RandomAccessFile(file, "r");
+		this.raf = new SimpleRandomAccess(file, "r");
 		this.sb = SuperBlock.read(raf);
 		this.shouldClose = true;
 	}
 
-	public FileTableReader(RandomAccessFile raf, SuperBlock sb,
+	public FileTableReader(IRandomAccess raf, SuperBlock sb,
 			boolean shouldClose) throws SquashFsException, IOException
 	{
 		this.raf = raf;

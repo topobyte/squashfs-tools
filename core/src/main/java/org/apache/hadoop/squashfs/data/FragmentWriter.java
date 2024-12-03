@@ -20,7 +20,6 @@ package org.apache.hadoop.squashfs.data;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.Deflater;
@@ -28,6 +27,7 @@ import java.util.zip.DeflaterOutputStream;
 
 import org.apache.hadoop.squashfs.metadata.MetadataBlockRef;
 import org.apache.hadoop.squashfs.metadata.MetadataWriter;
+import org.apache.hadoop.squashfs.ra.IRandomAccess;
 import org.apache.hadoop.squashfs.superblock.CompressionId;
 import org.apache.hadoop.squashfs.table.FragmentTable;
 import org.apache.hadoop.squashfs.table.FragmentTableEntry;
@@ -37,7 +37,7 @@ import io.airlift.compress.zstd.ZstdOutputStream;
 public class FragmentWriter
 {
 
-	private final RandomAccessFile raf;
+	private final IRandomAccess raf;
 	private final int blockSize;
 	private final CompressionId compression;
 	private final byte[] currentBlock;
@@ -45,7 +45,7 @@ public class FragmentWriter
 	private int currentOffset = 0;
 	private final List<FragmentTableEntry> fragmentEntries = new ArrayList<>();
 
-	public FragmentWriter(RandomAccessFile raf, int blockSize,
+	public FragmentWriter(IRandomAccess raf, int blockSize,
 			CompressionId compression)
 	{
 		this.raf = raf;

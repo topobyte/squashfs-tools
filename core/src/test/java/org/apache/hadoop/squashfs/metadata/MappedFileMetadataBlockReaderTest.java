@@ -26,6 +26,8 @@ import java.io.File;
 import java.io.RandomAccessFile;
 
 import org.apache.hadoop.squashfs.io.MappedFile;
+import org.apache.hadoop.squashfs.ra.IRandomAccess;
+import org.apache.hadoop.squashfs.ra.SimpleRandomAccess;
 import org.apache.hadoop.squashfs.superblock.SuperBlock;
 import org.apache.hadoop.squashfs.test.MetadataTestUtils;
 import org.junit.After;
@@ -53,7 +55,7 @@ public class MappedFileMetadataBlockReaderTest
 		tag = 1;
 		tempFile = temp.newFile();
 		sb = new SuperBlock();
-		try (RandomAccessFile raf = new RandomAccessFile(tempFile, "rw")) {
+		try (IRandomAccess raf = new SimpleRandomAccess(tempFile, "rw")) {
 			sb.writeData(raf);
 
 			// write a block

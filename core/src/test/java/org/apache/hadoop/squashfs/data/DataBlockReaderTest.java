@@ -23,11 +23,12 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.RandomAccessFile;
 import java.util.Random;
 
 import org.apache.hadoop.squashfs.SquashFsException;
 import org.apache.hadoop.squashfs.inode.BasicFileINode;
+import org.apache.hadoop.squashfs.ra.IRandomAccess;
+import org.apache.hadoop.squashfs.ra.SimpleRandomAccess;
 import org.apache.hadoop.squashfs.superblock.CompressionId;
 import org.apache.hadoop.squashfs.superblock.SuperBlock;
 import org.apache.hadoop.squashfs.superblock.SuperBlockFlag;
@@ -46,7 +47,7 @@ public class DataBlockReaderTest
 	public TemporaryFolder temp = new TemporaryFolder();
 
 	File tempFile;
-	RandomAccessFile raf;
+	IRandomAccess raf;
 	SuperBlock sb;
 	int tag;
 
@@ -55,7 +56,7 @@ public class DataBlockReaderTest
 	{
 		tempFile = temp.newFile();
 		tag = 10101;
-		raf = new RandomAccessFile(tempFile, "rw");
+		raf = new SimpleRandomAccess(tempFile, "rw");
 		sb = new SuperBlock();
 		sb.writeData(raf);
 	}

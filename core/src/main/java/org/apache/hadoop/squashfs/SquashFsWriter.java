@@ -21,7 +21,6 @@ package org.apache.hadoop.squashfs;
 import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
-import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.List;
@@ -30,6 +29,8 @@ import org.apache.hadoop.squashfs.data.DataBlockWriter;
 import org.apache.hadoop.squashfs.data.FragmentWriter;
 import org.apache.hadoop.squashfs.metadata.MetadataBlockRef;
 import org.apache.hadoop.squashfs.metadata.MetadataWriter;
+import org.apache.hadoop.squashfs.ra.IRandomAccess;
+import org.apache.hadoop.squashfs.ra.SimpleRandomAccess;
 import org.apache.hadoop.squashfs.superblock.CompressionId;
 import org.apache.hadoop.squashfs.superblock.SuperBlock;
 import org.apache.hadoop.squashfs.table.IdTableGenerator;
@@ -44,7 +45,7 @@ public class SquashFsWriter implements Closeable
 
 	private final CompressionId compression;
 	private final int offset;
-	private final RandomAccessFile raf;
+	private final IRandomAccess raf;
 	private final IdTableGenerator idGenerator;
 	private final SuperBlock superBlock;
 	private final SquashFsTree fsTree;
@@ -64,7 +65,7 @@ public class SquashFsWriter implements Closeable
 	{
 		this.compression = compression;
 		this.offset = offset;
-		raf = new RandomAccessFile(outputFile, "rw");
+		raf = new SimpleRandomAccess(outputFile, "rw");
 		writeDummySuperblock(raf);
 		superBlock = createSuperBlock(compression);
 		blockBuffer = createBlockBuffer(superBlock);
@@ -79,7 +80,7 @@ public class SquashFsWriter implements Closeable
 		this.modificationTime = modificationTime;
 	}
 
-	void writeDummySuperblock(RandomAccessFile raf) throws IOException
+	void writeDummySuperblock(IRandomAccess raf) throws IOException
 	{
 		raf.seek(offset);
 		raf.write(new byte[SuperBlock.SIZE]);
@@ -107,13 +108,13 @@ public class SquashFsWriter implements Closeable
 		return new SquashFsTree(compression);
 	}
 
-	static DataBlockWriter createDataWriter(SuperBlock sb, RandomAccessFile raf,
+	static DataBlockWriter createDataWriter(SuperBlock sb, IRandomAccess raf,
 			CompressionId compression)
 	{
 		return new DataBlockWriter(raf, sb.getBlockSize(), compression);
 	}
 
-	FragmentWriter createFragmentWriter(SuperBlock sb, RandomAccessFile raf)
+	FragmentWriter createFragmentWriter(SuperBlock sb, IRandomAccess raf)
 	{
 		return new FragmentWriter(raf, sb.getBlockSize(), compression);
 	}
