@@ -18,6 +18,12 @@
 
 package org.apache.hadoop.squashfs;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.hadoop.squashfs.data.DataBlock;
 import org.apache.hadoop.squashfs.data.DataBlockCache;
 import org.apache.hadoop.squashfs.data.MappedDataBlockReader;
@@ -42,12 +48,6 @@ import org.apache.hadoop.squashfs.table.MappedFileTableReader;
 import org.apache.hadoop.squashfs.table.TableReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
 
 public class MappedSquashFsReader extends AbstractSquashFsReader
 {

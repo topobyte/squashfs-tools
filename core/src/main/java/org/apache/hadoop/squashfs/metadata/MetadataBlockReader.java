@@ -18,13 +18,13 @@
 
 package org.apache.hadoop.squashfs.metadata;
 
+import java.io.Closeable;
+import java.io.IOException;
+
 import org.apache.hadoop.squashfs.SquashFsException;
 import org.apache.hadoop.squashfs.directory.DirectoryEntry;
 import org.apache.hadoop.squashfs.inode.DirectoryINode;
 import org.apache.hadoop.squashfs.superblock.SuperBlock;
-
-import java.io.Closeable;
-import java.io.IOException;
 
 public interface MetadataBlockReader extends Closeable
 {

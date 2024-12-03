@@ -23,10 +23,9 @@ import static org.junit.Assert.assertSame;
 
 import java.io.IOException;
 
+import org.apache.hadoop.squashfs.test.INodeTestUtils;
 import org.junit.Before;
 import org.junit.Test;
-
-import org.apache.hadoop.squashfs.test.INodeTestUtils;
 
 public class AbsINodeTest
 {

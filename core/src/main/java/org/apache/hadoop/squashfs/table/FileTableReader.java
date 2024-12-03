@@ -18,14 +18,14 @@
 
 package org.apache.hadoop.squashfs.table;
 
-import org.apache.hadoop.squashfs.SquashFsException;
-import org.apache.hadoop.squashfs.superblock.SuperBlock;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+
+import org.apache.hadoop.squashfs.SquashFsException;
+import org.apache.hadoop.squashfs.superblock.SuperBlock;
 
 public class FileTableReader implements TableReader
 {

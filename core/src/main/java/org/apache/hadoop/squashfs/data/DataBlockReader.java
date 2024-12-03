@@ -18,6 +18,13 @@
 
 package org.apache.hadoop.squashfs.data;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.util.zip.Inflater;
+import java.util.zip.InflaterInputStream;
+
 import org.apache.hadoop.squashfs.SquashFsException;
 import org.apache.hadoop.squashfs.data.DataBlockCache.Key;
 import org.apache.hadoop.squashfs.inode.FileINode;
@@ -25,13 +32,6 @@ import org.apache.hadoop.squashfs.superblock.SuperBlock;
 import org.apache.hadoop.squashfs.superblock.SuperBlockFlag;
 import org.apache.hadoop.squashfs.table.FragmentTable;
 import org.apache.hadoop.squashfs.table.FragmentTableEntry;
-
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.RandomAccessFile;
-import java.util.zip.Inflater;
-import java.util.zip.InflaterInputStream;
 
 public class DataBlockReader
 {

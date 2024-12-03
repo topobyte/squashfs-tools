@@ -18,9 +18,9 @@
 
 package org.apache.hadoop.squashfs.inode;
 
-import org.apache.hadoop.squashfs.SquashFsException;
-
 import java.util.function.Supplier;
+
+import org.apache.hadoop.squashfs.SquashFsException;
 
 public enum INodeType {
 

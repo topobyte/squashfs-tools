@@ -18,15 +18,15 @@
 
 package org.apache.hadoop.squashfs.table;
 
-import org.apache.hadoop.squashfs.SquashFsException;
-import org.apache.hadoop.squashfs.io.ByteBufferDataInput;
-import org.apache.hadoop.squashfs.io.MappedFile;
-import org.apache.hadoop.squashfs.superblock.SuperBlock;
-
 import java.io.EOFException;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+
+import org.apache.hadoop.squashfs.SquashFsException;
+import org.apache.hadoop.squashfs.io.ByteBufferDataInput;
+import org.apache.hadoop.squashfs.io.MappedFile;
+import org.apache.hadoop.squashfs.superblock.SuperBlock;
 
 public class MappedFileTableReader implements TableReader
 {

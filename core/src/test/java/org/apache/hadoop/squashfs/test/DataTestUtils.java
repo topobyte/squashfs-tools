@@ -18,15 +18,6 @@
 
 package org.apache.hadoop.squashfs.test;
 
-import org.apache.hadoop.squashfs.data.FragmentWriter;
-import org.apache.hadoop.squashfs.metadata.MemoryMetadataBlockReader;
-import org.apache.hadoop.squashfs.metadata.MetadataBlockReader;
-import org.apache.hadoop.squashfs.metadata.MetadataReader;
-import org.apache.hadoop.squashfs.metadata.MetadataWriter;
-import org.apache.hadoop.squashfs.superblock.CompressionId;
-import org.apache.hadoop.squashfs.superblock.SuperBlock;
-import org.apache.hadoop.squashfs.util.BinUtils;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -35,6 +26,15 @@ import java.util.zip.Deflater;
 import java.util.zip.DeflaterOutputStream;
 import java.util.zip.Inflater;
 import java.util.zip.InflaterInputStream;
+
+import org.apache.hadoop.squashfs.data.FragmentWriter;
+import org.apache.hadoop.squashfs.metadata.MemoryMetadataBlockReader;
+import org.apache.hadoop.squashfs.metadata.MetadataBlockReader;
+import org.apache.hadoop.squashfs.metadata.MetadataReader;
+import org.apache.hadoop.squashfs.metadata.MetadataWriter;
+import org.apache.hadoop.squashfs.superblock.CompressionId;
+import org.apache.hadoop.squashfs.superblock.SuperBlock;
+import org.apache.hadoop.squashfs.util.BinUtils;
 
 public class DataTestUtils
 {

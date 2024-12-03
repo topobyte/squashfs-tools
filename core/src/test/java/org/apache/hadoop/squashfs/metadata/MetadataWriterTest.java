@@ -35,10 +35,9 @@ import java.nio.ShortBuffer;
 import java.util.Arrays;
 import java.util.Random;
 
+import org.apache.hadoop.squashfs.test.MetadataTestUtils;
 import org.junit.Before;
 import org.junit.Test;
-
-import org.apache.hadoop.squashfs.test.MetadataTestUtils;
 
 public class MetadataWriterTest
 {

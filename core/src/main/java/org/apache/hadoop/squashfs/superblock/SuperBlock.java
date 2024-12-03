@@ -18,8 +18,11 @@
 
 package org.apache.hadoop.squashfs.superblock;
 
-import org.apache.hadoop.squashfs.SquashFsException;
-import org.apache.hadoop.squashfs.inode.INodeRef;
+import static org.apache.hadoop.squashfs.util.BinUtils.dumpBin;
+import static org.apache.hadoop.squashfs.util.BinUtils.DumpOptions.BINARY;
+import static org.apache.hadoop.squashfs.util.BinUtils.DumpOptions.DECIMAL;
+import static org.apache.hadoop.squashfs.util.BinUtils.DumpOptions.UNIX_TIMESTAMP;
+import static org.apache.hadoop.squashfs.util.BinUtils.DumpOptions.UNSIGNED;
 
 import java.io.DataInput;
 import java.io.DataOutput;
@@ -27,11 +30,8 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
-import static org.apache.hadoop.squashfs.util.BinUtils.DumpOptions.BINARY;
-import static org.apache.hadoop.squashfs.util.BinUtils.DumpOptions.DECIMAL;
-import static org.apache.hadoop.squashfs.util.BinUtils.DumpOptions.UNIX_TIMESTAMP;
-import static org.apache.hadoop.squashfs.util.BinUtils.DumpOptions.UNSIGNED;
-import static org.apache.hadoop.squashfs.util.BinUtils.dumpBin;
+import org.apache.hadoop.squashfs.SquashFsException;
+import org.apache.hadoop.squashfs.inode.INodeRef;
 
 public class SuperBlock
 {

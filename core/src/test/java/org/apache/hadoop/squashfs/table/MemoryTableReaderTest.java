@@ -24,10 +24,9 @@ import static org.junit.Assert.assertSame;
 import java.io.EOFException;
 import java.nio.ByteBuffer;
 
+import org.apache.hadoop.squashfs.superblock.SuperBlock;
 import org.junit.Before;
 import org.junit.Test;
-
-import org.apache.hadoop.squashfs.superblock.SuperBlock;
 
 public class MemoryTableReaderTest
 {

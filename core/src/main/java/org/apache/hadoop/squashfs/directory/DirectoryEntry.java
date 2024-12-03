@@ -18,16 +18,16 @@
 
 package org.apache.hadoop.squashfs.directory;
 
-import org.apache.hadoop.squashfs.SquashFsException;
+import static org.apache.hadoop.squashfs.util.BinUtils.dumpBin;
+import static org.apache.hadoop.squashfs.util.BinUtils.DumpOptions.DECIMAL;
+import static org.apache.hadoop.squashfs.util.BinUtils.DumpOptions.UNSIGNED;
 
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
-import static org.apache.hadoop.squashfs.util.BinUtils.DumpOptions.DECIMAL;
-import static org.apache.hadoop.squashfs.util.BinUtils.DumpOptions.UNSIGNED;
-import static org.apache.hadoop.squashfs.util.BinUtils.dumpBin;
+import org.apache.hadoop.squashfs.SquashFsException;
 
 public class DirectoryEntry implements DirectoryElement
 {

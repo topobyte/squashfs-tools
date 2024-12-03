@@ -18,9 +18,9 @@
 
 package org.apache.hadoop.squashfs.table;
 
+import static org.apache.hadoop.squashfs.util.BinUtils.dumpBin;
 import static org.apache.hadoop.squashfs.util.BinUtils.DumpOptions.DECIMAL;
 import static org.apache.hadoop.squashfs.util.BinUtils.DumpOptions.UNSIGNED;
-import static org.apache.hadoop.squashfs.util.BinUtils.dumpBin;
 
 public class FragmentTableEntry
 {

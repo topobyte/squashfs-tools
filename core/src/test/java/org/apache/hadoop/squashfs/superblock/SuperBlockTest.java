@@ -27,11 +27,10 @@ import static org.junit.Assert.assertTrue;
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 
-import org.junit.Before;
-import org.junit.Test;
-
 import org.apache.hadoop.squashfs.SquashFsException;
 import org.apache.hadoop.squashfs.test.SuperBlockTestUtils;
+import org.junit.Before;
+import org.junit.Test;
 
 public class SuperBlockTest
 {

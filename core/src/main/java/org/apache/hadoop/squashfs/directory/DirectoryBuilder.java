@@ -18,13 +18,13 @@
 
 package org.apache.hadoop.squashfs.directory;
 
-import org.apache.hadoop.squashfs.inode.INodeType;
-import org.apache.hadoop.squashfs.metadata.MetadataWriter;
-
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.apache.hadoop.squashfs.inode.INodeType;
+import org.apache.hadoop.squashfs.metadata.MetadataWriter;
 
 public class DirectoryBuilder
 {

@@ -18,18 +18,18 @@
 
 package org.apache.hadoop.squashfs.tools;
 
-import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
-import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
-import org.apache.hadoop.squashfs.SquashFsEntryBuilder;
-import org.apache.hadoop.squashfs.SquashFsWriter;
-import org.apache.hadoop.squashfs.util.SizeTrackingInputStream;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Date;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.zip.GZIPInputStream;
+
+import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
+import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
+import org.apache.hadoop.squashfs.SquashFsEntryBuilder;
+import org.apache.hadoop.squashfs.SquashFsWriter;
+import org.apache.hadoop.squashfs.util.SizeTrackingInputStream;
 
 public class SquashConvert
 {

@@ -25,11 +25,10 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-import org.junit.Before;
-import org.junit.Test;
-
 import org.apache.hadoop.squashfs.SquashFsException;
 import org.apache.hadoop.squashfs.test.DirectoryTestUtils;
+import org.junit.Before;
+import org.junit.Test;
 
 public class DirectoryHeaderTest
 {

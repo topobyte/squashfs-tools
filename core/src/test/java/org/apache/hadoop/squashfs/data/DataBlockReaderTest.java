@@ -26,11 +26,6 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.Random;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
-
 import org.apache.hadoop.squashfs.SquashFsException;
 import org.apache.hadoop.squashfs.inode.BasicFileINode;
 import org.apache.hadoop.squashfs.superblock.CompressionId;
@@ -39,6 +34,10 @@ import org.apache.hadoop.squashfs.superblock.SuperBlockFlag;
 import org.apache.hadoop.squashfs.table.FragmentTable;
 import org.apache.hadoop.squashfs.table.FragmentTableEntry;
 import org.apache.hadoop.squashfs.test.InMemoryFragmentTable;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 public class DataBlockReaderTest
 {

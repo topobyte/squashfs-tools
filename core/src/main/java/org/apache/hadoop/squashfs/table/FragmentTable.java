@@ -18,19 +18,19 @@
 
 package org.apache.hadoop.squashfs.table;
 
+import static org.apache.hadoop.squashfs.util.BinUtils.dumpBin;
+import static org.apache.hadoop.squashfs.util.BinUtils.DumpOptions.DECIMAL;
+import static org.apache.hadoop.squashfs.util.BinUtils.DumpOptions.UNSIGNED;
+
+import java.io.IOException;
+import java.nio.ByteBuffer;
+
 import org.apache.hadoop.squashfs.SquashFsException;
 import org.apache.hadoop.squashfs.metadata.MetadataBlock;
 import org.apache.hadoop.squashfs.metadata.MetadataBlockReader;
 import org.apache.hadoop.squashfs.metadata.MetadataReader;
 import org.apache.hadoop.squashfs.superblock.SuperBlock;
 import org.apache.hadoop.squashfs.superblock.SuperBlockFlag;
-
-import java.io.IOException;
-import java.nio.ByteBuffer;
-
-import static org.apache.hadoop.squashfs.util.BinUtils.DumpOptions.DECIMAL;
-import static org.apache.hadoop.squashfs.util.BinUtils.DumpOptions.UNSIGNED;
-import static org.apache.hadoop.squashfs.util.BinUtils.dumpBin;
 
 public class FragmentTable
 {

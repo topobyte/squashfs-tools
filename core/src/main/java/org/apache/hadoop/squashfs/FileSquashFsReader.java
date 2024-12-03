@@ -18,6 +18,14 @@
 
 package org.apache.hadoop.squashfs;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.hadoop.squashfs.data.DataBlock;
 import org.apache.hadoop.squashfs.data.DataBlockCache;
 import org.apache.hadoop.squashfs.data.DataBlockReader;
@@ -38,14 +46,6 @@ import org.apache.hadoop.squashfs.table.FileTableReader;
 import org.apache.hadoop.squashfs.table.FragmentTable;
 import org.apache.hadoop.squashfs.table.IdTable;
 import org.apache.hadoop.squashfs.table.TableReader;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.RandomAccessFile;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
 
 public class FileSquashFsReader extends AbstractSquashFsReader
 {

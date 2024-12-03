@@ -18,12 +18,12 @@
 
 package org.apache.hadoop.squashfs.inode;
 
+import java.io.DataInput;
+import java.io.IOException;
+
 import org.apache.hadoop.squashfs.SquashFsException;
 import org.apache.hadoop.squashfs.metadata.MetadataWriter;
 import org.apache.hadoop.squashfs.superblock.SuperBlock;
-
-import java.io.DataInput;
-import java.io.IOException;
 
 public interface INode
 {

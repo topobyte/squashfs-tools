@@ -18,6 +18,14 @@
 
 package org.apache.hadoop.squashfs;
 
+import java.io.Closeable;
+import java.io.DataOutput;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.List;
+
 import org.apache.hadoop.squashfs.data.DataBlockCache;
 import org.apache.hadoop.squashfs.directory.DirectoryEntry;
 import org.apache.hadoop.squashfs.inode.DirectoryINode;
@@ -30,14 +38,6 @@ import org.apache.hadoop.squashfs.superblock.SuperBlock;
 import org.apache.hadoop.squashfs.table.ExportTable;
 import org.apache.hadoop.squashfs.table.FragmentTable;
 import org.apache.hadoop.squashfs.table.IdTable;
-
-import java.io.Closeable;
-import java.io.DataOutput;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.List;
 
 public interface SquashFsReader extends Closeable
 {

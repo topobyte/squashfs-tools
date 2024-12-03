@@ -18,6 +18,14 @@
 
 package org.apache.hadoop.squashfs;
 
+import java.io.Closeable;
+import java.io.File;
+import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.util.List;
+
 import org.apache.hadoop.squashfs.data.DataBlockWriter;
 import org.apache.hadoop.squashfs.data.FragmentWriter;
 import org.apache.hadoop.squashfs.metadata.MetadataBlockRef;
@@ -26,14 +34,6 @@ import org.apache.hadoop.squashfs.superblock.SuperBlock;
 import org.apache.hadoop.squashfs.table.IdTableGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.Closeable;
-import java.io.File;
-import java.io.IOException;
-import java.io.RandomAccessFile;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.util.List;
 
 public class SquashFsWriter implements Closeable
 {

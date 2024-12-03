@@ -18,14 +18,14 @@
 
 package org.apache.hadoop.squashfs.metadata;
 
+import static org.apache.hadoop.squashfs.util.BinUtils.dumpBin;
+import static org.apache.hadoop.squashfs.util.BinUtils.DumpOptions.DECIMAL;
+import static org.apache.hadoop.squashfs.util.BinUtils.DumpOptions.UNSIGNED;
+
 import org.apache.hadoop.squashfs.SquashFsException;
 import org.apache.hadoop.squashfs.directory.DirectoryEntry;
 import org.apache.hadoop.squashfs.inode.DirectoryINode;
 import org.apache.hadoop.squashfs.superblock.SuperBlock;
-
-import static org.apache.hadoop.squashfs.util.BinUtils.DumpOptions.DECIMAL;
-import static org.apache.hadoop.squashfs.util.BinUtils.DumpOptions.UNSIGNED;
-import static org.apache.hadoop.squashfs.util.BinUtils.dumpBin;
 
 public class MetadataReference
 {

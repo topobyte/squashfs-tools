@@ -31,11 +31,10 @@ import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import java.util.Random;
 
-import org.junit.Test;
-
 import org.apache.hadoop.squashfs.superblock.SuperBlock;
 import org.apache.hadoop.squashfs.test.MetadataBlockReaderMock;
 import org.apache.hadoop.squashfs.test.MetadataTestUtils;
+import org.junit.Test;
 
 public class MetadataReaderTest
 {

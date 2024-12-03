@@ -18,12 +18,6 @@
 
 package org.apache.hadoop.squashfs;
 
-import org.apache.hadoop.squashfs.data.DataBlockRef;
-import org.apache.hadoop.squashfs.data.FragmentRef;
-import org.apache.hadoop.squashfs.inode.INodeType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -33,6 +27,12 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.LongConsumer;
+
+import org.apache.hadoop.squashfs.data.DataBlockRef;
+import org.apache.hadoop.squashfs.data.FragmentRef;
+import org.apache.hadoop.squashfs.inode.INodeType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class SquashFsEntryBuilder
 {

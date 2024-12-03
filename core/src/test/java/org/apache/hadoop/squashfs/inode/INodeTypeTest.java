@@ -38,9 +38,8 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.EnumSet;
 
-import org.junit.Test;
-
 import org.apache.hadoop.squashfs.SquashFsException;
+import org.junit.Test;
 
 public class INodeTypeTest
 {

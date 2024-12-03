@@ -18,20 +18,20 @@
 
 package org.apache.hadoop.squashfs.table;
 
-import org.apache.hadoop.squashfs.SquashFsException;
-import org.apache.hadoop.squashfs.metadata.MetadataBlock;
-import org.apache.hadoop.squashfs.metadata.MetadataBlockReader;
-import org.apache.hadoop.squashfs.metadata.MetadataReader;
-import org.apache.hadoop.squashfs.superblock.SuperBlock;
+import static org.apache.hadoop.squashfs.util.BinUtils.dumpBin;
+import static org.apache.hadoop.squashfs.util.BinUtils.DumpOptions.DECIMAL;
+import static org.apache.hadoop.squashfs.util.BinUtils.DumpOptions.UNSIGNED;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import static org.apache.hadoop.squashfs.util.BinUtils.DumpOptions.DECIMAL;
-import static org.apache.hadoop.squashfs.util.BinUtils.DumpOptions.UNSIGNED;
-import static org.apache.hadoop.squashfs.util.BinUtils.dumpBin;
+import org.apache.hadoop.squashfs.SquashFsException;
+import org.apache.hadoop.squashfs.metadata.MetadataBlock;
+import org.apache.hadoop.squashfs.metadata.MetadataBlockReader;
+import org.apache.hadoop.squashfs.metadata.MetadataReader;
+import org.apache.hadoop.squashfs.superblock.SuperBlock;
 
 public class IdTable
 {

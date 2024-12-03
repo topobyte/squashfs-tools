@@ -25,12 +25,11 @@ import java.nio.ByteOrder;
 import java.nio.IntBuffer;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Test;
-
 import org.apache.hadoop.squashfs.metadata.MetadataBlockRef;
 import org.apache.hadoop.squashfs.metadata.MetadataWriter;
 import org.apache.hadoop.squashfs.test.MetadataTestUtils;
+import org.junit.Before;
+import org.junit.Test;
 
 public class IdTableGeneratorTest
 {

@@ -18,15 +18,15 @@
 
 package org.apache.hadoop.squashfs;
 
-import org.apache.hadoop.squashfs.data.DataBlock;
-import org.apache.hadoop.squashfs.inode.FileINode;
-import org.apache.hadoop.squashfs.inode.INode;
-import org.apache.hadoop.squashfs.superblock.SuperBlock;
-
 import java.io.DataOutput;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+
+import org.apache.hadoop.squashfs.data.DataBlock;
+import org.apache.hadoop.squashfs.inode.FileINode;
+import org.apache.hadoop.squashfs.inode.INode;
+import org.apache.hadoop.squashfs.superblock.SuperBlock;
 
 abstract public class AbstractSquashFsReader implements SquashFsReader
 {

@@ -20,8 +20,6 @@ package org.apache.hadoop.squashfs.metadata;
 
 import static org.junit.Assert.assertEquals;
 
-import org.junit.Test;
-
 import org.apache.hadoop.squashfs.directory.DirectoryEntry;
 import org.apache.hadoop.squashfs.directory.DirectoryHeader;
 import org.apache.hadoop.squashfs.inode.BasicDirectoryINode;
@@ -29,6 +27,7 @@ import org.apache.hadoop.squashfs.inode.INodeRef;
 import org.apache.hadoop.squashfs.superblock.SuperBlock;
 import org.apache.hadoop.squashfs.test.MetadataBlockReaderMock;
 import org.apache.hadoop.squashfs.test.MetadataTestUtils;
+import org.junit.Test;
 
 public class MetadataBlockReaderTest
 {

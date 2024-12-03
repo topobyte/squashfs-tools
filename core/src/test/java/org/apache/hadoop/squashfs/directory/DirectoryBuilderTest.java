@@ -24,11 +24,10 @@ import static org.junit.Assert.assertSame;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Test;
-
 import org.apache.hadoop.squashfs.inode.INodeType;
 import org.apache.hadoop.squashfs.test.DirectoryTestUtils;
+import org.junit.Before;
+import org.junit.Test;
 
 public class DirectoryBuilderTest
 {

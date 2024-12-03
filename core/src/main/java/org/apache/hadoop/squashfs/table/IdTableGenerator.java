@@ -18,8 +18,9 @@
 
 package org.apache.hadoop.squashfs.table;
 
-import org.apache.hadoop.squashfs.metadata.MetadataBlockRef;
-import org.apache.hadoop.squashfs.metadata.MetadataWriter;
+import static org.apache.hadoop.squashfs.util.BinUtils.dumpBin;
+import static org.apache.hadoop.squashfs.util.BinUtils.DumpOptions.DECIMAL;
+import static org.apache.hadoop.squashfs.util.BinUtils.DumpOptions.UNSIGNED;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -27,9 +28,8 @@ import java.util.List;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import static org.apache.hadoop.squashfs.util.BinUtils.DumpOptions.DECIMAL;
-import static org.apache.hadoop.squashfs.util.BinUtils.DumpOptions.UNSIGNED;
-import static org.apache.hadoop.squashfs.util.BinUtils.dumpBin;
+import org.apache.hadoop.squashfs.metadata.MetadataBlockRef;
+import org.apache.hadoop.squashfs.metadata.MetadataWriter;
 
 public class IdTableGenerator
 {

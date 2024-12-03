@@ -18,14 +18,14 @@
 
 package org.apache.hadoop.squashfs.metadata;
 
-import org.apache.hadoop.squashfs.SquashFsException;
-import org.apache.hadoop.squashfs.superblock.SuperBlock;
-
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicLong;
+
+import org.apache.hadoop.squashfs.SquashFsException;
+import org.apache.hadoop.squashfs.superblock.SuperBlock;
 
 public class MetadataBlockCache implements MetadataBlockReader
 {

@@ -27,14 +27,13 @@ import java.io.File;
 import java.io.RandomAccessFile;
 import java.util.Random;
 
+import org.apache.hadoop.squashfs.superblock.SuperBlock;
+import org.apache.hadoop.squashfs.test.DataTestUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-
-import org.apache.hadoop.squashfs.superblock.SuperBlock;
-import org.apache.hadoop.squashfs.test.DataTestUtils;
 
 public class DataBlockWriterTest
 {

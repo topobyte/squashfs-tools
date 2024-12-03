@@ -29,14 +29,13 @@ import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Test;
-
 import org.apache.hadoop.squashfs.SquashFsException;
 import org.apache.hadoop.squashfs.metadata.MemoryMetadataBlockReader;
 import org.apache.hadoop.squashfs.metadata.MetadataBlockReader;
 import org.apache.hadoop.squashfs.metadata.MetadataBlockRef;
 import org.apache.hadoop.squashfs.metadata.MetadataWriter;
 import org.apache.hadoop.squashfs.superblock.SuperBlock;
+import org.junit.Test;
 
 public class IdTableTest
 {

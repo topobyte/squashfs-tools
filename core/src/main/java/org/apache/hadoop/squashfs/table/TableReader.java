@@ -18,11 +18,11 @@
 
 package org.apache.hadoop.squashfs.table;
 
-import org.apache.hadoop.squashfs.superblock.SuperBlock;
-
 import java.io.Closeable;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+
+import org.apache.hadoop.squashfs.superblock.SuperBlock;
 
 public interface TableReader extends Closeable
 {

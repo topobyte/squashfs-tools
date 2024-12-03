@@ -27,14 +27,13 @@ import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 
+import org.apache.hadoop.squashfs.superblock.SuperBlock;
+import org.apache.hadoop.squashfs.test.MetadataTestUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-
-import org.apache.hadoop.squashfs.superblock.SuperBlock;
-import org.apache.hadoop.squashfs.test.MetadataTestUtils;
 
 public class FileMetadataBlockReaderTest
 {

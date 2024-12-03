@@ -29,16 +29,15 @@ import java.nio.ByteOrder;
 import java.nio.ShortBuffer;
 import java.util.Random;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
 import org.apache.hadoop.squashfs.SquashFsException;
 import org.apache.hadoop.squashfs.superblock.CompressionId;
 import org.apache.hadoop.squashfs.superblock.SuperBlock;
 import org.apache.hadoop.squashfs.superblock.SuperBlockFlag;
 import org.apache.hadoop.squashfs.test.DataTestUtils;
 import org.apache.hadoop.squashfs.test.MetadataTestUtils;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 public class MetadataBlockTest
 {

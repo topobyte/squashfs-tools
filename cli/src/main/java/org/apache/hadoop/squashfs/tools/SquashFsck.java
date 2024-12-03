@@ -18,6 +18,12 @@
 
 package org.apache.hadoop.squashfs.tools;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.nio.channels.FileChannel;
+
 import org.apache.hadoop.squashfs.MappedSquashFsReader;
 import org.apache.hadoop.squashfs.SquashFsReader;
 import org.apache.hadoop.squashfs.directory.DirectoryEntry;
@@ -27,12 +33,6 @@ import org.apache.hadoop.squashfs.inode.INode;
 import org.apache.hadoop.squashfs.io.MappedFile;
 import org.apache.hadoop.squashfs.metadata.MetadataReader;
 import org.apache.hadoop.squashfs.util.BinUtils;
-
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.RandomAccessFile;
-import java.nio.channels.FileChannel;
 
 public class SquashFsck
 {

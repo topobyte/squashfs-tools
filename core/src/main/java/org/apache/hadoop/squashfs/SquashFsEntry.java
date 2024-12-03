@@ -18,6 +18,18 @@
 
 package org.apache.hadoop.squashfs;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.SortedMap;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import org.apache.hadoop.squashfs.data.DataBlockRef;
 import org.apache.hadoop.squashfs.data.FragmentRef;
 import org.apache.hadoop.squashfs.directory.DirectoryBuilder;
@@ -37,18 +49,6 @@ import org.apache.hadoop.squashfs.inode.Permission;
 import org.apache.hadoop.squashfs.inode.SymlinkINode;
 import org.apache.hadoop.squashfs.metadata.MetadataBlockRef;
 import org.apache.hadoop.squashfs.metadata.MetadataWriter;
-
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.SortedMap;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class SquashFsEntry
 {

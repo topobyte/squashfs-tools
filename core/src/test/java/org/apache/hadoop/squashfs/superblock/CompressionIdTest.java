@@ -21,9 +21,8 @@ package org.apache.hadoop.squashfs.superblock;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
 
-import org.junit.Test;
-
 import org.apache.hadoop.squashfs.SquashFsException;
+import org.junit.Test;
 
 public class CompressionIdTest
 {

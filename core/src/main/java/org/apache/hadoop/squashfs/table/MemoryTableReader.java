@@ -18,12 +18,12 @@
 
 package org.apache.hadoop.squashfs.table;
 
-import org.apache.hadoop.squashfs.superblock.SuperBlock;
-
 import java.io.EOFException;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+
+import org.apache.hadoop.squashfs.superblock.SuperBlock;
 
 public class MemoryTableReader implements TableReader
 {

@@ -18,11 +18,6 @@
 
 package org.apache.hadoop.squashfs;
 
-import org.apache.hadoop.squashfs.inode.INodeType;
-import org.apache.hadoop.squashfs.metadata.MetadataBlockRef;
-import org.apache.hadoop.squashfs.metadata.MetadataWriter;
-import org.apache.hadoop.squashfs.table.ExportTable;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +27,11 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
+
+import org.apache.hadoop.squashfs.inode.INodeType;
+import org.apache.hadoop.squashfs.metadata.MetadataBlockRef;
+import org.apache.hadoop.squashfs.metadata.MetadataWriter;
+import org.apache.hadoop.squashfs.table.ExportTable;
 
 public class SquashFsTree
 {

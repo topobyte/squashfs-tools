@@ -20,10 +20,9 @@ package org.apache.hadoop.squashfs.metadata;
 
 import static org.junit.Assert.assertEquals;
 
+import org.apache.hadoop.squashfs.inode.INodeRef;
 import org.junit.Before;
 import org.junit.Test;
-
-import org.apache.hadoop.squashfs.inode.INodeRef;
 
 public class MetadataBlockRefTest
 {

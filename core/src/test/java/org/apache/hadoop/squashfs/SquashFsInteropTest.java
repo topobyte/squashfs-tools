@@ -37,13 +37,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
-
 import org.apache.hadoop.squashfs.data.DataBlockCache;
 import org.apache.hadoop.squashfs.directory.DirectoryEntry;
 import org.apache.hadoop.squashfs.inode.DeviceINode;
@@ -56,6 +49,12 @@ import org.apache.hadoop.squashfs.inode.SymlinkINode;
 import org.apache.hadoop.squashfs.io.MappedFile;
 import org.apache.hadoop.squashfs.metadata.MetadataBlockCache;
 import org.apache.hadoop.squashfs.metadata.TaggedMetadataBlockReader;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
 @RunWith(Parameterized.class)
 public class SquashFsInteropTest

@@ -25,12 +25,11 @@ import static org.junit.Assert.assertSame;
 import java.io.EOFException;
 import java.io.File;
 
+import org.apache.hadoop.squashfs.superblock.SuperBlock;
+import org.apache.hadoop.squashfs.test.MetadataTestUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
-import org.apache.hadoop.squashfs.superblock.SuperBlock;
-import org.apache.hadoop.squashfs.test.MetadataTestUtils;
 
 public class MemoryMetadataBlockReaderTest
 {
