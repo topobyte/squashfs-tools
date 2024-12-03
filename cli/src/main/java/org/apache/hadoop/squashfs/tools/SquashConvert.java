@@ -38,11 +38,11 @@ public class SquashConvert
 	public static void convertToSquashFs(File inputFile, File outputFile)
 			throws IOException
 	{
-		convertToSquashFs(inputFile, outputFile, CompressionId.ZLIB);
+		convertToSquashFs(inputFile, outputFile, CompressionId.ZLIB, 0);
 	}
 
 	public static void convertToSquashFs(File inputFile, File outputFile,
-			CompressionId compression) throws IOException
+			CompressionId compression, int offset) throws IOException
 	{
 		long size = inputFile.length();
 
@@ -56,7 +56,7 @@ public class SquashConvert
 
 			long fileCount = 0L;
 			try (SquashFsWriter writer = new SquashFsWriter(outputFile,
-					compression)) {
+					compression, offset)) {
 				TarArchiveEntry entry;
 				AtomicReference<Date> modDate = new AtomicReference<>(
 						new Date(0));

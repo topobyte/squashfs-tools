@@ -42,6 +42,7 @@ public class SquashFsWriter implements Closeable
 	private static final Logger LOG = LoggerFactory
 			.getLogger(SquashFsWriter.class);
 
+	private final int offset;
 	private final RandomAccessFile raf;
 	private final IdTableGenerator idGenerator;
 	private final SuperBlock superBlock;
@@ -54,12 +55,13 @@ public class SquashFsWriter implements Closeable
 
 	public SquashFsWriter(File outputFile) throws SquashFsException, IOException
 	{
-		this(outputFile, CompressionId.ZLIB);
+		this(outputFile, CompressionId.ZLIB, 0);
 	}
 
-	public SquashFsWriter(File outputFile, CompressionId compression)
-			throws SquashFsException, IOException
+	public SquashFsWriter(File outputFile, CompressionId compression,
+			int offset) throws SquashFsException, IOException
 	{
+		this.offset = offset;
 		raf = new RandomAccessFile(outputFile, "rw");
 		writeDummySuperblock(raf);
 		superBlock = createSuperBlock(compression);
@@ -75,9 +77,9 @@ public class SquashFsWriter implements Closeable
 		this.modificationTime = modificationTime;
 	}
 
-	static void writeDummySuperblock(RandomAccessFile raf) throws IOException
+	void writeDummySuperblock(RandomAccessFile raf) throws IOException
 	{
-		raf.seek(0L);
+		raf.seek(offset);
 		raf.write(new byte[SuperBlock.SIZE]);
 	}
 
@@ -257,7 +259,7 @@ public class SquashFsWriter implements Closeable
 		LOG.debug("Superblock: {}", superBlock);
 
 		// write superblock
-		raf.seek(0L);
+		raf.seek(offset);
 		superBlock.writeData(raf);
 		raf.seek(fileSize);
 	}
