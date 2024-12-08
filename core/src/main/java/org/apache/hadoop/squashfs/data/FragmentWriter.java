@@ -27,10 +27,11 @@ import java.util.zip.Deflater;
 import java.util.zip.DeflaterOutputStream;
 
 import org.apache.hadoop.squashfs.CompressionUtil;
+import org.apache.hadoop.squashfs.compression.Compression;
+import org.apache.hadoop.squashfs.compression.ZstdCompression;
 import org.apache.hadoop.squashfs.metadata.MetadataBlockRef;
 import org.apache.hadoop.squashfs.metadata.MetadataWriter;
 import org.apache.hadoop.squashfs.ra.IRandomAccess;
-import org.apache.hadoop.squashfs.superblock.CompressionId;
 import org.apache.hadoop.squashfs.table.FragmentTable;
 import org.apache.hadoop.squashfs.table.FragmentTableEntry;
 
@@ -39,14 +40,14 @@ public class FragmentWriter
 
 	private final IRandomAccess raf;
 	private final int blockSize;
-	private final CompressionId compression;
+	private final Compression compression;
 	private final byte[] currentBlock;
 	private final List<FragmentRef> currentFragments = new ArrayList<>();
 	private int currentOffset = 0;
 	private final List<FragmentTableEntry> fragmentEntries = new ArrayList<>();
 
 	public FragmentWriter(IRandomAccess raf, int blockSize,
-			CompressionId compression)
+			Compression compression)
 	{
 		this.raf = raf;
 		this.blockSize = blockSize;
@@ -145,11 +146,11 @@ public class FragmentWriter
 
 	private byte[] compressData() throws IOException
 	{
-		switch (compression) {
+		switch (compression.getCompressionId()) {
 		case ZLIB:
 			return compressDataZlib();
 		case ZSTD:
-			return compressDataZstd();
+			return compressDataZstd((ZstdCompression) compression);
 		case LZ4:
 		case LZMA:
 		case LZO:
@@ -178,11 +179,11 @@ public class FragmentWriter
 		}
 	}
 
-	private byte[] compressDataZstd() throws IOException
+	private byte[] compressDataZstd(ZstdCompression options) throws IOException
 	{
 		try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
-			try (OutputStream zos = CompressionUtil
-					.createZstdOutputStream(bos)) {
+			try (OutputStream zos = CompressionUtil.createZstdOutputStream(bos,
+					options)) {
 				zos.write(currentBlock, 0, currentOffset);
 			}
 			byte[] result = bos.toByteArray();

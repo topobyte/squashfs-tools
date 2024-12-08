@@ -25,11 +25,11 @@ import java.util.zip.Inflater;
 import java.util.zip.InflaterInputStream;
 
 import org.apache.hadoop.squashfs.SquashFsException;
+import org.apache.hadoop.squashfs.compression.SuperBlockFlag;
 import org.apache.hadoop.squashfs.data.DataBlockCache.Key;
 import org.apache.hadoop.squashfs.inode.FileINode;
 import org.apache.hadoop.squashfs.ra.IRandomAccess;
 import org.apache.hadoop.squashfs.superblock.SuperBlock;
-import org.apache.hadoop.squashfs.superblock.SuperBlockFlag;
 import org.apache.hadoop.squashfs.table.FragmentTable;
 import org.apache.hadoop.squashfs.table.FragmentTableEntry;
 
@@ -161,7 +161,7 @@ public class DataBlockReader
 			int dataSize, int expectedSize)
 			throws IOException, SquashFsException
 	{
-		switch (sb.getCompressionId()) {
+		switch (sb.getCompression().getCompressionId()) {
 		case NONE:
 			throw new SquashFsException(
 					"Archive claims no compression, but found compressed data");
@@ -170,7 +170,7 @@ public class DataBlockReader
 		default:
 			throw new UnsupportedOperationException(String.format(
 					"Reading compressed data of type %s not yet supported",
-					sb.getCompressionId()));
+					sb.getCompression()));
 		}
 	}
 

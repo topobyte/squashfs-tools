@@ -28,12 +28,13 @@ import java.util.zip.Deflater;
 import java.util.zip.DeflaterOutputStream;
 
 import org.apache.hadoop.squashfs.CompressionUtil;
-import org.apache.hadoop.squashfs.superblock.CompressionId;
+import org.apache.hadoop.squashfs.compression.Compression;
+import org.apache.hadoop.squashfs.compression.ZstdCompression;
 
 public class MetadataWriter implements DataOutput
 {
 
-	private final CompressionId compression;
+	private final Compression compression;
 
 	private final byte[] xfer = new byte[1];
 	private final byte[] currentBlock = new byte[8192];
@@ -41,7 +42,7 @@ public class MetadataWriter implements DataOutput
 	private long location = 0L;
 	private int offset = 0;
 
-	public MetadataWriter(CompressionId compression)
+	public MetadataWriter(Compression compression)
 	{
 		this.compression = compression;
 	}
@@ -100,11 +101,12 @@ public class MetadataWriter implements DataOutput
 	private byte[] compress(byte[] data, int offset, int length)
 			throws IOException
 	{
-		switch (compression) {
+		switch (compression.getCompressionId()) {
 		case ZLIB:
 			return compressZlib(data, offset, length);
 		case ZSTD:
-			return compressZstd(data, offset, length);
+			return compressZstd(data, offset, length,
+					(ZstdCompression) compression);
 		case LZ4:
 		case LZMA:
 		case LZO:
@@ -134,12 +136,12 @@ public class MetadataWriter implements DataOutput
 		}
 	}
 
-	private byte[] compressZstd(byte[] data, int offset, int length)
-			throws IOException
+	private byte[] compressZstd(byte[] data, int offset, int length,
+			ZstdCompression options) throws IOException
 	{
 		try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
-			try (OutputStream zos = CompressionUtil
-					.createZstdOutputStream(bos)) {
+			try (OutputStream zos = CompressionUtil.createZstdOutputStream(bos,
+					options)) {
 				zos.write(data, offset, length);
 			}
 			byte[] result = bos.toByteArray();

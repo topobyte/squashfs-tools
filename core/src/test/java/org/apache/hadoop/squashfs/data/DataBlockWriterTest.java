@@ -26,9 +26,9 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.util.Random;
 
+import org.apache.hadoop.squashfs.compression.ZlibCompression;
 import org.apache.hadoop.squashfs.ra.IRandomAccess;
 import org.apache.hadoop.squashfs.ra.SimpleRandomAccess;
-import org.apache.hadoop.squashfs.superblock.CompressionId;
 import org.apache.hadoop.squashfs.superblock.SuperBlock;
 import org.apache.hadoop.squashfs.test.DataTestUtils;
 import org.junit.After;
@@ -53,7 +53,7 @@ public class DataBlockWriterTest
 		tempFile = temp.newFile();
 		raf = new SimpleRandomAccess(tempFile, "rw");
 		writer = new DataBlockWriter(raf, SuperBlock.DEFAULT_BLOCK_SIZE,
-				CompressionId.ZLIB);
+				new ZlibCompression());
 	}
 
 	@After

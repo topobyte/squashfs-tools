@@ -26,11 +26,11 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 
 import org.apache.hadoop.squashfs.SquashFsException;
+import org.apache.hadoop.squashfs.compression.SuperBlockFlag;
 import org.apache.hadoop.squashfs.inode.INodeRef;
 import org.apache.hadoop.squashfs.metadata.MetadataBlock;
 import org.apache.hadoop.squashfs.metadata.MetadataBlockReader;
 import org.apache.hadoop.squashfs.superblock.SuperBlock;
-import org.apache.hadoop.squashfs.superblock.SuperBlockFlag;
 
 public class ExportTable
 {

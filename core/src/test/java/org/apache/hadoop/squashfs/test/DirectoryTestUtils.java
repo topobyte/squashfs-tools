@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.hadoop.squashfs.compression.ZlibCompression;
 import org.apache.hadoop.squashfs.directory.DirectoryBuilder;
 import org.apache.hadoop.squashfs.directory.DirectoryElement;
 import org.apache.hadoop.squashfs.directory.DirectoryEntry;
@@ -32,7 +33,6 @@ import org.apache.hadoop.squashfs.metadata.MemoryMetadataBlockReader;
 import org.apache.hadoop.squashfs.metadata.MetadataBlockReader;
 import org.apache.hadoop.squashfs.metadata.MetadataReader;
 import org.apache.hadoop.squashfs.metadata.MetadataWriter;
-import org.apache.hadoop.squashfs.superblock.CompressionId;
 import org.apache.hadoop.squashfs.superblock.SuperBlock;
 import org.apache.hadoop.squashfs.util.BinUtils;
 
@@ -42,7 +42,7 @@ public class DirectoryTestUtils
 	public static byte[] serializeDirectoryBuilder(DirectoryBuilder db)
 			throws IOException
 	{
-		MetadataWriter writer = new MetadataWriter(CompressionId.ZLIB);
+		MetadataWriter writer = new MetadataWriter(new ZlibCompression());
 		db.write(writer);
 
 		byte[] data;
@@ -64,7 +64,7 @@ public class DirectoryTestUtils
 	public static byte[] serializeDirectoryElement(DirectoryElement entry)
 			throws IOException
 	{
-		MetadataWriter writer = new MetadataWriter(CompressionId.ZLIB);
+		MetadataWriter writer = new MetadataWriter(new ZlibCompression());
 		entry.writeData(writer);
 
 		byte[] data;
@@ -87,7 +87,7 @@ public class DirectoryTestUtils
 			throws IOException
 	{
 		SuperBlock sb = new SuperBlock();
-		sb.setCompressionId(CompressionId.ZLIB);
+		sb.setCompression(new ZlibCompression());
 		sb.setBlockSize(131072);
 		sb.setBlockLog((short) 17);
 		sb.setVersionMajor((short) 4);
@@ -107,7 +107,7 @@ public class DirectoryTestUtils
 			DirectoryHeader header, byte[] data) throws IOException
 	{
 		SuperBlock sb = new SuperBlock();
-		sb.setCompressionId(CompressionId.ZLIB);
+		sb.setCompression(new ZlibCompression());
 		sb.setBlockSize(131072);
 		sb.setBlockLog((short) 17);
 		sb.setVersionMajor((short) 4);
@@ -129,7 +129,7 @@ public class DirectoryTestUtils
 		List<DirectoryElement> results = new ArrayList<>();
 
 		SuperBlock sb = new SuperBlock();
-		sb.setCompressionId(CompressionId.ZLIB);
+		sb.setCompression(new ZlibCompression());
 		sb.setBlockSize(131072);
 		sb.setBlockLog((short) 17);
 		sb.setVersionMajor((short) 4);

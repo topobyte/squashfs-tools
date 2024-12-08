@@ -30,7 +30,11 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
+import org.apache.hadoop.squashfs.CompressionUtil;
 import org.apache.hadoop.squashfs.SquashFsException;
+import org.apache.hadoop.squashfs.compression.Compression;
+import org.apache.hadoop.squashfs.compression.SuperBlockFlag;
+import org.apache.hadoop.squashfs.compression.ZlibCompression;
 import org.apache.hadoop.squashfs.inode.INodeRef;
 
 public class SuperBlock
@@ -54,7 +58,7 @@ public class SuperBlock
 	int modificationTime = (int) (System.currentTimeMillis() / 1000);
 	int blockSize = DEFAULT_BLOCK_SIZE;
 	int fragmentEntryCount;
-	CompressionId compressionId = CompressionId.ZSTD;
+	Compression compression = null;
 	short blockLog = DEFAULT_BLOCK_LOG;
 	short flags = DEFAULT_FLAGS;
 	short idCount;
@@ -71,18 +75,18 @@ public class SuperBlock
 
 	public SuperBlock()
 	{
-		this(CompressionId.ZLIB);
+		this(new ZlibCompression());
 	}
 
-	public SuperBlock(CompressionId compression)
+	public SuperBlock(Compression compression)
 	{
-		this.compressionId = compression;
+		this.compression = compression;
 	}
 
 	public static SuperBlock read(DataInput in)
 			throws IOException, SquashFsException
 	{
-		SuperBlock block = new SuperBlock(CompressionId.ZLIB);
+		SuperBlock block = new SuperBlock(new ZlibCompression());
 		block.readData(in);
 		return block;
 	}
@@ -127,14 +131,14 @@ public class SuperBlock
 		this.fragmentEntryCount = fragmentEntryCount;
 	}
 
-	public CompressionId getCompressionId()
+	public Compression getCompression()
 	{
-		return compressionId;
+		return compression;
 	}
 
-	public void setCompressionId(CompressionId compressionId)
+	public void setCompression(Compression compression)
 	{
-		this.compressionId = compressionId;
+		this.compression = compression;
 	}
 
 	public short getBlockLog()
@@ -281,7 +285,7 @@ public class SuperBlock
 		buffer.putInt(modificationTime);
 		buffer.putInt(blockSize);
 		buffer.putInt(fragmentEntryCount);
-		buffer.putShort(compressionId.value());
+		buffer.putShort(compression.getCompressionId().value());
 		buffer.putShort(blockLog);
 		buffer.putShort(flags);
 		buffer.putShort(idCount);
@@ -314,7 +318,9 @@ public class SuperBlock
 		modificationTime = buffer.getInt();
 		blockSize = buffer.getInt();
 		fragmentEntryCount = buffer.getInt();
-		compressionId = CompressionId.fromValue(buffer.getShort());
+		CompressionId compressionId = CompressionId
+				.fromValue(buffer.getShort());
+		compression = CompressionUtil.fromCompressionId(compressionId);
 		blockLog = buffer.getShort();
 		int expectedBlockSize = 1 << blockLog;
 		if (blockSize != expectedBlockSize) {
@@ -355,10 +361,9 @@ public class SuperBlock
 		dumpBin(buf, width, "blockSize", blockSize, DECIMAL, UNSIGNED);
 		dumpBin(buf, width, "fragmentEntryCount", fragmentEntryCount, DECIMAL,
 				UNSIGNED);
-		dumpBin(buf, width, "compressionId", compressionId.value(), BINARY,
-				UNSIGNED);
-		dumpBin(buf, width, "compressionId (decoded)",
-				compressionId.toString());
+		dumpBin(buf, width, "compressionId",
+				compression.getCompressionId().value(), BINARY, UNSIGNED);
+		dumpBin(buf, width, "compressionId (decoded)", compression.toString());
 		dumpBin(buf, width, "blockLog", blockLog, DECIMAL, UNSIGNED);
 		dumpBin(buf, width, "blockSize (calculated)", 1 << blockLog, DECIMAL,
 				UNSIGNED);

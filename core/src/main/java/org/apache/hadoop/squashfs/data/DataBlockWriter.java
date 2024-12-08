@@ -25,18 +25,19 @@ import java.util.zip.Deflater;
 import java.util.zip.DeflaterOutputStream;
 
 import org.apache.hadoop.squashfs.CompressionUtil;
+import org.apache.hadoop.squashfs.compression.Compression;
+import org.apache.hadoop.squashfs.compression.ZstdCompression;
 import org.apache.hadoop.squashfs.ra.IRandomAccess;
-import org.apache.hadoop.squashfs.superblock.CompressionId;
 
 public class DataBlockWriter
 {
 
 	private final IRandomAccess raf;
 	private final int blockSize;
-	private final CompressionId compression;
+	private final Compression compression;
 
 	public DataBlockWriter(IRandomAccess raf, int blockSize,
-			CompressionId compression)
+			Compression compression)
 	{
 		this.raf = raf;
 		this.blockSize = blockSize;
@@ -59,7 +60,7 @@ public class DataBlockWriter
 		}
 
 		byte[] compressed = null;
-		switch (compression) {
+		switch (compression.getCompressionId()) {
 		case NONE:
 		case LZ4:
 		case LZMA:
@@ -70,7 +71,8 @@ public class DataBlockWriter
 			compressed = compressZlib(data, offset, length);
 			break;
 		case ZSTD:
-			compressed = compressZstd(data, offset, length);
+			compressed = compressZstd(data, offset, length,
+					(ZstdCompression) compression);
 			break;
 		}
 		if (compressed != null) {
@@ -113,12 +115,12 @@ public class DataBlockWriter
 		}
 	}
 
-	private byte[] compressZstd(byte[] data, int offset, int length)
-			throws IOException
+	private byte[] compressZstd(byte[] data, int offset, int length,
+			ZstdCompression options) throws IOException
 	{
 		try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
-			try (OutputStream zos = CompressionUtil
-					.createZstdOutputStream(bos)) {
+			try (OutputStream zos = CompressionUtil.createZstdOutputStream(bos,
+					options)) {
 				zos.write(data, offset, length);
 			}
 			byte[] result = bos.toByteArray();

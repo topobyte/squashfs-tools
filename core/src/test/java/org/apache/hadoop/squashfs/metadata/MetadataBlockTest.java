@@ -30,9 +30,10 @@ import java.nio.ShortBuffer;
 import java.util.Random;
 
 import org.apache.hadoop.squashfs.SquashFsException;
-import org.apache.hadoop.squashfs.superblock.CompressionId;
+import org.apache.hadoop.squashfs.compression.NoCompression;
+import org.apache.hadoop.squashfs.compression.SuperBlockFlag;
+import org.apache.hadoop.squashfs.compression.XzCompression;
 import org.apache.hadoop.squashfs.superblock.SuperBlock;
-import org.apache.hadoop.squashfs.superblock.SuperBlockFlag;
 import org.apache.hadoop.squashfs.test.DataTestUtils;
 import org.apache.hadoop.squashfs.test.MetadataTestUtils;
 import org.junit.After;
@@ -84,7 +85,7 @@ public class MetadataBlockTest
 		byte[] blockData = MetadataTestUtils.saveMetadataBlock(buf);
 
 		SuperBlock sb = new SuperBlock();
-		sb.setCompressionId(CompressionId.NONE);
+		sb.setCompression(new NoCompression());
 		try (DataInputStream dis = new DataInputStream(
 				new ByteArrayInputStream(blockData))) {
 			MetadataBlock.read(dis, sb);
@@ -104,7 +105,7 @@ public class MetadataBlockTest
 		byte[] blockData = MetadataTestUtils.saveMetadataBlock(buf);
 
 		SuperBlock sb = new SuperBlock();
-		sb.setCompressionId(CompressionId.XZ);
+		sb.setCompression(new XzCompression());
 		try (DataInputStream dis = new DataInputStream(
 				new ByteArrayInputStream(blockData))) {
 			MetadataBlock.read(dis, sb);

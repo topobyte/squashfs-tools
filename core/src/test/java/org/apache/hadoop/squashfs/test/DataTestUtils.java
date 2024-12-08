@@ -27,12 +27,12 @@ import java.util.zip.DeflaterOutputStream;
 import java.util.zip.Inflater;
 import java.util.zip.InflaterInputStream;
 
+import org.apache.hadoop.squashfs.compression.ZlibCompression;
 import org.apache.hadoop.squashfs.data.FragmentWriter;
 import org.apache.hadoop.squashfs.metadata.MemoryMetadataBlockReader;
 import org.apache.hadoop.squashfs.metadata.MetadataBlockReader;
 import org.apache.hadoop.squashfs.metadata.MetadataReader;
 import org.apache.hadoop.squashfs.metadata.MetadataWriter;
-import org.apache.hadoop.squashfs.superblock.CompressionId;
 import org.apache.hadoop.squashfs.superblock.SuperBlock;
 import org.apache.hadoop.squashfs.util.BinUtils;
 
@@ -84,7 +84,7 @@ public class DataTestUtils
 	public static byte[] saveFragmentMetadata(FragmentWriter fw)
 			throws IOException
 	{
-		MetadataWriter writer = new MetadataWriter(CompressionId.ZLIB);
+		MetadataWriter writer = new MetadataWriter(new ZlibCompression());
 		fw.save(writer);
 
 		byte[] data;
@@ -106,7 +106,7 @@ public class DataTestUtils
 	public static byte[] decodeMetadataBlock(byte[] data) throws IOException
 	{
 		SuperBlock sb = new SuperBlock();
-		sb.setCompressionId(CompressionId.ZLIB);
+		sb.setCompression(new ZlibCompression());
 		sb.setBlockSize(131072);
 		sb.setBlockLog((short) 17);
 		sb.setVersionMajor((short) 4);

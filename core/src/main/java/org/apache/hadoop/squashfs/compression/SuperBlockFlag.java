@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package org.apache.hadoop.squashfs.superblock;
+package org.apache.hadoop.squashfs.compression;
 
 import java.util.Collection;
 import java.util.EnumSet;

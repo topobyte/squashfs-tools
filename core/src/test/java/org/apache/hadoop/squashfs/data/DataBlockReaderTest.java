@@ -26,12 +26,14 @@ import java.io.IOException;
 import java.util.Random;
 
 import org.apache.hadoop.squashfs.SquashFsException;
+import org.apache.hadoop.squashfs.compression.NoCompression;
+import org.apache.hadoop.squashfs.compression.SuperBlockFlag;
+import org.apache.hadoop.squashfs.compression.XzCompression;
+import org.apache.hadoop.squashfs.compression.ZlibCompression;
 import org.apache.hadoop.squashfs.inode.BasicFileINode;
 import org.apache.hadoop.squashfs.ra.IRandomAccess;
 import org.apache.hadoop.squashfs.ra.SimpleRandomAccess;
-import org.apache.hadoop.squashfs.superblock.CompressionId;
 import org.apache.hadoop.squashfs.superblock.SuperBlock;
-import org.apache.hadoop.squashfs.superblock.SuperBlockFlag;
 import org.apache.hadoop.squashfs.table.FragmentTable;
 import org.apache.hadoop.squashfs.table.FragmentTableEntry;
 import org.apache.hadoop.squashfs.test.InMemoryFragmentTable;
@@ -65,7 +67,7 @@ public class DataBlockReaderTest
 			throws IOException
 	{
 		DataBlockWriter writer = new DataBlockWriter(raf,
-				SuperBlock.DEFAULT_BLOCK_SIZE, CompressionId.ZLIB);
+				SuperBlock.DEFAULT_BLOCK_SIZE, new ZlibCompression());
 		return writer.write(data, offset, length);
 	}
 
@@ -85,7 +87,7 @@ public class DataBlockReaderTest
 		}
 
 		FragmentWriter fw = new FragmentWriter(raf,
-				SuperBlock.DEFAULT_BLOCK_SIZE, CompressionId.ZLIB);
+				SuperBlock.DEFAULT_BLOCK_SIZE, new ZlibCompression());
 		FragmentRef ref = writeFragment(fw, data, 0, data.length);
 		fw.flush();
 		System.out.println(ref);
@@ -117,7 +119,7 @@ public class DataBlockReaderTest
 		}
 
 		FragmentWriter fw = new FragmentWriter(raf,
-				SuperBlock.DEFAULT_BLOCK_SIZE, CompressionId.ZLIB);
+				SuperBlock.DEFAULT_BLOCK_SIZE, new ZlibCompression());
 		FragmentRef ref = writeFragment(fw, data, 0, data.length);
 		fw.flush();
 		System.out.println(ref);
@@ -164,7 +166,7 @@ public class DataBlockReaderTest
 	public void readOfCompressedBlockShouldFailIfCompressionIdIsNotSet()
 			throws Exception
 	{
-		sb.setCompressionId(CompressionId.NONE);
+		sb.setCompression(new NoCompression());
 		byte[] data = new byte[SuperBlock.DEFAULT_BLOCK_SIZE];
 		for (int i = 0; i < data.length; i++) {
 			data[i] = (byte) 0xff;
@@ -225,7 +227,7 @@ public class DataBlockReaderTest
 	public void readOfCompressedBlockShouldFailIfCompressionIdIsSetToAnUnsupportedAlgorithm()
 			throws Exception
 	{
-		sb.setCompressionId(CompressionId.XZ);
+		sb.setCompression(new XzCompression());
 		byte[] data = new byte[SuperBlock.DEFAULT_BLOCK_SIZE];
 		for (int i = 0; i < data.length; i++) {
 			data[i] = (byte) 0xff;

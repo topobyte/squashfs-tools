@@ -28,6 +28,9 @@ import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 
 import org.apache.hadoop.squashfs.SquashFsException;
+import org.apache.hadoop.squashfs.compression.LzoCompression;
+import org.apache.hadoop.squashfs.compression.NoCompression;
+import org.apache.hadoop.squashfs.compression.SuperBlockFlag;
 import org.apache.hadoop.squashfs.test.SuperBlockTestUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -54,8 +57,8 @@ public class SuperBlockTest
 	@Test
 	public void modificationTimePropertyShouldWorkAsExpected()
 	{
-		assertEquals((double) System.currentTimeMillis(),
-				(double) (sb.getModificationTime() * 1000L), 5000d);
+		assertEquals(System.currentTimeMillis(),
+				sb.getModificationTime() * 1000L, 5000d);
 		sb.setModificationTime(1);
 		assertEquals(1, sb.getModificationTime());
 	}
@@ -79,9 +82,9 @@ public class SuperBlockTest
 	@Test
 	public void compressionIdPropertyShouldWorkAsExpected()
 	{
-		assertSame(CompressionId.ZLIB, sb.getCompressionId());
-		sb.setCompressionId(CompressionId.NONE);
-		assertSame(CompressionId.NONE, sb.getCompressionId());
+		assertSame(CompressionId.ZLIB, sb.getCompression().getCompressionId());
+		sb.setCompression(new NoCompression());
+		assertSame(CompressionId.NONE, sb.getCompression().getCompressionId());
 	}
 
 	@Test
@@ -243,7 +246,7 @@ public class SuperBlockTest
 		sb.setBlockLog((short) 18);
 		sb.setBlockSize(262144);
 		sb.setFragmentEntryCount(2);
-		sb.setCompressionId(CompressionId.LZO);
+		sb.setCompression(new LzoCompression());
 		sb.setFlags((short) 3);
 		sb.setIdCount((short) 4);
 		sb.setRootInodeRef(5L);
@@ -267,8 +270,9 @@ public class SuperBlockTest
 		assertEquals("Wrong block size", sb.getBlockSize(), sb2.getBlockSize());
 		assertEquals("Wrong fragment entry count", sb.getFragmentEntryCount(),
 				sb2.getFragmentEntryCount());
-		assertSame("Wrong compression ID", sb.getCompressionId(),
-				sb2.getCompressionId());
+		assertSame("Wrong compression ID",
+				sb.getCompression().getCompressionId(),
+				sb2.getCompression().getCompressionId());
 		assertEquals("Wrong block log", sb.getBlockLog(), sb2.getBlockLog());
 		assertEquals("Wrong flags", sb.getFlags(), sb2.getFlags());
 		assertEquals("Wrong id count", sb.getIdCount(), sb2.getIdCount());

@@ -24,6 +24,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.EnumSet;
 
+import org.apache.hadoop.squashfs.compression.SuperBlockFlag;
 import org.junit.Test;
 
 public class SuperBlockFlagTest

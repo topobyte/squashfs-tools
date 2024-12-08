@@ -28,10 +28,10 @@ import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
+import org.apache.hadoop.squashfs.compression.Compression;
 import org.apache.hadoop.squashfs.inode.INodeType;
 import org.apache.hadoop.squashfs.metadata.MetadataBlockRef;
 import org.apache.hadoop.squashfs.metadata.MetadataWriter;
-import org.apache.hadoop.squashfs.superblock.CompressionId;
 import org.apache.hadoop.squashfs.table.ExportTable;
 
 public class SquashFsTree
@@ -48,7 +48,7 @@ public class SquashFsTree
 	private final SquashFsEntry root = new SquashFsEntry();
 	private MetadataBlockRef rootInodeRef;
 
-	SquashFsTree(CompressionId compression)
+	SquashFsTree(Compression compression)
 	{
 		inodeWriter = new MetadataWriter(compression);
 		dirWriter = new MetadataWriter(compression);

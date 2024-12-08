@@ -31,14 +31,15 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.hadoop.squashfs.SquashFsEntryBuilder;
 import org.apache.hadoop.squashfs.SquashFsWriter;
-import org.apache.hadoop.squashfs.superblock.CompressionId;
+import org.apache.hadoop.squashfs.compression.Compression;
+import org.apache.hadoop.squashfs.compression.ZlibCompression;
 import org.apache.hadoop.squashfs.util.PosixUtil;
 
 public class SquashConvertDirectory
 {
 
 	public static void convertToSquashFs(File inputFile, File outputFile,
-			CompressionId compression, int offset) throws IOException
+			Compression compression, int offset) throws IOException
 	{
 		System.err.printf("Converting %s -> %s...%n",
 				inputFile.getAbsolutePath(), outputFile.getAbsolutePath());
@@ -146,7 +147,7 @@ public class SquashConvertDirectory
 			usage();
 		}
 		convertToSquashFs(new File(args[0]), new File(args[1]),
-				CompressionId.ZSTD, 0);
+				new ZlibCompression(), 0);
 	}
 
 }

@@ -25,6 +25,8 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.List;
 
+import org.apache.hadoop.squashfs.compression.Compression;
+import org.apache.hadoop.squashfs.compression.ZlibCompression;
 import org.apache.hadoop.squashfs.data.DataBlockWriter;
 import org.apache.hadoop.squashfs.data.FragmentWriter;
 import org.apache.hadoop.squashfs.metadata.MetadataBlockRef;
@@ -32,7 +34,6 @@ import org.apache.hadoop.squashfs.metadata.MetadataWriter;
 import org.apache.hadoop.squashfs.ra.IRandomAccess;
 import org.apache.hadoop.squashfs.ra.OffsetRandomAccess;
 import org.apache.hadoop.squashfs.ra.SimpleRandomAccess;
-import org.apache.hadoop.squashfs.superblock.CompressionId;
 import org.apache.hadoop.squashfs.superblock.SuperBlock;
 import org.apache.hadoop.squashfs.table.IdTableGenerator;
 import org.slf4j.Logger;
@@ -44,7 +45,7 @@ public class SquashFsWriter implements Closeable
 	private static final Logger LOG = LoggerFactory
 			.getLogger(SquashFsWriter.class);
 
-	private final CompressionId compression;
+	private final Compression compression;
 	private final IRandomAccess raf;
 	private final IdTableGenerator idGenerator;
 	private final SuperBlock superBlock;
@@ -57,11 +58,11 @@ public class SquashFsWriter implements Closeable
 
 	public SquashFsWriter(File outputFile) throws SquashFsException, IOException
 	{
-		this(outputFile, CompressionId.ZLIB, 0);
+		this(outputFile, new ZlibCompression(), 0);
 	}
 
-	public SquashFsWriter(File outputFile, CompressionId compression,
-			int offset) throws SquashFsException, IOException
+	public SquashFsWriter(File outputFile, Compression compression, int offset)
+			throws SquashFsException, IOException
 	{
 		this.compression = compression;
 		if (offset == 0) {
@@ -89,7 +90,7 @@ public class SquashFsWriter implements Closeable
 		raf.write(new byte[SuperBlock.SIZE]);
 	}
 
-	static SuperBlock createSuperBlock(CompressionId compression)
+	static SuperBlock createSuperBlock(Compression compression)
 	{
 		return new SuperBlock(compression);
 	}
@@ -112,7 +113,7 @@ public class SquashFsWriter implements Closeable
 	}
 
 	static DataBlockWriter createDataWriter(SuperBlock sb, IRandomAccess raf,
-			CompressionId compression)
+			Compression compression)
 	{
 		return new DataBlockWriter(raf, sb.getBlockSize(), compression);
 	}
