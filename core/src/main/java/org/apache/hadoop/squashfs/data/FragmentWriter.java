@@ -20,19 +20,19 @@ package org.apache.hadoop.squashfs.data;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.Deflater;
 import java.util.zip.DeflaterOutputStream;
 
+import org.apache.hadoop.squashfs.CompressionUtil;
 import org.apache.hadoop.squashfs.metadata.MetadataBlockRef;
 import org.apache.hadoop.squashfs.metadata.MetadataWriter;
 import org.apache.hadoop.squashfs.ra.IRandomAccess;
 import org.apache.hadoop.squashfs.superblock.CompressionId;
 import org.apache.hadoop.squashfs.table.FragmentTable;
 import org.apache.hadoop.squashfs.table.FragmentTableEntry;
-
-import io.airlift.compress.zstd.ZstdOutputStream;
 
 public class FragmentWriter
 {
@@ -181,7 +181,8 @@ public class FragmentWriter
 	private byte[] compressDataZstd() throws IOException
 	{
 		try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
-			try (ZstdOutputStream zos = new ZstdOutputStream(bos)) {
+			try (OutputStream zos = CompressionUtil
+					.createZstdOutputStream(bos)) {
 				zos.write(currentBlock, 0, currentOffset);
 			}
 			byte[] result = bos.toByteArray();

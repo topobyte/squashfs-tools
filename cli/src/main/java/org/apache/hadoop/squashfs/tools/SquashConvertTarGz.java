@@ -36,12 +36,6 @@ import org.apache.hadoop.squashfs.util.SizeTrackingInputStream;
 public class SquashConvertTarGz
 {
 
-	public static void convertToSquashFs(File inputFile, File outputFile)
-			throws IOException
-	{
-		convertToSquashFs(inputFile, outputFile, CompressionId.ZLIB, 0);
-	}
-
 	public static void convertToSquashFs(File inputFile, File outputFile,
 			CompressionId compression, int offset) throws IOException
 	{
@@ -144,7 +138,8 @@ public class SquashConvertTarGz
 		if (args.length != 2) {
 			usage();
 		}
-		convertToSquashFs(new File(args[0]), new File(args[1]));
+		convertToSquashFs(new File(args[0]), new File(args[1]),
+				CompressionId.ZLIB, 0);
 	}
 
 }

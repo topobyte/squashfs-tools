@@ -37,12 +37,6 @@ import org.apache.hadoop.squashfs.util.PosixUtil;
 public class SquashConvertDirectory
 {
 
-	public static void convertToSquashFs(File inputFile, File outputFile)
-			throws IOException
-	{
-		convertToSquashFs(inputFile, outputFile, CompressionId.ZLIB, 0);
-	}
-
 	public static void convertToSquashFs(File inputFile, File outputFile,
 			CompressionId compression, int offset) throws IOException
 	{
@@ -151,7 +145,8 @@ public class SquashConvertDirectory
 		if (args.length != 2) {
 			usage();
 		}
-		convertToSquashFs(new File(args[0]), new File(args[1]));
+		convertToSquashFs(new File(args[0]), new File(args[1]),
+				CompressionId.ZSTD, 0);
 	}
 
 }

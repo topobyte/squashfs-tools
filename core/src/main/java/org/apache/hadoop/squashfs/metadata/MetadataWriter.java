@@ -21,14 +21,14 @@ package org.apache.hadoop.squashfs.metadata;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutput;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.Deflater;
 import java.util.zip.DeflaterOutputStream;
 
+import org.apache.hadoop.squashfs.CompressionUtil;
 import org.apache.hadoop.squashfs.superblock.CompressionId;
-
-import io.airlift.compress.zstd.ZstdOutputStream;
 
 public class MetadataWriter implements DataOutput
 {
@@ -138,7 +138,8 @@ public class MetadataWriter implements DataOutput
 			throws IOException
 	{
 		try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
-			try (ZstdOutputStream zos = new ZstdOutputStream(bos)) {
+			try (OutputStream zos = CompressionUtil
+					.createZstdOutputStream(bos)) {
 				zos.write(data, offset, length);
 			}
 			byte[] result = bos.toByteArray();

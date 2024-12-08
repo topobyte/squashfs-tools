@@ -36,7 +36,7 @@ import org.apache.hadoop.squashfs.SquashFsException;
 import org.apache.hadoop.squashfs.superblock.SuperBlock;
 import org.apache.hadoop.squashfs.superblock.SuperBlockFlag;
 
-import io.airlift.compress.zstd.ZstdInputStream;
+import com.github.luben.zstd.ZstdInputStream;
 
 public class MetadataBlock
 {
