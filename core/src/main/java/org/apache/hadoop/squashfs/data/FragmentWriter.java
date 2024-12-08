@@ -180,7 +180,6 @@ public class FragmentWriter
 
 	private byte[] compressDataZstd() throws IOException
 	{
-		Deflater def = new Deflater(Deflater.BEST_COMPRESSION);
 		try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
 			try (ZstdOutputStream zos = new ZstdOutputStream(bos)) {
 				zos.write(currentBlock, 0, currentOffset);
@@ -190,8 +189,6 @@ public class FragmentWriter
 				return null;
 			}
 			return result;
-		} finally {
-			def.end();
 		}
 	}
 

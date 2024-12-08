@@ -137,7 +137,6 @@ public class MetadataWriter implements DataOutput
 	private byte[] compressZstd(byte[] data, int offset, int length)
 			throws IOException
 	{
-		Deflater def = new Deflater(Deflater.BEST_COMPRESSION);
 		try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
 			try (ZstdOutputStream zos = new ZstdOutputStream(bos)) {
 				zos.write(data, offset, length);
@@ -147,8 +146,6 @@ public class MetadataWriter implements DataOutput
 				return null;
 			}
 			return result;
-		} finally {
-			def.end();
 		}
 	}
 
