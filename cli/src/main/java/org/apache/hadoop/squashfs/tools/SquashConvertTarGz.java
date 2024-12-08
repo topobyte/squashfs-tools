@@ -21,6 +21,7 @@ package org.apache.hadoop.squashfs.tools;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.Date;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.zip.GZIPInputStream;
@@ -46,6 +47,8 @@ public class SquashConvertTarGz
 	{
 		System.err.printf("Converting %s -> %s...%n",
 				inputFile.getAbsolutePath(), outputFile.getAbsolutePath());
+
+		Files.deleteIfExists(outputFile.toPath());
 
 		try (FileInputStream fis = new FileInputStream(inputFile);
 				SizeTrackingInputStream stis = new SizeTrackingInputStream(fis);

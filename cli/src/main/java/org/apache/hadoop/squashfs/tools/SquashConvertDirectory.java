@@ -49,6 +49,8 @@ public class SquashConvertDirectory
 		System.err.printf("Converting %s -> %s...%n",
 				inputFile.getAbsolutePath(), outputFile.getAbsolutePath());
 
+		Files.deleteIfExists(outputFile.toPath());
+
 		long fileCount = 0L;
 		try (SquashFsWriter writer = new SquashFsWriter(outputFile, compression,
 				offset)) {
