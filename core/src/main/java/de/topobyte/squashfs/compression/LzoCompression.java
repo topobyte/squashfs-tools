@@ -8,7 +8,7 @@ public class LzoCompression implements Compression
 	@Override
 	public CompressionId getCompressionId()
 	{
-		return CompressionId.LZ4;
+		return CompressionId.LZO;
 	}
 
 }
