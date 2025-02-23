@@ -18,14 +18,22 @@
 
 package de.topobyte.squashfs.tools;
 
+import static java.lang.System.lineSeparator;
+
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.topobyte.squashfs.SquashFsReader;
 
 public class RunSquashExtract
 {
+
+	final static Logger logger = LoggerFactory
+			.getLogger(RunSquashExtract.class);
 
 	public static void usage()
 	{
@@ -34,9 +42,6 @@ public class RunSquashExtract
 				RunSquashExtract.class.getSimpleName());
 		System.err.println();
 		System.err.println("    -m,--mapped     Use mmap() for I/O");
-		System.err.println("       --metadata   Dump metadata ");
-		System.err
-				.println("                       <file-offset> <block-offset>");
 		System.err.println();
 		System.exit(1);
 	}
@@ -44,9 +49,6 @@ public class RunSquashExtract
 	public static void main(String[] args) throws Exception
 	{
 		boolean mapped = false;
-		boolean metadata = false;
-		long metaFileOffset = 0L;
-		int metaBlockOffset = 0;
 
 		String squashfs = null;
 		String dir = null;
@@ -56,14 +58,6 @@ public class RunSquashExtract
 			case "-m":
 			case "--mapped":
 				mapped = true;
-				break;
-			case "--metadata":
-				metadata = true;
-				if (i + 2 >= args.length) {
-					usage();
-				}
-				metaFileOffset = Long.parseLong(args[++i], 10);
-				metaBlockOffset = Integer.parseInt(args[++i], 10);
 				break;
 			default:
 				if (squashfs != null && dir != null) {
@@ -82,27 +76,19 @@ public class RunSquashExtract
 
 		Path directory = Paths.get(dir);
 		if (Files.exists(directory)) {
-			System.out.printf("Output directory '%s' exists. Exit%n", dir);
+			logger.warn("Output directory '{}' exists. Exit.", dir);
 			System.exit(1);
 		}
 
 		SquashExtract task = new SquashExtract();
 		try (SquashFsReader reader = SquashFsReaderUtil
 				.createReader(Paths.get(squashfs), mapped)) {
-			System.out.println(reader.getSuperBlock());
-			System.out.println();
-			System.out.println(reader.getIdTable());
-			System.out.println();
-			System.out.println(reader.getFragmentTable());
-			System.out.println();
-			System.out.println(reader.getExportTable());
-			System.out.println();
+			logger.info(lineSeparator() + reader.getSuperBlock());
+			logger.info(lineSeparator() + reader.getIdTable());
+			logger.info(lineSeparator() + reader.getFragmentTable());
+			logger.info(lineSeparator() + reader.getExportTable());
 
 			task.extract(reader, directory);
-
-			if (metadata) {
-				task.dumpMetadataBlock(reader, metaFileOffset, metaBlockOffset);
-			}
 		}
 	}
 

@@ -18,12 +18,19 @@
 
 package de.topobyte.squashfs.tools;
 
+import static java.lang.System.lineSeparator;
+
 import java.nio.file.Paths;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.topobyte.squashfs.SquashFsReader;
 
 public class RunSquashFsck
 {
+
+	final static Logger logger = LoggerFactory.getLogger(RunSquashFsck.class);
 
 	public static void usage()
 	{
@@ -88,14 +95,10 @@ public class RunSquashFsck
 		SquashFsck task = new SquashFsck();
 		try (SquashFsReader reader = SquashFsReaderUtil
 				.createReader(Paths.get(squashfs), mapped)) {
-			System.out.println(reader.getSuperBlock());
-			System.out.println();
-			System.out.println(reader.getIdTable());
-			System.out.println();
-			System.out.println(reader.getFragmentTable());
-			System.out.println();
-			System.out.println(reader.getExportTable());
-			System.out.println();
+			logger.info(lineSeparator() + reader.getSuperBlock());
+			logger.info(lineSeparator() + reader.getIdTable());
+			logger.info(lineSeparator() + reader.getFragmentTable());
+			logger.info(lineSeparator() + reader.getExportTable());
 
 			if (tree || files) {
 				task.dumpTree(reader, files);

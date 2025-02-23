@@ -21,6 +21,9 @@ package de.topobyte.squashfs.tools;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.topobyte.squashfs.SquashFsReader;
 import de.topobyte.squashfs.directory.DirectoryEntry;
 import de.topobyte.squashfs.inode.DirectoryINode;
@@ -32,11 +35,13 @@ import de.topobyte.squashfs.util.BinUtils;
 public class SquashFsck
 {
 
+	final static Logger logger = LoggerFactory.getLogger(SquashFsck.class);
+
 	public void dumpTree(SquashFsReader reader, boolean readFiles)
 			throws IOException
 	{
-		System.out.println("Directory tree:");
-		System.out.println();
+		logger.info("Directory tree:");
+		logger.info("");
 		DirectoryINode root = reader.getRootInode();
 		dumpSubtree(reader, true, "/", root, readFiles);
 	}
@@ -51,19 +56,19 @@ public class SquashFsck
 			byte[] content = bos.toByteArray();
 			readSize = content.length;
 		}
-		System.out.printf("  %d bytes, %d read%n", fileSize, readSize);
+		logger.info("  {} bytes, {} read", fileSize, readSize);
 	}
 
 	private void dumpSubtree(SquashFsReader reader, boolean root, String path,
 			DirectoryINode inode, boolean readFiles) throws IOException
 	{
 		if (root) {
-			System.out.printf("/ (%d)%n", inode.getInodeNumber());
+			logger.info("/ ({})", inode.getInodeNumber());
 		}
 
 		for (DirectoryEntry entry : reader.getChildren(inode)) {
 			INode childInode = reader.findInodeByDirectoryEntry(entry);
-			System.out.printf("%s%s%s (%d)%n", path, entry.getNameAsString(),
+			logger.info("{}{}{} ({})", path, entry.getNameAsString(),
 					childInode.getInodeType().directory() ? "/" : "",
 					childInode.getInodeNumber());
 
@@ -85,10 +90,10 @@ public class SquashFsck
 	public void dumpMetadataBlock(SquashFsReader reader, long metaFileOffset,
 			int metaBlockOffset) throws IOException
 	{
-		System.out.println();
-		System.out.printf("Dumping block at file offset %d, block offset %d%n",
+		logger.info("");
+		logger.info("Dumping block at file offset {}, block offset {}",
 				metaFileOffset, metaBlockOffset);
-		System.out.println();
+		logger.info("");
 
 		MetadataReader mr = reader.getMetaReader().rawReader(0, metaFileOffset,
 				(short) metaBlockOffset);
@@ -98,7 +103,7 @@ public class SquashFsck
 
 		StringBuilder sb = new StringBuilder();
 		BinUtils.dumpBin(sb, 0, "data", buf, 0, buf.length, 32, 2);
-		System.out.println(sb.toString());
+		logger.info(sb.toString());
 	}
 
 }

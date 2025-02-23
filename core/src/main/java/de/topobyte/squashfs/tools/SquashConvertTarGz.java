@@ -28,6 +28,8 @@ import java.util.zip.GZIPInputStream;
 
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.topobyte.squashfs.SquashFsEntryBuilder;
 import de.topobyte.squashfs.SquashFsWriter;
@@ -37,11 +39,14 @@ import de.topobyte.squashfs.util.SizeTrackingInputStream;
 public class SquashConvertTarGz
 {
 
+	final static Logger logger = LoggerFactory
+			.getLogger(SquashConvertTarGz.class);
+
 	public void convertToSquashFs(Path inputFile, Path outputFile,
 			Compression compression, int offset) throws IOException
 	{
-		System.err.printf("Converting %s -> %s...%n",
-				inputFile.toAbsolutePath(), outputFile.toAbsolutePath());
+		logger.info("Converting {} -> {}...", inputFile.toAbsolutePath(),
+				outputFile.toAbsolutePath());
 
 		Files.deleteIfExists(outputFile);
 
@@ -66,8 +71,7 @@ public class SquashConvertTarGz
 				writer.finish();
 			}
 
-			System.err.printf("Converted image containing %d files.%n",
-					fileCount);
+			logger.info("Converted image containing {} files.", fileCount);
 		}
 	}
 
@@ -82,7 +86,7 @@ public class SquashConvertTarGz
 		String name = entry.getName().replaceAll("/+", "/").replaceAll("^/", "")
 				.replaceAll("/$", "").replaceAll("^", "/");
 
-		System.err.println(name);
+		logger.info(name);
 
 		short permissions = (short) (entry.getMode() & 07777);
 

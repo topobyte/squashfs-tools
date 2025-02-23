@@ -30,7 +30,7 @@ import de.topobyte.squashfs.SquashFsException;
 public class MetadataReader implements DataInput
 {
 
-	private static final Logger LOG = LoggerFactory
+	private static final Logger logger = LoggerFactory
 			.getLogger(MetadataReader.class);
 
 	private final MetadataBlockReader blockReader;
@@ -54,7 +54,7 @@ public class MetadataReader implements DataInput
 				? Integer.MAX_VALUE
 				: metaRef.getMaxLength() + (metaRef.getOffset());
 		skipBytes(metaRef.getOffset());
-		LOG.trace("Reader initialized for reference: \n{}", metaRef);
+		logger.trace("Reader initialized for reference: \n{}", metaRef);
 	}
 
 	public boolean isEof() throws IOException

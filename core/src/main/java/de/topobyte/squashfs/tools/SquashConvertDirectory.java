@@ -28,6 +28,9 @@ import java.nio.file.attribute.PosixFileAttributes;
 import java.time.Instant;
 import java.util.concurrent.atomic.AtomicReference;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.topobyte.squashfs.SquashFsEntryBuilder;
 import de.topobyte.squashfs.SquashFsWriter;
 import de.topobyte.squashfs.compression.Compression;
@@ -36,11 +39,14 @@ import de.topobyte.squashfs.util.PosixUtil;
 public class SquashConvertDirectory
 {
 
+	final static Logger logger = LoggerFactory
+			.getLogger(SquashConvertDirectory.class);
+
 	public void convertToSquashFs(Path inputFile, Path outputFile,
 			Compression compression, int offset) throws IOException
 	{
-		System.err.printf("Converting %s -> %s...%n",
-				inputFile.toAbsolutePath(), outputFile.toAbsolutePath());
+		logger.info("Converting {} -> {}...", inputFile.toAbsolutePath(),
+				outputFile.toAbsolutePath());
 
 		Files.deleteIfExists(outputFile);
 
@@ -56,7 +62,7 @@ public class SquashConvertDirectory
 			writer.finish();
 		}
 
-		System.err.printf("Converted image containing %d files.%n", fileCount);
+		logger.info("Converted image containing {} files.", fileCount);
 	}
 
 	private int walk(Path root, Path path, int depth, SquashFsWriter writer,
@@ -97,7 +103,7 @@ public class SquashConvertDirectory
 		short permissions = (short) (PosixUtil
 				.getPosixPermissionsAsInt(posix.permissions()) & 07777);
 
-		System.out.println(Integer.toOctalString(permissions) + " " + name);
+		logger.info(Integer.toOctalString(permissions) + " " + name);
 
 		Instant lastModified = Files.getLastModifiedTime(file).toInstant();
 		if (lastModified.isAfter(modDate.get())) {
@@ -110,10 +116,10 @@ public class SquashConvertDirectory
 
 		if (Files.isSymbolicLink(file)) {
 			Path symlink = Files.readSymbolicLink(file);
-			System.out.println("symlink: " + symlink);
+			logger.info("symlink: " + symlink);
 			tb.symlink(symlink.toString());
 		} else if (Files.isDirectory(file)) {
-			System.out.println("dir: " + file);
+			logger.info("dir: " + file);
 			tb.directory();
 		} else if (Files.isRegularFile(file)) {
 			tb.file();

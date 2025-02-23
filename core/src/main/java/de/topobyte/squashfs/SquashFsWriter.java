@@ -18,6 +18,8 @@
 
 package de.topobyte.squashfs;
 
+import static java.lang.System.lineSeparator;
+
 import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
@@ -43,7 +45,7 @@ import de.topobyte.squashfs.table.IdTableGenerator;
 public class SquashFsWriter implements Closeable
 {
 
-	private static final Logger LOG = LoggerFactory
+	private static final Logger logger = LoggerFactory
 			.getLogger(SquashFsWriter.class);
 
 	private final Compression compression;
@@ -169,12 +171,12 @@ public class SquashFsWriter implements Closeable
 
 		// save inode table
 		long inodeTableStart = raf.getFilePointer();
-		LOG.debug("Inode table start: {}", inodeTableStart);
+		logger.debug("Inode table start: {}", inodeTableStart);
 		fsTree.getINodeWriter().save(raf);
 
 		// save directory table
 		long dirTableStart = raf.getFilePointer();
-		LOG.debug("Directory table start: {}", dirTableStart);
+		logger.debug("Directory table start: {}", dirTableStart);
 		fsTree.getDirWriter().save(raf);
 
 		// build fragment table
@@ -185,7 +187,7 @@ public class SquashFsWriter implements Closeable
 
 		// save fragment table
 		long fragTableStart = raf.getFilePointer();
-		LOG.debug("Fragment table start: {}", fragTableStart);
+		logger.debug("Fragment table start: {}", fragTableStart);
 		for (MetadataBlockRef fragRef : fragRefs) {
 			long fragTableFileOffset = fragMetaStart + fragRef.getLocation();
 			byte[] buf = new byte[8];
@@ -203,7 +205,7 @@ public class SquashFsWriter implements Closeable
 
 		// write export table
 		long exportTableStart = raf.getFilePointer();
-		LOG.debug("Export table start: {}", exportTableStart);
+		logger.debug("Export table start: {}", exportTableStart);
 		for (MetadataBlockRef exportRef : exportRefs) {
 			long exportFileOffset = exportMetaStart + exportRef.getLocation();
 			byte[] buf = new byte[8];
@@ -219,11 +221,11 @@ public class SquashFsWriter implements Closeable
 		idMetaWriter.save(raf);
 
 		MetadataBlockRef rootInodeRef = fsTree.getRootInodeRef();
-		LOG.debug("Root inode ref: {}", rootInodeRef);
+		logger.debug("Root inode ref: {}", rootInodeRef);
 
 		// write ID table
 		long idTableStart = raf.getFilePointer();
-		LOG.debug("ID table start: {}", idTableStart);
+		logger.debug("ID table start: {}", idTableStart);
 
 		for (MetadataBlockRef idRef : idRefs) {
 			long idFileOffset = idMetaStart + idRef.getLocation();
@@ -234,7 +236,7 @@ public class SquashFsWriter implements Closeable
 		}
 
 		long archiveSize = raf.getFilePointer();
-		LOG.debug("Archive size:{}", archiveSize);
+		logger.debug("Archive size:{}", archiveSize);
 
 		// pad to 4096 bytes
 		int padding = (4096 - ((int) (archiveSize % 4096L))) % 4096;
@@ -243,7 +245,7 @@ public class SquashFsWriter implements Closeable
 		}
 
 		long fileSize = raf.getFilePointer();
-		LOG.debug("File size: {}", fileSize);
+		logger.debug("File size: {}", fileSize);
 
 		if (modificationTime == null) {
 			modificationTime = (int) (System.currentTimeMillis() / 1000L);
@@ -263,7 +265,7 @@ public class SquashFsWriter implements Closeable
 		superBlock.setFragmentTableStart(fragTableStart);
 		superBlock.setExportTableStart(exportTableStart);
 
-		LOG.debug("Superblock: {}", superBlock);
+		logger.debug(lineSeparator() + "Superblock: {}", superBlock);
 
 		// write superblock
 		raf.seek(0);

@@ -38,7 +38,7 @@ import de.topobyte.squashfs.inode.INodeType;
 public class SquashFsEntryBuilder
 {
 
-	private static final Logger LOG = LoggerFactory
+	private static final Logger logger = LoggerFactory
 			.getLogger(SquashFsEntryBuilder.class);
 
 	private final SquashFsWriter writer;
@@ -92,7 +92,7 @@ public class SquashFsEntryBuilder
 		if (dataBlocks == null) {
 			dataBlocks = new ArrayList<>();
 		}
-		LOG.debug("Wrote datablock {}", block);
+		logger.debug("Wrote datablock {}", block);
 		dataBlocks.add(block);
 		return this;
 	}
@@ -100,7 +100,7 @@ public class SquashFsEntryBuilder
 	public SquashFsEntryBuilder fragment(FragmentRef fragment)
 	{
 		this.fragment = fragment;
-		LOG.debug("Wrote fragment {}", fragment);
+		logger.debug("Wrote fragment {}", fragment);
 		return this;
 	}
 
@@ -225,7 +225,7 @@ public class SquashFsEntryBuilder
 				written += c;
 				if (off == blockBuffer.length) {
 					// write the block
-					LOG.trace("Writing block of size {}", blockBuffer.length);
+					logger.trace("Writing block of size {}", blockBuffer.length);
 					DataBlockRef dataBlock = writer.getDataWriter()
 							.write(blockBuffer, 0, blockBuffer.length);
 					dataBlock(dataBlock);
@@ -241,7 +241,7 @@ public class SquashFsEntryBuilder
 
 		if (off > 0) {
 			// write final block
-			LOG.trace("Writing fragment of size {}", off);
+			logger.trace("Writing fragment of size {}", off);
 			FragmentRef fragment = writer.getFragmentWriter().write(blockBuffer,
 					0, off);
 			fragment(fragment);
@@ -249,7 +249,7 @@ public class SquashFsEntryBuilder
 			off = 0;
 		}
 
-		LOG.debug("Wrote {} bytes to {}", written, name);
+		logger.debug("Wrote {} bytes to {}", written, name);
 
 		// set output type to file
 		if (type == null) {

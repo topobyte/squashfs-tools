@@ -53,10 +53,12 @@ import de.topobyte.squashfs.table.TableReader;
 public class MappedSquashFsReader extends AbstractSquashFsReader
 {
 
+	private static final Logger logger = LoggerFactory
+			.getLogger(MappedSquashFsReader.class);
+
 	public static final int PREFERRED_MAP_SIZE = 128 * 1024 * 1024; // 128 MB
 	public static final int PREFERRED_WINDOW_SIZE = 2 * PREFERRED_MAP_SIZE;
-	private static final Logger LOG = LoggerFactory
-			.getLogger(MappedSquashFsReader.class);
+
 	private final int tag;
 	private final MappedFile mmap;
 	private final SuperBlock superBlock;
@@ -86,18 +88,18 @@ public class MappedSquashFsReader extends AbstractSquashFsReader
 		this.fragmentCache = fragmentCache;
 		this.mmap = mmap;
 		superBlock = readSuperBlock(mmap);
-		LOG.trace("Superblock: {}", superBlock);
+		logger.trace("Superblock: {}", superBlock);
 		sparseBlock = createSparseBlock(superBlock);
 
 		this.metaReader = metadataCache;
 		metaReader.add(tag,
 				new MappedFileMetadataBlockReader(tag, superBlock, mmap));
 		idTable = readIdTable(tag, mmap, metaReader);
-		LOG.trace("ID table: {}", idTable);
+		logger.trace("ID table: {}", idTable);
 		fragmentTable = readFragmentTable(tag, mmap, metaReader);
-		LOG.trace("Fragment table: {}", fragmentTable);
+		logger.trace("Fragment table: {}", fragmentTable);
 		exportTable = readExportTable(tag, mmap, metaReader);
-		LOG.trace("Export table: {}", exportTable);
+		logger.trace("Export table: {}", exportTable);
 	}
 
 	static SuperBlock readSuperBlock(MappedFile mmap)
@@ -303,6 +305,7 @@ public class MappedSquashFsReader extends AbstractSquashFsReader
 		return dirEntries;
 	}
 
+	@Override
 	protected DataBlock readBlock(FileINode fileInode, int blockNumber,
 			boolean cache) throws IOException, SquashFsException
 	{
@@ -311,6 +314,7 @@ public class MappedSquashFsReader extends AbstractSquashFsReader
 				blockNumber, cache ? dataCache : DataBlockCache.NO_CACHE);
 	}
 
+	@Override
 	protected DataBlock readFragment(FileINode fileInode, int fragmentSize,
 			boolean cache) throws IOException, SquashFsException
 	{

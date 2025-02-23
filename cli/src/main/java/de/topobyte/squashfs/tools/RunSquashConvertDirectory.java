@@ -20,10 +20,16 @@ package de.topobyte.squashfs.tools;
 
 import java.nio.file.Paths;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.topobyte.squashfs.compression.ZstdCompression;
 
 public class RunSquashConvertDirectory
 {
+
+	final static Logger logger = LoggerFactory
+			.getLogger(RunSquashConvertDirectory.class);
 
 	public static void usage()
 	{

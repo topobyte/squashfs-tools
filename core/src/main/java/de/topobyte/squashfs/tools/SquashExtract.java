@@ -33,6 +33,8 @@ import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.compress.utils.CountingOutputStream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.topobyte.squashfs.SquashFsReader;
 import de.topobyte.squashfs.directory.DirectoryEntry;
@@ -47,6 +49,8 @@ import de.topobyte.squashfs.util.PosixUtil;
 
 public class SquashExtract
 {
+
+	final static Logger logger = LoggerFactory.getLogger(SquashExtract.class);
 
 	public void extract(SquashFsReader reader, Path directory)
 			throws IOException
@@ -87,7 +91,7 @@ public class SquashExtract
 			reader.writeFileStream(inode, cos);
 			readSize = cos.getBytesWritten();
 		}
-		System.out.printf(" [%d bytes, %d read]%n", fileSize, readSize);
+		logger.info("[File has {} bytes, {} read]", fileSize, readSize);
 		Files.setLastModifiedTime(file,
 				FileTime.from(inode.getModifiedTime(), TimeUnit.SECONDS));
 		Files.setPosixFilePermissions(file,
@@ -116,10 +120,10 @@ public class SquashExtract
 			String path, DirectoryINode inode, Path directory)
 			throws IOException
 	{
-		System.out.printf("Decending into '%s'%n", path);
+		logger.info("Decending into '{}'", path);
 		if (root) {
 			createDirectory(inode, directory);
-			System.out.printf("(%d) /%n", inode.getInodeNumber());
+			logger.info("({}) /", inode.getInodeNumber());
 		}
 
 		for (DirectoryEntry entry : reader.getChildren(inode)) {
@@ -131,15 +135,15 @@ public class SquashExtract
 			Path p = directory.resolve(entryPath.substring(1));
 
 			if (type.directory()) {
-				System.out.printf("(%d) Creating directory '%s'%n",
+				logger.info("({}) Creating directory '{}'",
 						childInode.getInodeNumber(), p);
 				createDirectory((DirectoryINode) childInode, p);
 			} else if (type.file()) {
-				System.out.printf("(%d) Extracting file '%s'",
+				logger.info("({}) Extracting file '{}'",
 						childInode.getInodeNumber(), p);
 				extractFileContent(reader, (FileINode) childInode, p);
 			} else if (type.symlink()) {
-				System.out.printf("(%d) Creating symlink '%s'%n",
+				logger.info("({}) Creating symlink '{}'",
 						childInode.getInodeNumber(), p);
 				createSymlink((SymlinkINode) childInode, p);
 			}
@@ -158,10 +162,10 @@ public class SquashExtract
 	public void dumpMetadataBlock(SquashFsReader reader, long metaFileOffset,
 			int metaBlockOffset) throws IOException
 	{
-		System.out.println();
-		System.out.printf("Dumping block at file offset %d, block offset %d%n",
+		logger.info("");
+		logger.info("Dumping block at file offset {}, block offset {}",
 				metaFileOffset, metaBlockOffset);
-		System.out.println();
+		logger.info("");
 
 		MetadataReader mr = reader.getMetaReader().rawReader(0, metaFileOffset,
 				(short) metaBlockOffset);
@@ -171,7 +175,7 @@ public class SquashExtract
 
 		StringBuilder sb = new StringBuilder();
 		BinUtils.dumpBin(sb, 0, "data", buf, 0, buf.length, 32, 2);
-		System.out.println(sb.toString());
+		logger.info(System.lineSeparator() + sb);
 	}
 
 }

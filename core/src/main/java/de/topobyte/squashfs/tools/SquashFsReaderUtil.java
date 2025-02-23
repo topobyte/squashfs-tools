@@ -23,6 +23,9 @@ import java.io.RandomAccessFile;
 import java.nio.channels.FileChannel;
 import java.nio.file.Path;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.topobyte.squashfs.MappedSquashFsReader;
 import de.topobyte.squashfs.SquashFsReader;
 import de.topobyte.squashfs.io.MappedFile;
@@ -30,12 +33,14 @@ import de.topobyte.squashfs.io.MappedFile;
 public class SquashFsReaderUtil
 {
 
+	final static Logger logger = LoggerFactory
+			.getLogger(SquashFsReaderUtil.class);
+
 	public static SquashFsReader createReader(Path file, boolean mapped)
 			throws IOException
 	{
 		if (mapped) {
-			System.out.println("Using memory-mapped reader");
-			System.out.println();
+			logger.info("Using memory-mapped reader");
 			try (RandomAccessFile raf = new RandomAccessFile(file.toFile(),
 					"r")) {
 				try (FileChannel channel = raf.getChannel()) {
@@ -47,8 +52,7 @@ public class SquashFsReaderUtil
 				}
 			}
 		} else {
-			System.out.println("Using file reader");
-			System.out.println();
+			logger.info("Using file reader");
 			return SquashFsReader.fromFile(0, file.toFile(), 0);
 		}
 	}
