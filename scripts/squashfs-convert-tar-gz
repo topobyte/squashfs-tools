@@ -2,6 +2,6 @@
 
 DIR=$(dirname $0)
 CMD="$DIR/squashfs-tools.sh"
-CLASS="de.topobyte.squashfs.tools.SquashConvertTarGz"
+CLASS="de.topobyte.squashfs.tools.RunSquashConvertTarGz"
 
 exec "$CMD" "$CLASS" "$@"

@@ -24,7 +24,6 @@ import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.attribute.PosixFileAttributes;
 import java.time.Instant;
 import java.util.concurrent.atomic.AtomicReference;
@@ -32,13 +31,12 @@ import java.util.concurrent.atomic.AtomicReference;
 import de.topobyte.squashfs.SquashFsEntryBuilder;
 import de.topobyte.squashfs.SquashFsWriter;
 import de.topobyte.squashfs.compression.Compression;
-import de.topobyte.squashfs.compression.ZstdCompression;
 import de.topobyte.squashfs.util.PosixUtil;
 
 public class SquashConvertDirectory
 {
 
-	public static void convertToSquashFs(Path inputFile, Path outputFile,
+	public void convertToSquashFs(Path inputFile, Path outputFile,
 			Compression compression, int offset) throws IOException
 	{
 		System.err.printf("Converting %s -> %s...%n",
@@ -61,9 +59,8 @@ public class SquashConvertDirectory
 		System.err.printf("Converted image containing %d files.%n", fileCount);
 	}
 
-	private static int walk(Path root, Path path, int depth,
-			SquashFsWriter writer, AtomicReference<Instant> modDate)
-			throws IOException
+	private int walk(Path root, Path path, int depth, SquashFsWriter writer,
+			AtomicReference<Instant> modDate) throws IOException
 	{
 		int count = 0;
 
@@ -81,7 +78,7 @@ public class SquashConvertDirectory
 		return count;
 	}
 
-	private static void processFile(Path root, Path file, SquashFsWriter writer,
+	private void processFile(Path root, Path file, SquashFsWriter writer,
 			AtomicReference<Instant> modDate) throws IOException
 	{
 		PosixFileAttributes posix = Files.readAttributes(file,
@@ -130,23 +127,6 @@ public class SquashConvertDirectory
 		}
 
 		tb.build();
-	}
-
-	public static void usage()
-	{
-		System.err.printf("Usage: %s <directory> <squashfs-file>%n",
-				SquashConvertDirectory.class.getSimpleName());
-		System.err.println();
-		System.exit(1);
-	}
-
-	public static void main(String[] args) throws Exception
-	{
-		if (args.length != 2) {
-			usage();
-		}
-		convertToSquashFs(Paths.get(args[0]), Paths.get(args[1]),
-				new ZstdCompression(), 0);
 	}
 
 }

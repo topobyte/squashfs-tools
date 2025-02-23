@@ -20,8 +20,6 @@ package de.topobyte.squashfs.tools;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.RandomAccessFile;
-import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
@@ -36,7 +34,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.compress.utils.CountingOutputStream;
 
-import de.topobyte.squashfs.MappedSquashFsReader;
 import de.topobyte.squashfs.SquashFsReader;
 import de.topobyte.squashfs.directory.DirectoryEntry;
 import de.topobyte.squashfs.inode.DirectoryINode;
@@ -44,7 +41,6 @@ import de.topobyte.squashfs.inode.FileINode;
 import de.topobyte.squashfs.inode.INode;
 import de.topobyte.squashfs.inode.INodeType;
 import de.topobyte.squashfs.inode.SymlinkINode;
-import de.topobyte.squashfs.io.MappedFile;
 import de.topobyte.squashfs.metadata.MetadataReader;
 import de.topobyte.squashfs.util.BinUtils;
 import de.topobyte.squashfs.util.PosixUtil;
@@ -52,44 +48,7 @@ import de.topobyte.squashfs.util.PosixUtil;
 public class SquashExtract
 {
 
-	public static void usage()
-	{
-		System.err.printf(
-				"Usage: %s [options...] <squashfs-file> <directory>%n",
-				SquashExtract.class.getSimpleName());
-		System.err.println();
-		System.err.println("    -m,--mapped     Use mmap() for I/O");
-		System.err.println("       --metadata   Dump metadata ");
-		System.err
-				.println("                       <file-offset> <block-offset>");
-		System.err.println();
-		System.exit(1);
-	}
-
-	private static SquashFsReader createReader(Path file, boolean mapped)
-			throws IOException
-	{
-		if (mapped) {
-			System.out.println("Using memory-mapped reader");
-			System.out.println();
-			try (RandomAccessFile raf = new RandomAccessFile(file.toFile(),
-					"r")) {
-				try (FileChannel channel = raf.getChannel()) {
-					MappedFile mmap = MappedFile.mmap(channel,
-							MappedSquashFsReader.PREFERRED_MAP_SIZE,
-							MappedSquashFsReader.PREFERRED_WINDOW_SIZE, 0);
-
-					return SquashFsReader.fromMappedFile(0, mmap);
-				}
-			}
-		} else {
-			System.out.println("Using file reader");
-			System.out.println();
-			return SquashFsReader.fromFile(0, file.toFile(), 0);
-		}
-	}
-
-	private static void extract(SquashFsReader reader, Path directory)
+	public void extract(SquashFsReader reader, Path directory)
 			throws IOException
 	{
 		DirectoryINode root = reader.getRootInode();
@@ -103,9 +62,9 @@ public class SquashExtract
 		}
 	}
 
-	private static Map<Path, FileTime> directoryToLastModified = new LinkedHashMap<>();
+	private Map<Path, FileTime> directoryToLastModified = new LinkedHashMap<>();
 
-	private static void createDirectory(DirectoryINode inode, Path file)
+	private void createDirectory(DirectoryINode inode, Path file)
 			throws IOException
 	{
 		Files.createDirectories(file);
@@ -118,8 +77,8 @@ public class SquashExtract
 		directoryToLastModified.put(file, fileTime);
 	}
 
-	private static void extractFileContent(SquashFsReader reader,
-			FileINode inode, Path file) throws IOException
+	private void extractFileContent(SquashFsReader reader, FileINode inode,
+			Path file) throws IOException
 	{
 		long fileSize = inode.getFileSize();
 		long readSize;
@@ -135,8 +94,7 @@ public class SquashExtract
 				PosixUtil.getPosixPermissionsAsSet(inode.getPermissions()));
 	}
 
-	private static void createSymlink(SymlinkINode inode, Path file)
-			throws IOException
+	private void createSymlink(SymlinkINode inode, Path file) throws IOException
 	{
 		String target = new String(inode.getTargetPath(),
 				StandardCharsets.ISO_8859_1);
@@ -154,7 +112,7 @@ public class SquashExtract
 		// Cannot set permissions on symbolic links (at least on Linux)
 	}
 
-	private static void extractSubtree(SquashFsReader reader, boolean root,
+	private void extractSubtree(SquashFsReader reader, boolean root,
 			String path, DirectoryINode inode, Path directory)
 			throws IOException
 	{
@@ -197,8 +155,8 @@ public class SquashExtract
 		}
 	}
 
-	private static void dumpMetadataBlock(SquashFsReader reader,
-			long metaFileOffset, int metaBlockOffset) throws IOException
+	public void dumpMetadataBlock(SquashFsReader reader, long metaFileOffset,
+			int metaBlockOffset) throws IOException
 	{
 		System.out.println();
 		System.out.printf("Dumping block at file offset %d, block offset %d%n",
@@ -214,70 +172,6 @@ public class SquashExtract
 		StringBuilder sb = new StringBuilder();
 		BinUtils.dumpBin(sb, 0, "data", buf, 0, buf.length, 32, 2);
 		System.out.println(sb.toString());
-	}
-
-	public static void main(String[] args) throws Exception
-	{
-		boolean mapped = false;
-		boolean metadata = false;
-		long metaFileOffset = 0L;
-		int metaBlockOffset = 0;
-
-		String squashfs = null;
-		String dir = null;
-		for (int i = 0; i < args.length; i++) {
-			String arg = args[i];
-			switch (arg) {
-			case "-m":
-			case "--mapped":
-				mapped = true;
-				break;
-			case "--metadata":
-				metadata = true;
-				if (i + 2 >= args.length) {
-					usage();
-				}
-				metaFileOffset = Long.parseLong(args[++i], 10);
-				metaBlockOffset = Integer.parseInt(args[++i], 10);
-				break;
-			default:
-				if (squashfs != null && dir != null) {
-					usage();
-				}
-				if (squashfs == null) {
-					squashfs = arg;
-				} else if (dir == null) {
-					dir = arg;
-				}
-			}
-		}
-		if (squashfs == null || dir == null) {
-			usage();
-		}
-
-		Path directory = Paths.get(dir);
-		if (Files.exists(directory)) {
-			System.out.printf("Output directory '%s' exists. Exit%n", dir);
-			System.exit(1);
-		}
-
-		try (SquashFsReader reader = createReader(Paths.get(squashfs),
-				mapped)) {
-			System.out.println(reader.getSuperBlock());
-			System.out.println();
-			System.out.println(reader.getIdTable());
-			System.out.println();
-			System.out.println(reader.getFragmentTable());
-			System.out.println();
-			System.out.println(reader.getExportTable());
-			System.out.println();
-
-			extract(reader, directory);
-
-			if (metadata) {
-				dumpMetadataBlock(reader, metaFileOffset, metaBlockOffset);
-			}
-		}
 	}
 
 }

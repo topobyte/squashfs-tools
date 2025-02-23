@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Date;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.zip.GZIPInputStream;
@@ -33,13 +32,12 @@ import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import de.topobyte.squashfs.SquashFsEntryBuilder;
 import de.topobyte.squashfs.SquashFsWriter;
 import de.topobyte.squashfs.compression.Compression;
-import de.topobyte.squashfs.compression.ZlibCompression;
 import de.topobyte.squashfs.util.SizeTrackingInputStream;
 
 public class SquashConvertTarGz
 {
 
-	public static void convertToSquashFs(Path inputFile, Path outputFile,
+	public void convertToSquashFs(Path inputFile, Path outputFile,
 			Compression compression, int offset) throws IOException
 	{
 		System.err.printf("Converting %s -> %s...%n",
@@ -73,7 +71,7 @@ public class SquashConvertTarGz
 		}
 	}
 
-	private static void processTarEntry(SizeTrackingInputStream stis,
+	private void processTarEntry(SizeTrackingInputStream stis,
 			TarArchiveInputStream tis, TarArchiveEntry entry,
 			SquashFsWriter writer, AtomicReference<Date> modDate)
 			throws IOException
@@ -126,23 +124,6 @@ public class SquashConvertTarGz
 		}
 
 		tb.build();
-	}
-
-	public static void usage()
-	{
-		System.err.printf("Usage: %s <tar-gz-file> <squashfs-file>%n",
-				SquashConvertTarGz.class.getSimpleName());
-		System.err.println();
-		System.exit(1);
-	}
-
-	public static void main(String[] args) throws Exception
-	{
-		if (args.length != 2) {
-			usage();
-		}
-		convertToSquashFs(Paths.get(args[0]), Paths.get(args[1]),
-				new ZlibCompression(), 0);
 	}
 
 }
