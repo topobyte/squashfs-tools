@@ -30,3 +30,7 @@ To convert a Docker tar.gz layer to squashfs:
 To dump the raw content of a squashfs file:
 
     ./scripts/squashfs-fsck <squashfs-file>
+
+To extract the contents of a squashfs file:
+
+    ./scripts/squashfs-extract <squashfs-file> <directory>
