@@ -24,6 +24,8 @@ import java.io.IOException;
 import java.util.zip.Inflater;
 import java.util.zip.InflaterInputStream;
 
+import com.github.luben.zstd.ZstdInputStream;
+
 import de.topobyte.squashfs.SquashFsException;
 import de.topobyte.squashfs.compression.SuperBlockFlag;
 import de.topobyte.squashfs.data.DataBlockCache.Key;
@@ -167,6 +169,8 @@ public class DataBlockReader
 					"Archive claims no compression, but found compressed data");
 		case ZLIB:
 			return readCompressedZlib(sb, raf, dataSize, expectedSize);
+		case ZSTD:
+			return readCompressedZstd(sb, raf, dataSize, expectedSize);
 		default:
 			throw new UnsupportedOperationException(String.format(
 					"Reading compressed data of type %s not yet supported",
@@ -192,6 +196,44 @@ public class DataBlockReader
 		try (ByteArrayInputStream bis = new ByteArrayInputStream(buf)) {
 			try (InflaterInputStream iis = new InflaterInputStream(bis,
 					new Inflater(), 4096)) {
+				try (ByteArrayOutputStream bos = new ByteArrayOutputStream(
+						4096)) {
+					int c = 0;
+					while ((c = iis.read(xfer, 0, 4096)) >= 0) {
+						if (c > 0) {
+							bos.write(xfer, 0, c);
+						}
+					}
+					data = bos.toByteArray();
+					if (data.length > sb.getBlockSize()) {
+						throw new SquashFsException(String.format(
+								"Corrupt metadata block: Got size %d (max = %d)",
+								data.length, sb.getBlockSize()));
+					}
+				}
+			}
+		}
+
+		return new DataBlock(data, expectedSize, data.length);
+	}
+
+	private static DataBlock readCompressedZstd(SuperBlock sb,
+			IRandomAccess raf, int dataSize, int expectedSize)
+			throws IOException, SquashFsException
+	{
+		// see if there are compression flags
+		if (sb.hasFlag(SuperBlockFlag.COMPRESSOR_OPTIONS)) {
+			throw new UnsupportedOperationException(
+					"Reading Zstd compressed data with non-standard options not yet supported");
+		}
+
+		byte[] buf = new byte[dataSize];
+		raf.readFully(buf);
+		byte[] data;
+
+		byte[] xfer = new byte[4096];
+		try (ByteArrayInputStream bis = new ByteArrayInputStream(buf)) {
+			try (ZstdInputStream iis = new ZstdInputStream(bis)) {
 				try (ByteArrayOutputStream bos = new ByteArrayOutputStream(
 						4096)) {
 					int c = 0;
