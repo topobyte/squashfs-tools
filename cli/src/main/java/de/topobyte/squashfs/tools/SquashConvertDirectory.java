@@ -20,11 +20,11 @@ package de.topobyte.squashfs.tools;
 
 import static java.nio.file.LinkOption.NOFOLLOW_LINKS;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.attribute.PosixFileAttributes;
 import java.time.Instant;
 import java.util.concurrent.atomic.AtomicReference;
@@ -38,22 +38,21 @@ import de.topobyte.squashfs.util.PosixUtil;
 public class SquashConvertDirectory
 {
 
-	public static void convertToSquashFs(File inputFile, File outputFile,
+	public static void convertToSquashFs(Path inputFile, Path outputFile,
 			Compression compression, int offset) throws IOException
 	{
 		System.err.printf("Converting %s -> %s...%n",
-				inputFile.getAbsolutePath(), outputFile.getAbsolutePath());
+				inputFile.toAbsolutePath(), outputFile.toAbsolutePath());
 
-		Files.deleteIfExists(outputFile.toPath());
+		Files.deleteIfExists(outputFile);
 
 		long fileCount = 0L;
-		try (SquashFsWriter writer = new SquashFsWriter(outputFile, compression,
-				offset)) {
+		try (SquashFsWriter writer = new SquashFsWriter(outputFile.toFile(),
+				compression, offset)) {
 			AtomicReference<Instant> modDate = new AtomicReference<>(
 					Instant.ofEpochMilli(0));
 
-			Path path = inputFile.toPath();
-			fileCount = walk(path, path, 0, writer, modDate);
+			fileCount = walk(inputFile, inputFile, 0, writer, modDate);
 
 			writer.setModificationTime((int) (modDate.get().getEpochSecond()));
 			writer.finish();
@@ -146,7 +145,7 @@ public class SquashConvertDirectory
 		if (args.length != 2) {
 			usage();
 		}
-		convertToSquashFs(new File(args[0]), new File(args[1]),
+		convertToSquashFs(Paths.get(args[0]), Paths.get(args[1]),
 				new ZstdCompression(), 0);
 	}
 

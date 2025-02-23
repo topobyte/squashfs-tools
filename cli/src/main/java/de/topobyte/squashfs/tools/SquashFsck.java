@@ -19,10 +19,11 @@
 package de.topobyte.squashfs.tools;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.channels.FileChannel;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import de.topobyte.squashfs.MappedSquashFsReader;
 import de.topobyte.squashfs.SquashFsReader;
@@ -53,13 +54,14 @@ public class SquashFsck
 		System.exit(1);
 	}
 
-	private static SquashFsReader createReader(File file, boolean mapped)
+	private static SquashFsReader createReader(Path file, boolean mapped)
 			throws IOException
 	{
 		if (mapped) {
 			System.out.println("Using memory-mapped reader");
 			System.out.println();
-			try (RandomAccessFile raf = new RandomAccessFile(file, "r")) {
+			try (RandomAccessFile raf = new RandomAccessFile(file.toFile(),
+					"r")) {
 				try (FileChannel channel = raf.getChannel()) {
 					MappedFile mmap = MappedFile.mmap(channel,
 							MappedSquashFsReader.PREFERRED_MAP_SIZE,
@@ -71,7 +73,7 @@ public class SquashFsck
 		} else {
 			System.out.println("Using file reader");
 			System.out.println();
-			return SquashFsReader.fromFile(0, file, 0);
+			return SquashFsReader.fromFile(0, file.toFile(), 0);
 		}
 	}
 
@@ -189,7 +191,8 @@ public class SquashFsck
 			usage();
 		}
 
-		try (SquashFsReader reader = createReader(new File(squashfs), mapped)) {
+		try (SquashFsReader reader = createReader(Paths.get(squashfs),
+				mapped)) {
 			System.out.println(reader.getSuperBlock());
 			System.out.println();
 			System.out.println(reader.getIdTable());

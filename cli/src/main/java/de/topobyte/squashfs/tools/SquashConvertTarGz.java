@@ -18,10 +18,11 @@
 
 package de.topobyte.squashfs.tools;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Date;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.zip.GZIPInputStream;
@@ -38,21 +39,21 @@ import de.topobyte.squashfs.util.SizeTrackingInputStream;
 public class SquashConvertTarGz
 {
 
-	public static void convertToSquashFs(File inputFile, File outputFile,
+	public static void convertToSquashFs(Path inputFile, Path outputFile,
 			Compression compression, int offset) throws IOException
 	{
 		System.err.printf("Converting %s -> %s...%n",
-				inputFile.getAbsolutePath(), outputFile.getAbsolutePath());
+				inputFile.toAbsolutePath(), outputFile.toAbsolutePath());
 
-		Files.deleteIfExists(outputFile.toPath());
+		Files.deleteIfExists(outputFile);
 
-		try (FileInputStream fis = new FileInputStream(inputFile);
+		try (InputStream fis = Files.newInputStream(inputFile);
 				SizeTrackingInputStream stis = new SizeTrackingInputStream(fis);
 				GZIPInputStream gis = new GZIPInputStream(stis);
 				TarArchiveInputStream tis = new TarArchiveInputStream(gis)) {
 
 			long fileCount = 0L;
-			try (SquashFsWriter writer = new SquashFsWriter(outputFile,
+			try (SquashFsWriter writer = new SquashFsWriter(outputFile.toFile(),
 					compression, offset)) {
 				TarArchiveEntry entry;
 				AtomicReference<Date> modDate = new AtomicReference<>(
@@ -140,7 +141,7 @@ public class SquashConvertTarGz
 		if (args.length != 2) {
 			usage();
 		}
-		convertToSquashFs(new File(args[0]), new File(args[1]),
+		convertToSquashFs(Paths.get(args[0]), Paths.get(args[1]),
 				new ZlibCompression(), 0);
 	}
 
