@@ -1,0 +1,7 @@
+#!/bin/bash
+
+DIR=$(dirname $0)
+CMD="$DIR/squashfs-tools.sh"
+CLASS="de.topobyte.squashfs.tools.SquashExtract"
+
+exec "$CMD" "$CLASS" "$@"
