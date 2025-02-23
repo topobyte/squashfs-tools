@@ -11,4 +11,10 @@ public class NoCompression implements Compression
 		return CompressionId.NONE;
 	}
 
+	@Override
+	public String toString()
+	{
+		return getClass().getSimpleName();
+	}
+
 }

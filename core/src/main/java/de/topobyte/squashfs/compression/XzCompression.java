@@ -11,4 +11,10 @@ public class XzCompression implements Compression
 		return CompressionId.XZ;
 	}
 
+	@Override
+	public String toString()
+	{
+		return getClass().getSimpleName();
+	}
+
 }

@@ -11,4 +11,10 @@ public class LzoCompression implements Compression
 		return CompressionId.LZO;
 	}
 
+	@Override
+	public String toString()
+	{
+		return getClass().getSimpleName();
+	}
+
 }

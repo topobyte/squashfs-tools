@@ -30,4 +30,10 @@ public class ZstdCompression implements Compression
 		return level;
 	}
 
+	@Override
+	public String toString()
+	{
+		return getClass().getSimpleName();
+	}
+
 }

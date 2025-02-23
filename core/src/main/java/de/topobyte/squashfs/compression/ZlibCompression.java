@@ -11,4 +11,10 @@ public class ZlibCompression implements Compression
 		return CompressionId.ZLIB;
 	}
 
+	@Override
+	public String toString()
+	{
+		return getClass().getSimpleName();
+	}
+
 }

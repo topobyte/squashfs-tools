@@ -11,4 +11,10 @@ public class LzmaCompression implements Compression
 		return CompressionId.LZMA;
 	}
 
+	@Override
+	public String toString()
+	{
+		return getClass().getSimpleName();
+	}
+
 }
