@@ -2,6 +2,6 @@
 
 DIR=$(dirname $0)
 CMD="$DIR/squashfs-tools.sh"
-CLASS="org.apache.hadoop.squashfs.tools.SquashFsck"
+CLASS="de.topobyte.squashfs.tools.SquashFsck"
 
 exec "$CMD" "$CLASS" "$@"
