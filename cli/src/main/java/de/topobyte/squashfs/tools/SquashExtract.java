@@ -25,8 +25,15 @@ import java.io.RandomAccessFile;
 import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.attribute.BasicFileAttributeView;
+import java.nio.file.attribute.FileTime;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.compress.utils.CountingOutputStream;
 
@@ -41,6 +48,7 @@ import de.topobyte.squashfs.inode.SymlinkINode;
 import de.topobyte.squashfs.io.MappedFile;
 import de.topobyte.squashfs.metadata.MetadataReader;
 import de.topobyte.squashfs.util.BinUtils;
+import de.topobyte.squashfs.util.PosixUtil;
 
 public class SquashExtract
 {
@@ -86,6 +94,28 @@ public class SquashExtract
 	{
 		DirectoryINode root = reader.getRootInode();
 		extractSubtree(reader, true, "/", root, directory);
+
+		// Creating files within the previously created directories modifies the
+		// contained directory's last modified time, so we need to update it
+		// again for each directory.
+		for (Entry<Path, FileTime> entry : directoryToLastModified.entrySet()) {
+			Files.setLastModifiedTime(entry.getKey(), entry.getValue());
+		}
+	}
+
+	private static Map<Path, FileTime> directoryToLastModified = new LinkedHashMap<>();
+
+	private static void createDirectory(DirectoryINode inode, Path file)
+			throws IOException
+	{
+		Files.createDirectories(file);
+		FileTime fileTime = FileTime.from(inode.getModifiedTime(),
+				TimeUnit.SECONDS);
+		Files.setLastModifiedTime(file, fileTime);
+		Files.setPosixFilePermissions(file,
+				PosixUtil.getPosixPermissionsAsSet(inode.getPermissions()));
+
+		directoryToLastModified.put(file, fileTime);
 	}
 
 	private static void extractFileContent(SquashFsReader reader,
@@ -99,6 +129,10 @@ public class SquashExtract
 			readSize = cos.getBytesWritten();
 		}
 		System.out.printf(" [%d bytes, %d read]%n", fileSize, readSize);
+		Files.setLastModifiedTime(file,
+				FileTime.from(inode.getModifiedTime(), TimeUnit.SECONDS));
+		Files.setPosixFilePermissions(file,
+				PosixUtil.getPosixPermissionsAsSet(inode.getPermissions()));
 	}
 
 	private static void createSymlink(SymlinkINode inode, Path file)
@@ -108,6 +142,16 @@ public class SquashExtract
 				StandardCharsets.ISO_8859_1);
 		Path targetPath = Paths.get(target);
 		Files.createSymbolicLink(file, targetPath);
+
+		// Use more complicated means to set last modified time here in order to
+		// specify option to not follow links
+		BasicFileAttributeView attributes = Files.getFileAttributeView(file,
+				BasicFileAttributeView.class, LinkOption.NOFOLLOW_LINKS);
+		attributes.setTimes(
+				FileTime.from(inode.getModifiedTime(), TimeUnit.SECONDS), null,
+				null);
+
+		// Cannot set permissions on symbolic links (at least on Linux)
 	}
 
 	private static void extractSubtree(SquashFsReader reader, boolean root,
@@ -116,7 +160,7 @@ public class SquashExtract
 	{
 		System.out.printf("Decending into '%s'%n", path);
 		if (root) {
-			Files.createDirectories(directory);
+			createDirectory(inode, directory);
 			System.out.printf("(%d) /%n", inode.getInodeNumber());
 		}
 
@@ -131,7 +175,7 @@ public class SquashExtract
 			if (type.directory()) {
 				System.out.printf("(%d) Creating directory '%s'%n",
 						childInode.getInodeNumber(), p);
-				Files.createDirectories(p);
+				createDirectory((DirectoryINode) childInode, p);
 			} else if (type.file()) {
 				System.out.printf("(%d) Extracting file '%s'",
 						childInode.getInodeNumber(), p);
