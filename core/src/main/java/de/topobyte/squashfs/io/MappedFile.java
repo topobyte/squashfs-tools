@@ -44,21 +44,21 @@ public class MappedFile
 	}
 
 	public static MappedFile mmap(FileChannel channel, int bufferSize,
-			int windowSize) throws IOException
+			int windowSize, int offset) throws IOException
 	{
 		long size = channel.size();
 
 		List<MappedByteBuffer> buffers = new ArrayList<>();
 
-		long offset = 0L;
-		long remain = size;
+		long currentOffset = offset;
+		long currentRemain = size - offset;
 
-		while (offset < size) {
-			long mapSize = Math.min(windowSize, remain);
+		while (currentOffset < size) {
+			long mapSize = Math.min(windowSize, currentRemain);
 
-			buffers.add(channel.map(MapMode.READ_ONLY, offset, mapSize));
-			offset += bufferSize;
-			remain -= bufferSize;
+			buffers.add(channel.map(MapMode.READ_ONLY, currentOffset, mapSize));
+			currentOffset += bufferSize;
+			currentRemain -= bufferSize;
 		}
 
 		MappedByteBuffer[] bufferArray = buffers

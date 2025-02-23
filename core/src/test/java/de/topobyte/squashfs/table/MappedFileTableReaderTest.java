@@ -62,7 +62,7 @@ public class MappedFileTableReaderTest
 		}
 
 		try (RandomAccessFile raf = new RandomAccessFile(tempFile, "r")) {
-			mmap = MappedFile.mmap(raf.getChannel(), 1024, 2048);
+			mmap = MappedFile.mmap(raf.getChannel(), 1024, 2048, 0);
 		}
 		reader = new MappedFileTableReader(mmap);
 	}

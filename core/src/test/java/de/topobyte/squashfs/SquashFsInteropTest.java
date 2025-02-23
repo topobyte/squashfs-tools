@@ -100,7 +100,7 @@ public class SquashFsInteropTest
 	public static SquashFsReader createFileReader(File archive)
 			throws SquashFsException, IOException
 	{
-		return SquashFsReader.fromFile(0, archive);
+		return SquashFsReader.fromFile(0, archive, 0);
 	}
 
 	public static SquashFsReader createFileReaderWithCache(File archive)
@@ -108,7 +108,7 @@ public class SquashFsInteropTest
 	{
 		MetadataBlockCache cache = new MetadataBlockCache(
 				new TaggedMetadataBlockReader(true));
-		return SquashFsReader.fromFile(0, archive, cache,
+		return SquashFsReader.fromFile(0, archive, 0, cache,
 				new DataBlockCache(64), new DataBlockCache(64));
 	}
 
@@ -119,7 +119,7 @@ public class SquashFsInteropTest
 		try (RandomAccessFile raf = new RandomAccessFile(archive, "r")) {
 			mmap = MappedFile.mmap(raf.getChannel(),
 					MappedSquashFsReader.PREFERRED_MAP_SIZE,
-					MappedSquashFsReader.PREFERRED_WINDOW_SIZE);
+					MappedSquashFsReader.PREFERRED_WINDOW_SIZE, 0);
 		}
 		return SquashFsReader.fromMappedFile(0, mmap);
 	}
@@ -133,7 +133,7 @@ public class SquashFsInteropTest
 		try (RandomAccessFile raf = new RandomAccessFile(archive, "r")) {
 			mmap = MappedFile.mmap(raf.getChannel(),
 					MappedSquashFsReader.PREFERRED_MAP_SIZE,
-					MappedSquashFsReader.PREFERRED_WINDOW_SIZE);
+					MappedSquashFsReader.PREFERRED_WINDOW_SIZE, 0);
 		}
 		return SquashFsReader.fromMappedFile(0, mmap, cache,
 				new DataBlockCache(64), new DataBlockCache(64));

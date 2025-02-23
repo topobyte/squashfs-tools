@@ -42,19 +42,19 @@ import de.topobyte.squashfs.table.IdTable;
 public interface SquashFsReader extends Closeable
 {
 
-	public static SquashFsReader fromFile(int tag, File inputFile)
+	public static SquashFsReader fromFile(int tag, File inputFile, int offset)
 			throws SquashFsException, IOException
 	{
-		return new FileSquashFsReader(tag, inputFile);
+		return new FileSquashFsReader(tag, inputFile, offset);
 	}
 
-	public static SquashFsReader fromFile(int tag, File inputFile,
+	public static SquashFsReader fromFile(int tag, File inputFile, int offset,
 			MetadataBlockCache metadataCache, DataBlockCache dataCache,
 			DataBlockCache fragmentCache) throws SquashFsException, IOException
 	{
 
-		return new FileSquashFsReader(tag, inputFile, metadataCache, dataCache,
-				fragmentCache);
+		return new FileSquashFsReader(tag, inputFile, offset, metadataCache,
+				dataCache, fragmentCache);
 	}
 
 	public static SquashFsReader fromMappedFile(int tag, MappedFile mmap)

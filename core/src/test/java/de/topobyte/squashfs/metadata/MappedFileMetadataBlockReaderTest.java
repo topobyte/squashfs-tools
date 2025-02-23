@@ -72,7 +72,7 @@ public class MappedFileMetadataBlockReaderTest
 		int windowSize = 1024;
 		MappedFile mmap;
 		try (RandomAccessFile raf = new RandomAccessFile(tempFile, "r")) {
-			mmap = MappedFile.mmap(raf.getChannel(), mapSize, windowSize);
+			mmap = MappedFile.mmap(raf.getChannel(), mapSize, windowSize, 0);
 		}
 		reader = new MappedFileMetadataBlockReader(tag, sb, mmap);
 	}

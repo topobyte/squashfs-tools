@@ -63,7 +63,7 @@ public class SquashFsck
 				try (FileChannel channel = raf.getChannel()) {
 					MappedFile mmap = MappedFile.mmap(channel,
 							MappedSquashFsReader.PREFERRED_MAP_SIZE,
-							MappedSquashFsReader.PREFERRED_WINDOW_SIZE);
+							MappedSquashFsReader.PREFERRED_WINDOW_SIZE, 0);
 
 					return SquashFsReader.fromMappedFile(0, mmap);
 				}
@@ -71,7 +71,7 @@ public class SquashFsck
 		} else {
 			System.out.println("Using file reader");
 			System.out.println();
-			return SquashFsReader.fromFile(0, file);
+			return SquashFsReader.fromFile(0, file, 0);
 		}
 	}
 
@@ -101,7 +101,6 @@ public class SquashFsck
 			String path, DirectoryINode inode, boolean readFiles)
 			throws IOException
 	{
-
 		if (root) {
 			System.out.printf("/ (%d)%n", inode.getInodeNumber());
 		}
@@ -130,7 +129,6 @@ public class SquashFsck
 	private static void dumpMetadataBlock(SquashFsReader reader,
 			long metaFileOffset, int metaBlockOffset) throws IOException
 	{
-
 		System.out.println();
 		System.out.printf("Dumping block at file offset %d, block offset %d%n",
 				metaFileOffset, metaBlockOffset);
@@ -149,7 +147,6 @@ public class SquashFsck
 
 	public static void main(String[] args) throws Exception
 	{
-
 		boolean mapped = false;
 		boolean tree = false;
 		boolean files = false;

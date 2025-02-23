@@ -40,6 +40,7 @@ import de.topobyte.squashfs.metadata.MetadataBlockReader;
 import de.topobyte.squashfs.metadata.MetadataReader;
 import de.topobyte.squashfs.metadata.TaggedMetadataBlockReader;
 import de.topobyte.squashfs.ra.IRandomAccess;
+import de.topobyte.squashfs.ra.OffsetRandomAccess;
 import de.topobyte.squashfs.ra.SimpleRandomAccess;
 import de.topobyte.squashfs.superblock.SuperBlock;
 import de.topobyte.squashfs.table.ExportTable;
@@ -62,22 +63,26 @@ public class FileSquashFsReader extends AbstractSquashFsReader
 	private final ExportTable exportTable;
 	private final byte[] sparseBlock;
 
-	FileSquashFsReader(int tag, File inputFile)
+	FileSquashFsReader(int tag, File inputFile, int offset)
 			throws SquashFsException, IOException
 	{
-		this(tag, inputFile,
+		this(tag, inputFile, offset,
 				new MetadataBlockCache(new TaggedMetadataBlockReader(false)),
 				DataBlockCache.NO_CACHE, DataBlockCache.NO_CACHE);
 	}
 
-	FileSquashFsReader(int tag, File inputFile,
+	FileSquashFsReader(int tag, File inputFile, int offset,
 			MetadataBlockCache metadataCache, DataBlockCache dataCache,
 			DataBlockCache fragmentCache) throws SquashFsException, IOException
 	{
 		this.tag = tag;
 		this.dataCache = dataCache;
 		this.fragmentCache = fragmentCache;
-		raf = new SimpleRandomAccess(inputFile, "r");
+		if (offset == 0) {
+			raf = new SimpleRandomAccess(inputFile, "r");
+		} else {
+			raf = new OffsetRandomAccess(inputFile, "r", offset);
+		}
 		superBlock = readSuperBlock(raf);
 		sparseBlock = createSparseBlock(superBlock);
 
