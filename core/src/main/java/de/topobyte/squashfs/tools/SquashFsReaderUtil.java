@@ -36,8 +36,8 @@ public class SquashFsReaderUtil
 	final static Logger logger = LoggerFactory
 			.getLogger(SquashFsReaderUtil.class);
 
-	public static SquashFsReader createReader(Path file, boolean mapped)
-			throws IOException
+	public static SquashFsReader createReader(Path file, int offset,
+			boolean mapped) throws IOException
 	{
 		if (mapped) {
 			logger.info("Using memory-mapped reader");
@@ -46,14 +46,14 @@ public class SquashFsReaderUtil
 				try (FileChannel channel = raf.getChannel()) {
 					MappedFile mmap = MappedFile.mmap(channel,
 							MappedSquashFsReader.PREFERRED_MAP_SIZE,
-							MappedSquashFsReader.PREFERRED_WINDOW_SIZE, 0);
+							MappedSquashFsReader.PREFERRED_WINDOW_SIZE, offset);
 
 					return SquashFsReader.fromMappedFile(0, mmap);
 				}
 			}
 		} else {
 			logger.info("Using file reader");
-			return SquashFsReader.fromFile(0, file.toFile(), 0);
+			return SquashFsReader.fromFile(0, file.toFile(), offset);
 		}
 	}
 

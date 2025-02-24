@@ -94,7 +94,7 @@ public class RunSquashFsck
 
 		SquashFsck task = new SquashFsck();
 		try (SquashFsReader reader = SquashFsReaderUtil
-				.createReader(Paths.get(squashfs), mapped)) {
+				.createReader(Paths.get(squashfs), 0, mapped)) {
 			logger.info(lineSeparator() + reader.getSuperBlock());
 			logger.info(lineSeparator() + reader.getIdTable());
 			logger.info(lineSeparator() + reader.getFragmentTable());
