@@ -2,6 +2,7 @@ dependencies {
     implementation project(':squashfs-tools')
 
     runtimeOnly 'org.slf4j:slf4j-reload4j:2.0.16'
+    runtimeOnly 'ch.qos.reload4j:reload4j:1.2.26'
     testRuntimeOnly 'junit:junit:4.12'
 }
 
