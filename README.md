@@ -34,3 +34,9 @@ To dump the raw content of a squashfs file:
 To extract the contents of a squashfs file:
 
     ./scripts/squashfs-extract <squashfs-file> <directory>
+
+## Using the library
+
+In order to use this as a library, include this dependency from Maven Central:
+
+[de.topobyte:squashfs-tools:0.1.0](https://repo1.maven.org/maven2/de/topobyte/squashfs-tools/0.1.0/)
