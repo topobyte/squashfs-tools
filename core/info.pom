@@ -3,4 +3,9 @@
   <name>SquashFS Tools</name>
   <description>Utilities for reading and writing SquashFS images.</description>
   <url>https://github.com/topobyte/squashfs-tools</url>
+  <license>
+      <name>Apache License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution>repo</distribution>
+  </license>
 </project>

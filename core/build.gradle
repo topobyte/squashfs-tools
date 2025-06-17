@@ -24,6 +24,13 @@ publishing {
                 name = "$pomInfo.name"
                 description = "$pomInfo.description"
                 url = "$pomInfo.url"
+                licenses {
+                    license {
+                        name = "$pomInfo.license.name"
+                        url = "$pomInfo.license.url"
+                        distribution = "$pomInfo.license.distribution"
+                    }
+                }
             }
         }
     }
