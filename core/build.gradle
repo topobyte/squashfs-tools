@@ -24,7 +24,31 @@ publishing {
                 name = "$pomInfo.name"
                 description = "$pomInfo.description"
                 url = "$pomInfo.url"
+                licenses {
+                    license {
+                        name = "$pomInfo.license.name"
+                        url = "$pomInfo.license.url"
+                        distribution = "$pomInfo.license.distribution"
+                    }
+                }
+                developers {
+                    developer {
+                        id.set("sebkur")
+                        name.set("Sebastian Kürten")
+                        email.set("sebastian@topobyte.de")
+                    }
+                }
+                scm {
+                    connection = "$pomInfo.scm.connection"
+                    developerConnection = "$pomInfo.scm.developerConnection"
+                    url = "$pomInfo.scm.url"
+                }
             }
         }
     }
+}
+
+signing {
+    useGpgCmd()
+    sign(publishing.publications["maven"])
 }

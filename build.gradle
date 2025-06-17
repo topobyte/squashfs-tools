@@ -1,3 +1,7 @@
+plugins {
+    id("io.github.gradle-nexus.publish-plugin") version "2.0.0"
+}
+
 wrapper {
     gradleVersion = '7.6.1'
 }
@@ -14,9 +18,11 @@ ext.libraries = [
 configure(libraries) {
     apply plugin: 'java-library'
     apply plugin: 'maven-publish'
+    apply plugin: 'signing'
 
     java {
         withSourcesJar()
+        withJavadocJar()
     }
 }
 
@@ -39,4 +45,17 @@ subprojects {
 
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
+}
+
+if (project.hasProperty("publish")) {
+    nexusPublishing {
+        repositories {
+            sonatype {
+                nexusUrl.set(uri("https://ossrh-staging-api.central.sonatype.com/service/local/"))
+                snapshotRepositoryUrl.set(uri("https://central.sonatype.com/repository/maven-snapshots/"))
+                username = sonatype_username
+                password = sonatype_password
+            }
+        }
+    }
 }

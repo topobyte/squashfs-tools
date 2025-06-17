@@ -34,3 +34,12 @@ To dump the raw content of a squashfs file:
 To extract the contents of a squashfs file:
 
     ./scripts/squashfs-extract <squashfs-file> <directory>
+
+## Publish
+
+Publish to Maven Central:
+
+    ./gradlew -Ppublish clean publishToSonatype closeSonatypeStagingRepository
+
+Make sure to define `sonatype_username` and `sonatype_password` in your global
+`gradle.properties` file.
